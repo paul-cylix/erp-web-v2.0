@@ -56,7 +56,7 @@ Route::get('/create-leave', function () {
 });
 
 Route::get('/create-incidentreport', function () {
-    return view('HumanResourceRequest.create-leave');
+    return view('HumanResourceRequest.create-incidentreport');
 });
 
 Route::get('/create-itinerary', function () {

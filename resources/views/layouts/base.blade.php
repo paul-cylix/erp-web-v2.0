@@ -205,7 +205,7 @@
                       </a> 
                     </li>  
                     <li class="nav-item">
-                      <a href="/craete-incidentreport" class="nav-link">
+                      <a href="/create-incidentreport" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
                       <p>
                       Incident Report 
