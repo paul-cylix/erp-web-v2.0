@@ -51,7 +51,7 @@
                                                 <option>Rizal, Jose</option>
                                                 <option>Washington, George</option>
                                             </select>
-                                        </div>                            
+                                        </div>
                                     </div>
 
                                     <div class="col-md-3">

@@ -50,3 +50,15 @@ Route::get('/create-ca', function () {
 Route::get('/create-ot', function () {
     return view('HumanResourceRequest.create-ot');
 });
+
+Route::get('/create-leave', function () {
+    return view('HumanResourceRequest.create-leave');
+});
+
+Route::get('/create-incidentreport', function () {
+    return view('HumanResourceRequest.create-leave');
+});
+
+Route::get('/create-itinerary', function () {
+    return view('HumanResourceRequest.create-leave');
+});

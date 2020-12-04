@@ -63,7 +63,8 @@
                                             <div class="card-body table-responsive p-0">
                                                 <div class="col-md-1" style="padding-top:5px">
                                                     <div class="form-group">
-                                                        <button style="width:100%" type="submit" class="btn btn-primary">Add Record</button>
+                                                        <button style="width:100%" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Add Record</button>
+                                                        {{-- <button style="width:100%" type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg" data-whatever="@mdo">Add Record</button> --}}
                                                     </div>
                                                 </div>
                                                 
@@ -103,15 +104,15 @@
 
                                 <div class="row">
                                     <div class="col-md-2">
-                                        <div class="form-group">             
-                                            <label for="purpose">Attachments</label> 
+                                        <div class="form-group">
+                                            <label for="purpose">Attachments</label>
                                             <span class="btn btn-success col fileinput-button">
                                                 <i class="fas fa-plus"></i>
                                                 <span>Browse files</span>
                                             </span>
                                         </div>
                                     </div>
-                                </div> 
+                                </div>
 
                                 <div class="row"> 
                                     <div class="col-md-1">
@@ -137,4 +138,131 @@
     </section>
 </div>
 
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Overtime Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Employee Name</label>
+                                <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                                    <option selected="selected">Ceballos, Rosevir Jr.</option>
+                                    <option>Bonifacio, Andres</option>
+                                    <option>Ceballos, Rosevir Jr.</option>
+                                    <option>Dela Cruz, Juan</option>  
+                                    <option>Mabini, Andres</option>
+                                    <option>Rizal, Jose</option>
+                                    <option>Washington, George</option>
+                                </select>
+                            </div>                            
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Project Name</label>
+                                <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                                    <option selected="selected">OKADA</option>
+                                    <option>Charity First</option>
+                                    <option>OKADA</option>
+                                    <option>Thuderbird</option>  
+                                    <option>WFifth</option>
+                                </select>
+                            </div>                            
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Overtime Date</label>
+                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Authorized Time Start</label>
+                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Authorized Time End</label>
+                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Actual Time Start</label>
+                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Actual Time End</label>
+                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Purpose</label>
+                        <textarea class="form-control" id="message-text"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
+
+<script>
+    $('#myModal').on('shown.bs.modal', function () {
+        $('#myInput').trigger('focus')
+    })
+</script>
