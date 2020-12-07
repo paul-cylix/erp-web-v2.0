@@ -36,10 +36,25 @@
                                             </div>
                                         </div>         
                                     </div>  
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Reporting Manager</label>
+                                            <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                                                <option selected="selected">Ceballos, Rosevir Jr.</option>
+                                                <option>Bonifacio, Andres</option>
+                                                <option>Ceballos, Rosevir Jr.</option>
+                                                <option>Dela Cruz, Juan</option>  
+                                                <option>Mabini, Andres</option>
+                                                <option>Rizal, Jose</option>
+                                                <option>Washington, George</option>
+                                            </select>
+                                        </div>                            
+                                    </div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="form-group">                                            
                                             <label for="purpose">Purpose</label> 
                                             <textarea style="resize:none" class="form-control" id="purpose" name="purpose" rows="4" placeholder=""></textarea>

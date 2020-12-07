@@ -16,7 +16,7 @@
                         </div>
 
                         <form action="">
-                            <div class="card-body">
+                            <div class="card-body">                                
                                 <div class="row">
                                     <div class="col-md-3">
                                         <div class="form-group">
@@ -34,40 +34,12 @@
                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div>         
                                     </div>
                                     
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Date Needed</label>
-                                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
-                                                <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
-                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    
-                                    
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Report Time</label>
-                                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
-                                                <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
-                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">Employee Name</label>
+                                            <label for="exampleInputEmail1">Reporting Manager</label>
                                             <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
                                                 <option selected="selected">Ceballos, Rosevir Jr.</option>
                                                 <option>Bonifacio, Andres</option>
@@ -79,37 +51,13 @@
                                             </select>
                                         </div>                            
                                     </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Medium of Report</label>
-                                            <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                                <option selected="selected">Call</option>
-                                                <option>Call</option>
-                                                <option>Email</option>
-                                                <option>Text</option>  
-                                                <option>MS Teams</option>
-                                                <option>Skype</option>
-                                                <option>Viber</option>
-                                            </select>
-                                        </div>                            
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="message-text" class="col-form-label">Reason</label>
-                                            <textarea class="form-control" id="message-text"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
+                                </div> 
 
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="card card-default">
                                             <div class="card-header">
-                                                <h3 class="card-title">Leave Details</h3>
+                                                <h3 class="card-title">Itinerary Details</h3>
         
                                                 <div class="card-tools">
                                                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -129,12 +77,13 @@
                                                 <table class="table table-hover text-nowrap">
                                                     <thead>
                                                         <tr>
-                                                            <th>Leave Date</th>
-                                                            <th>Leave Type</th>
-                                                            <th>Half Day</th>
-                                                            <th>AM/PM</th>
-                                                            <th>Count</th>
-                                                            <th>With Pay</th>
+                                                            <th>Employee Name</th>
+                                                            <th>Client Name</th>
+                                                            <th>Authorized Time Start</th>
+                                                            <th>Authorized Time End</th>
+                                                            <th>Actual Time Start</th>
+                                                            <th>Actual Time End</th>
+                                                            <th>Purpose</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
@@ -196,7 +145,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add Overtime Details</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Add Itinerary Details</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -204,24 +153,39 @@
             <div class="modal-body">
                 <form>
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Leave Type</label>
+                                <label for="exampleInputEmail1">Employee Name</label>
                                 <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                    <option selected="selected">Vacation Leave</option> 
-                                    <option>Sick Leave</option>
-                                    <option>Maternity Leave</option>
-                                    <option>Paternity Leave</option>  
-                                    <option>Special Leave</option>
+                                    <option selected="selected">Ceballos, Rosevir Jr.</option>
+                                    <option>Bonifacio, Andres</option>
+                                    <option>Ceballos, Rosevir Jr.</option>
+                                    <option>Dela Cruz, Juan</option>  
+                                    <option>Mabini, Andres</option>
+                                    <option>Rizal, Jose</option>
+                                    <option>Washington, George</option>
                                 </select>
                             </div>                            
-                        </div> 
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Client Name</label>
+                                <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                                    <option selected="selected">OKADA</option>
+                                    <option>Charity First</option>
+                                    <option>OKADA</option>
+                                    <option>Thuderbird</option>  
+                                    <option>WFifth</option>
+                                </select>
+                            </div>                            
+                        </div>
                     </div> 
 
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Leave Date Start</label>
+                                <label for="exampleInputEmail1">Authorized Time Start</label>
                                 <div class="input-group date" id="reservationdate" data-target-input="nearest">
                                     <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
                                     <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
@@ -233,7 +197,33 @@
                         
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Leave Date End</label>
+                                <label for="exampleInputEmail1">Authorized Time End</label>
+                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Actual Time Start</label>
+                                <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Actual Time End</label>
                                 <div class="input-group date" id="reservationdate" data-target-input="nearest">
                                     <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
                                     <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
@@ -244,17 +234,10 @@
                         </div>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="exampleInputEmail1">Pay Type</label>
-                                <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                    <option selected="selected">With Pay</option> 
-                                    <option>Without Pay</option>
-                                </select>
-                            </div>                            
-                        </div> 
-                    </div> 
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Purpose</label>
+                        <textarea class="form-control" id="message-text"></textarea>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">

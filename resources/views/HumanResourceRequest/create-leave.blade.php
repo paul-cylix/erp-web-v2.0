@@ -35,36 +35,25 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="exampleInputEmail1">Date Needed</label>
-                                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
-                                                <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
-                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    </div>                                    
 
-                                    
-                                    
-                                    <div class="col-md-3">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">Report Time</label>
-                                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
-                                                <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
-                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            <label for="exampleInputEmail1">Reporting Manager</label>
+                                            <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                                                <option selected="selected">Ceballos, Rosevir Jr.</option>
+                                                <option>Bonifacio, Andres</option>
+                                                <option>Ceballos, Rosevir Jr.</option>
+                                                <option>Dela Cruz, Juan</option>  
+                                                <option>Mabini, Andres</option>
+                                                <option>Rizal, Jose</option>
+                                                <option>Washington, George</option>
+                                            </select>
+                                        </div>                            
                                     </div>
                                 </div>
 
-                                <div class="row">
+                                <div class="row">   
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Employee Name</label>
@@ -80,7 +69,7 @@
                                         </div>                            
                                     </div>
                                     
-                                    <div class="col-md-6">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">Medium of Report</label>
                                             <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
@@ -94,6 +83,18 @@
                                             </select>
                                         </div>                            
                                     </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Report Time</label>
+                                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                                <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                                                <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> 
                                 </div>
 
                                 <div class="row">

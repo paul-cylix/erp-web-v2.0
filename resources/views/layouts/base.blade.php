@@ -299,7 +299,7 @@
                   </a>
                   <ul class="nav nav-treeview">
                     <li class="nav-item">
-                      <a href="#" class="nav-link">
+                      <a href="/create-sof-delivery" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
                       <p>
                       Sales Order - Delivery 
@@ -307,7 +307,7 @@
                       </a> 
                     </li>
                     <li class="nav-item">
-                      <a href="#" class="nav-link">
+                      <a href="/create-sof-project" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
                       <p>
                       Sales Order - Project 
@@ -315,7 +315,7 @@
                       </a> 
                     </li>  
                     <li class="nav-item">
-                      <a href="#" class="nav-link">
+                      <a href="/create-sof-demo" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
                       <p>
                       Sales Order - Demo 
@@ -323,7 +323,7 @@
                       </a> 
                     </li>  
                     <li class="nav-item">
-                      <a href="#" class="nav-link">
+                      <a href="/create-sof-poc" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
                       <p>
                       Sales Order - POC 
@@ -331,10 +331,10 @@
                       </a> 
                     </li>
                     <li class="nav-item">
-                      <a href="#" class="nav-link">
+                      <a href="sof-pending" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
                       <p>
-                      Sales Order - Summary 
+                      Sales Order - Pending 
                       </p>
                       </a> 
                     </li>  
@@ -468,43 +468,49 @@
                 </li>
                 <li class="nav-header">My Workflow</li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <a href="/participants" class="nav-link">
                     <i class="nav-icon far fa-circle text-white"></i>
                     <p class="text">Participants</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <a href="/inputs" class="nav-link">
                     <i class="nav-icon far fa-circle text-primary"></i>
-                    <p class="text">Input</p>
+                    <p class="text">Inputs</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <a href="/approvals" class="nav-link">
+                    <i class="nav-icon far fa-circle text-info"></i>
+                    <p class="text">Approvals</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/in-progress" class="nav-link">
                     <i class="nav-icon far fa-circle text-warning"></i>
                     <p>In Progress</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <a href="/clarifications" class="nav-link">
                     <i class="nav-icon far fa-circle text-info"></i>
-                    <p class="text">Clarification</p>
+                    <p class="text">Clarifications</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <a href="/approved" class="nav-link">
                     <i class="nav-icon far fa-circle text-success"></i>
                     <p>Approved</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <a href="/withdrawn" class="nav-link">
                     <i class="nav-icon far fa-circle text-secondary"></i>
                     <p class="text">Withdrawn</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <a href="/rejected" class="nav-link">
                     <i class="nav-icon far fa-circle text-danger"></i>
                     <p class="text">Rejected</p>
                   </a>

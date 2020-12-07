@@ -60,5 +60,61 @@ Route::get('/create-incidentreport', function () {
 });
 
 Route::get('/create-itinerary', function () {
-    return view('HumanResourceRequest.create-leave');
+    return view('HumanResourceRequest.create-itinerary');
+});
+
+
+//Sales Order Request Routes
+Route::get('/create-sof-project', function () {
+    return view('SalesOrderRequest.create-sof-project');
+});
+
+Route::get('/create-sof-delivery', function () {
+    return view('SalesOrderRequest.create-sof-delivery');
+});
+
+Route::get('/create-sof-poc', function () {
+    return view('SalesOrderRequest.create-sof-poc');
+});
+
+Route::get('/create-sof-demo', function () {
+    return view('SalesOrderRequest.create-sof-demo');
+});
+
+Route::get('/sof-pending', function () {
+    return view('SalesOrderRequest.sof-pending');
+});
+
+
+//Work Flow Manager
+Route::get('/approvals', function () {
+    return view('MyWorkflow.approval');
+});
+
+Route::get('/approved', function () {
+    return view('MyWorkflow.approved');
+});
+
+Route::get('/clarifications', function () {
+    return view('MyWorkflow.clarification');
+});
+
+Route::get('/in-progress', function () {
+    return view('MyWorkflow.in-progress');
+});
+
+Route::get('/inputs', function () {
+    return view('MyWorkflow.input');
+});
+
+Route::get('/participants', function () {
+    return view('MyWorkflow.participant');
+});
+
+Route::get('/rejected', function () {
+    return view('MyWorkflow.rejected');
+});
+
+Route::get('/withdrawn', function () {
+    return view('MyWorkflow.withdrawn');
 });
