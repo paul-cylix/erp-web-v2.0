@@ -19,12 +19,9 @@
                                                 <tr>
                                                     <th>Reference</th>
                                                     <th>Request Type</th>
-                                                    <th>Due Date</th>
                                                     <th>Date Requested</th>
                                                     <th>Project Name</th>
-                                                    <th>Business Name</th>
                                                     <th>Initiator</th>
-                                                    <th>Remarks</th>
                                                     <th>Amount</th>
                                                     <th>Action</th>
                                                 </tr>

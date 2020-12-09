@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\WorkflowController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -87,9 +88,7 @@ Route::get('/sof-pending', function () {
 
 
 //Work Flow Manager
-Route::get('/approvals', function () {
-    return view('MyWorkflow.approval');
-});
+Route::get('/approvals', [WorkflowController::class, 'getPost']);
 
 Route::get('/approved', function () {
     return view('MyWorkflow.approved');

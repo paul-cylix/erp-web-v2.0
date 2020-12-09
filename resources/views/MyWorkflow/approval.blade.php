@@ -19,17 +19,27 @@
                                                 <tr>
                                                     <th>Reference</th>
                                                     <th>Request Type</th>
-                                                    <th>Due Date</th>
                                                     <th>Date Requested</th>
                                                     <th>Project Name</th>
-                                                    <th>Business Name</th>
                                                     <th>Initiator</th>
-                                                    <th>Remarks</th>
                                                     <th>Amount</th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                @foreach ($posts as $post)
+                                                    <tr>
+                                                        <td><a href="#">{{$post->REFERENCE}}</a></td>
+                                                        <td>{{$post->WebpageLink}}</td>
+                                                        <td>{{$post->Date}}</td>
+                                                        <td>{{$post->Project}}</td>
+                                                        <td>{{$post->Initiator}}</td>
+                                                        <td>{{$post->Amount}}</td>
+                                                        <td>
+                                                            <a href="#" class="btn btn-info">View</a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
