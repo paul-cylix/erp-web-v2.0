@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title')</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>@yield('title')</title>
     
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -41,498 +40,515 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{{asset('assets/dist/css/adminlte.min.css')}}">
 </head>
-<body>
 
-    <div style="height: 100%;"  class="wrapper">
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-          <!-- Left navbar links -->
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-              <a href="/dashboard" class="nav-link">Dashboard</a>
-            </li> 
-          </ul> 
+<body>
+  
+<body class="hold-transition sidebar-mini layout-fixed">
+  <div class="wrapper">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="/dashboard" class="nav-link">Dashboard</a>
+        </li> 
+      </ul> 
       
-          <!-- Right navbar links -->
-          <ul class="navbar-nav ml-auto"> 
-              
-            <!-- Notifications Dropdown Menu -->
-            <li class="nav-item dropdown">
-              <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge">15</span>
+      <ul class="navbar-nav ml-auto"> 
+        <li class="nav-item dropdown">
+          <a class="nav-link" data-toggle="dropdown" href="#">
+            <i class="far fa-bell"></i>
+            <span class="badge badge-warning navbar-badge">15</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+            <span class="dropdown-item dropdown-header">15 Notifications</span>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-envelope mr-2"></i> 4 new messages
+              <span class="float-right text-muted text-sm">3 mins</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-users mr-2"></i> 8 friend requests
+              <span class="float-right text-muted text-sm">12 hours</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-file mr-2"></i> 3 new reports
+              <span class="float-right text-muted text-sm">2 days</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+          </div>
+          <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#" role="button"><i class="fas fa-bars"></i></a> 
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+              <span class="dropdown-item dropdown-header">My Account</span>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item">
+                <i class="fas fa-settings mr-2"></i> Settings
               </a>
-              <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <span class="dropdown-item dropdown-header">15 Notifications</span>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="fas fa-envelope mr-2"></i> 4 new messages
-                  <span class="float-right text-muted text-sm">3 mins</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="fas fa-users mr-2"></i> 8 friend requests
-                  <span class="float-right text-muted text-sm">12 hours</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="fas fa-file mr-2"></i> 3 new reports
-                  <span class="float-right text-muted text-sm">2 days</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-              </div>
-              
-              <li class="nav-item dropdown">
-                  <a class="nav-link" data-toggle="dropdown" href="#" role="button"><i class="fas fa-bars"></i></a> 
-                  <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                    <span class="dropdown-item dropdown-header">My Account</span>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                      <i class="fas fa-settings mr-2"></i> Settings
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="/logout" class="dropdown-item">
-                      <i class="fas fa-logout mr-2"></i> Logout 
-                    </a> 
-                  </div>
-                </li>   
-            </li>   
-          </ul>
-        </nav>
-        <!-- /.navbar -->
-      
-        <!-- Main Sidebar Container -->
-        <aside style="height: 100%;" class="main-sidebar sidebar-dark-primary elevation-6"> 
-      
-          <!-- Sidebar -->
-          <div style="height: 100%;" class="sidebar">
-            <!-- Sidebar user panel (optional) -->
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-              <div class="image">
-                <img src="{{asset('assets/dist/img/jr.jpg')}}" class="img-circle elevation-2" alt="User Image">
-              </div>
-              <div class="info">
-                <a href="#" class="d-block">Rosevir Ceballos Jr.</a>
-              </div>
+              <div class="dropdown-divider"></div>
+              <a href="/logout" class="dropdown-item">
+                <i class="fas fa-logout mr-2"></i> Logout 
+              </a> 
             </div>
-      
-            <!-- SidebarSearch Form -->
-            <div class="form-inline">
-              <div class="input-group" data-widget="sidebar-search">
-                <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-                <div class="input-group-append">
-                  <button class="btn btn-sidebar">
-                    <i class="fas fa-search fa-fw"></i>
-                  </button>
-                </div>
-              </div>
+          </li>   
+        </li>   
+      </ul>
+    </nav>   
+  
+    <!-- Main Sidebar Container -->
+    <aside style="height: 100%;" class="main-sidebar sidebar-dark-primary elevation-6">
+      <div style="height: 100%;" class="sidebar">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="image">
+            <img src="{{asset('assets/dist/img/jr.jpg')}}" class="img-circle elevation-2" alt="User Image">
+          </div>
+          <div class="info">
+            <a href="#" class="d-block">Rosevir Ceballos Jr.</a>
+          </div>
+        </div>
+        
+        <div class="form-inline">
+          <div class="input-group" data-widget="sidebar-search">
+            <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+            <div class="input-group-append">
+              <button class="btn btn-sidebar">
+                <i class="fas fa-search fa-fw"></i>
+              </button>
             </div>
-      
-            
-            <nav class="mt-2">
-              <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <li class="nav-header">New Workflow</li> 
+          </div>
+        </div>
+  
+        <nav class="mt-2">
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <li class="nav-header">New Workflow</li> 
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-circle"></i>
+                <p>
+                  Accounting & Finance
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-circle"></i>
-                    <p>
-                      Accounting & Finance
-                      <i class="right fas fa-angle-left"></i>
-                    </p>
-                  </a>
-                  <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                      <a href="/create-rfp" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Payment</p>
-                      </a> 
-                    </li>
-                    <li class="nav-item">
-                      <a href="/create-re" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Reimbursement</p>
-                      </a> 
-                    </li>
-                    <li class="nav-item">
-                      <a href="/create-pc" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Petty Cash</p>
-                      </a> 
-                    </li>
-                    <li class="nav-item">
-                      <a href="/create-ca" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Cash Advance </p>
-                      </a> 
-                    </li>  
-                  </ul>
+                  <a href="/create-rfp" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Payment</p>
+                  </a> 
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-circle"></i>
-                    <p>
-                    Human Resource
-                    <i class="right fas fa-angle-left"></i>
-                    </p>
-                  </a>
-                  <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                      <a href="/create-ot" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>
-                      Overtime 
-                      </p>
-                      </a> 
-                    </li>
-                    <li class="nav-item">
-                      <a href="/create-leave" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>
-                      Leave 
-                      </p>
-                      </a> 
-                    </li>  
-                    <li class="nav-item">
-                      <a href="/create-itinerary" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>
-                      Itinerary 
-                      </p>
-                      </a> 
-                    </li>  
-                    <li class="nav-item">
-                      <a href="/create-incidentreport" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>
-                      Incident Report 
-                      </p>
-                      </a> 
-                    </li>  
-                  </ul>
+                  <a href="/create-re" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Reimbursement</p>
+                  </a> 
                 </li>
                 <li class="nav-item">
+                  <a href="/create-pc" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Petty Cash</p>
+                  </a> 
+                </li>
+                <li class="nav-item">
+                  <a href="/create-ca" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Cash Advance </p>
+                  </a> 
+                </li>  
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-circle"></i>
+                <p>
+                Human Resource
+                <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="/create-ot" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                  Overtime 
+                  </p>
+                  </a> 
+                </li>
+                <li class="nav-item">
+                  <a href="/create-leave" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                  Leave 
+                  </p>
+                  </a> 
+                </li>  
+                <li class="nav-item">
+                  <a href="/create-itinerary" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                  Itinerary 
+                  </p>
+                  </a> 
+                </li>  
+                <li class="nav-item">
+                  <a href="/create-incidentreport" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                  Incident Report 
+                  </p>
+                  </a> 
+                </li>  
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-circle"></i>
+                <p>
+                Master List
+                <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
                   <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-circle"></i>
-                    <p>
-                    Master List
-                    <i class="right fas fa-angle-left"></i>
-                    </p>
-                  </a>
-                  <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Customer Entry</p>
-                      </a> 
-                    </li>
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Item Entry</p>
-                      </a> 
-                      </li>  
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Supplier Entry</p>
-                      </a> 
-                    </li>
-                  </ul>
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Customer Entry</p>
+                  </a> 
                 </li>
                 <li class="nav-item">
                   <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-circle"></i>
-                    <p>
-                    Operations
-                    <i class="right fas fa-angle-left"></i>
-                    </p>
-                  </a>
-                  <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Labor Resources</p>
-                      </a> 
-                    </li>
-                  </ul>
-                </li>
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Item Entry</p>
+                  </a> 
+                  </li>  
                 <li class="nav-item">
                   <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-circle"></i>
-                    <p>
-                    Purchasing
-                    <i class="right fas fa-angle-left"></i>
-                    </p>
-                  </a>
-                  <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Purchase Request</p>
-                      </a> 
-                    </li>
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Purchase Order</p>
-                      </a> 
-                    </li>
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Direct Purchase Order</p>
-                      </a> 
-                    </li>
-                  </ul>
-                </li>
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-circle"></i>
-                    <p>
-                    Sales
-                    <i class="right fas fa-angle-left"></i>
-                    </p>
-                  </a>
-                  <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                      <a href="/create-sof-delivery" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>
-                      Sales Order - Delivery 
-                      </p>
-                      </a> 
-                    </li>
-                    <li class="nav-item">
-                      <a href="/create-sof-project" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>
-                      Sales Order - Project 
-                      </p>
-                      </a> 
-                    </li>  
-                    <li class="nav-item">
-                      <a href="/create-sof-demo" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>
-                      Sales Order - Demo 
-                      </p>
-                      </a> 
-                    </li>  
-                    <li class="nav-item">
-                      <a href="/create-sof-poc" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>
-                      Sales Order - POC 
-                      </p>
-                      </a> 
-                    </li>
-                    <li class="nav-item">
-                      <a href="sof-pending" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>
-                      Sales Order - Pending 
-                      </p>
-                      </a> 
-                    </li>  
-                  </ul>
-                </li>
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-circle"></i>
-                    <p>
-                    Supply Chain
-                    <i class="right fas fa-angle-left"></i>
-                    </p>
-                  </a>
-                  <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>
-                        Materials
-                        <i class="right fas fa-angle-left"></i>
-                        </p>
-                      </a>
-                      <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>MRF - Project</p>
-                          </a>
-                        </li>
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>MRF - Delivery</p>
-                          </a>
-                        </li> 
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>MRF - Demo</p>
-                          </a>
-                        </li> 
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>MRF - POC</p>
-                          </a>
-                        </li> 
-                      </ul>
-                    </li> 
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>
-                        Assets
-                        <i class="right fas fa-angle-left"></i>
-                        </p>
-                      </a>
-                      <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>ARF - Project</p>
-                          </a>
-                        </li>
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>ARF - Delivery</p>
-                          </a>
-                        </li>
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>ARF - Demo</p>
-                          </a>
-                        </li>
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>ARF - POC</p>
-                          </a>
-                        </li>
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>ARF - Internal</p>
-                          </a>
-                        </li> 
-                      </ul>
-                    </li> 
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>
-                        Supplies
-                        <i class="right fas fa-angle-left"></i>
-                        </p>
-                      </a>
-                      <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>SuRF - Project</p>
-                          </a>
-                        </li> 
-                        <li class="nav-item">
-                          <a href="#" class="nav-link">
-                          <i class="far fa-dot-circle nav-icon"></i>
-                          <p>SuRF - Internal</p>
-                          </a>
-                        </li> 
-                      </ul>
-                    </li> 
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>
-                        Release Stocks 
-                        </p>
-                      </a> 
-                    </li>  
-                    <li class="nav-item">
-                      <a href="#" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>
-                        RMA 
-                        </p>
-                      </a> 
-                    </li>  
-                  </ul>
-                </li>
-                <li class="nav-header">My Workflow</li>
-                <li class="nav-item">
-                  <a href="/participants" class="nav-link">
-                    <i class="nav-icon far fa-circle text-white"></i>
-                    <p class="text">Participants</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="/inputs" class="nav-link">
-                    <i class="nav-icon far fa-circle text-primary"></i>
-                    <p class="text">Inputs</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="/approvals" class="nav-link">
-                    <i class="nav-icon far fa-circle text-info"></i>
-                    <p class="text">Approvals</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="/in-progress" class="nav-link">
-                    <i class="nav-icon far fa-circle text-warning"></i>
-                    <p>In Progress</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="/clarifications" class="nav-link">
-                    <i class="nav-icon far fa-circle text-info"></i>
-                    <p class="text">Clarifications</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="/approved" class="nav-link">
-                    <i class="nav-icon far fa-circle text-success"></i>
-                    <p>Approved</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="/withdrawn" class="nav-link">
-                    <i class="nav-icon far fa-circle text-secondary"></i>
-                    <p class="text">Withdrawn</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="/rejected" class="nav-link">
-                    <i class="nav-icon far fa-circle text-danger"></i>
-                    <p class="text">Rejected</p>
-                  </a>
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Supplier Entry</p>
+                  </a> 
                 </li>
               </ul>
-            </nav>
-        </div>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-circle"></i>
+                <p>
+                Operations
+                <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Labor Resources</p>
+                  </a> 
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-circle"></i>
+                <p>
+                Purchasing
+                <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Purchase Request</p>
+                  </a> 
+                </li>
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Purchase Order</p>
+                  </a> 
+                </li>
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Direct Purchase Order</p>
+                  </a> 
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-circle"></i>
+                <p>
+                Sales
+                <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="/create-sof-delivery" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                  Sales Order - Delivery 
+                  </p>
+                  </a> 
+                </li>
+                <li class="nav-item">
+                  <a href="/create-sof-project" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                  Sales Order - Project 
+                  </p>
+                  </a> 
+                </li>  
+                <li class="nav-item">
+                  <a href="/create-sof-demo" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                  Sales Order - Demo 
+                  </p>
+                  </a> 
+                </li>  
+                <li class="nav-item">
+                  <a href="/create-sof-poc" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                  Sales Order - POC 
+                  </p>
+                  </a> 
+                </li>
+                <li class="nav-item">
+                  <a href="sof-pending" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                  Sales Order - Pending 
+                  </p>
+                  </a> 
+                </li>  
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-circle"></i>
+                <p>
+                Supply Chain
+                <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                    Materials
+                    <i class="right fas fa-angle-left"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>MRF - Project</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>MRF - Delivery</p>
+                      </a>
+                    </li> 
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>MRF - Demo</p>
+                      </a>
+                    </li> 
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>MRF - POC</p>
+                      </a>
+                    </li> 
+                  </ul>
+                </li> 
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                    Assets
+                    <i class="right fas fa-angle-left"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>ARF - Project</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>ARF - Delivery</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>ARF - Demo</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>ARF - POC</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>ARF - Internal</p>
+                      </a>
+                    </li> 
+                  </ul>
+                </li> 
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                    Supplies
+                    <i class="right fas fa-angle-left"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>SuRF - Project</p>
+                      </a>
+                    </li> 
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>SuRF - Internal</p>
+                      </a>
+                    </li> 
+                  </ul>
+                </li> 
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                    Release Stocks 
+                    </p>
+                  </a> 
+                </li>  
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>
+                    RMA 
+                    </p>
+                  </a> 
+                </li>  
+              </ul>
+            </li>
+            <li class="nav-header">My Workflow</li>
+            <li class="nav-item">
+              <a href="/participants" class="nav-link">
+                <i class="nav-icon far fa-circle text-white"></i>
+                <p class="text">Participants</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/inputs" class="nav-link">
+                <i class="nav-icon far fa-circle text-primary"></i>
+                <p class="text">Inputs</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/approvals" class="nav-link">
+                <i class="nav-icon far fa-circle text-info"></i>
+                <p class="text">Approvals</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/in-progress" class="nav-link">
+                <i class="nav-icon far fa-circle text-warning"></i>
+                <p>In Progress</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/clarifications" class="nav-link">
+                <i class="nav-icon far fa-circle text-info"></i>
+                <p class="text">Clarifications</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/approved" class="nav-link">
+                <i class="nav-icon far fa-circle text-success"></i>
+                <p>Approved</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/withdrawn" class="nav-link">
+                <i class="nav-icon far fa-circle text-secondary"></i>
+                <p class="text">Withdrawn</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/rejected" class="nav-link">
+                <i class="nav-icon far fa-circle text-danger"></i>
+                <p class="text">Rejected</p>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </aside>
-            
-    @yield('content')
-
-    <footer class="main-footer">
-        <strong>Copyright &copy; 2020 <a style="color: #11ba27" href="https://www.cylix.ph/">Cylix Technologies Inc.</a></strong>
-        All rights reserved.
-        <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 1.0.5-UT
+  
+  
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1 class="m-0">Dashboard</h1>
+            </div><!-- /.col --> 
+          </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+  
+      <!-- Main content -->
+      <section class="content">
+        <div class="container-fluid">
+           @yield('content')
         </div>
+      </section> 
+    </div>
+    
+    {{-- <footer class="main-footer">
+      <strong>Copyright &copy; 2020 <a style="color: #11ba27" href="https://www.cylix.ph/">Cylix Technologies Inc.</a></strong>
+      All rights reserved.
+      <div class="float-right d-none d-sm-inline-block">
+          <b>Version</b> 1.0.5-UT
+      </div>
     </footer>
+   --}}
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+      <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+    
+  </div>
 
-    <aside class="control-sidebar control-sidebar-dark"></aside>
-</div>
-
+  <!-- ./wrapper -->
 
 <!-- jQuery -->
 <script src="{{asset('assets/plugins/jquery/jquery.min.js')}}"></script>
