@@ -13,17 +13,17 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Reference Number</label>
-                                    <input type="text" class="form-control" id="exampleInputEmail1" placeholder="" readonly>
+                                    <label for="referenceNumber">Reference Number</label>
+                                    <input type="text" class="form-control" id="referenceNumber" placeholder="" readonly>
                                 </div>                            
                             </div>
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Requested Date</label>
-                                    <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                        <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
-                                        <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                    <label for="dateRequested">Requested Date</label>
+                                    <div class="input-group date" id="dateRequested" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#dateRequested" value="{{date('m/d/Y')}}" readonly/>
+                                        <div class="input-group-append" data-target="#dateRequested" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
                                     </div>
@@ -34,13 +34,9 @@
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Reporting Manager</label>
                                     <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                        <option selected="selected">Ceballos, Rosevir Jr.</option>
-                                        <option>Bonifacio, Andres</option>
-                                        <option>Ceballos, Rosevir Jr.</option>
-                                        <option>Dela Cruz, Juan</option>  
-                                        <option>Mabini, Andres</option>
-                                        <option>Rizal, Jose</option>
-                                        <option>Washington, George</option>
+                                        @foreach ($mngrs as $rm)
+                                            <option value="{{$rm->RMID}}">{{$rm->RMName}}</option>
+                                        @endforeach
                                     </select>
                                 </div>                            
                             </div>
@@ -51,13 +47,9 @@
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Project Name</label>
                                     <select class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                        <option selected="selected">Alabama</option>
-                                        <option>Alaska</option>
-                                        <option>California</option>
-                                        <option>Delaware</option>
-                                        <option>Tennessee</option>
-                                        <option>Texas</option>
-                                        <option>Washington</option>
+                                        @foreach ($projects as $prj)
+                                            <option value="{{$prj->project_id}}">{{$prj->project_name}}</option>
+                                        @endforeach
                                     </select>
                                 </div>                            
                             </div>
@@ -118,8 +110,8 @@
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="amount">Amount</label>
-                                    <input data-type="currency" min="0" style="text-align: right" type="text" class="form-control" name="amount" id="amount" placeholder="">
+                                    <label for="amount">Amount</label> 
+                                    <input type="text" min="0.01" style="text-align: right" type="text" class="form-control currency" name="amount" id="amount" placeholder="" value="0.00">
                                 </div>
                             </div>
                         </div>
@@ -184,3 +176,23 @@
         </section>
     </div>
 @endsection
+
+<script> 
+    $(document).ready(function(){
+        $('#yn').bootstrapToggle();
+
+        $('input.currency').keyup(function(event) {
+
+            // skip for arrow keys
+            if(event.which >= 37 && event.which <= 40) return;
+
+            // format number
+            $(this).val(function(index, value) {
+                return value
+                .replace(/\D/g, "")
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                ;
+            });
+        });
+    });
+</script> 

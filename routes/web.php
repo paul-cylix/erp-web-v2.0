@@ -33,6 +33,7 @@ Route::get('/index', function () {
 Route::get('/create-rfp', function () {
     return view('AccountingRequest.create-rfp');
 });
+Route::get('/create-rfp', [WorkflowController::class, 'getRFP_InitData']); 
 
 Route::get('/create-re', function () {
     return view('AccountingRequest.create-reimbursement');
