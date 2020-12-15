@@ -14,7 +14,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="referenceNumber">Reference Number</label>
-                                    <input type="text" class="form-control" id="referenceNumber" name="referenceNumber" placeholder="" readonly>
+                                    <input type="text" class="form-control" id="referenceNumber" name="referenceNumber" placeholder="" value=<?php echo "RFP-" . date('Y') . "-"?> readonly>
                                 </div>
                             </div>
 
@@ -46,7 +46,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="projectName">Project Name</label>
-                                    <select id="projectName" name="projectName" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                                    <select id="projectName" name="projectName" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;" onload="loadProject()" onchange="myFunction()">
+                                        <option disabled selected value>-- Select Project Name --</option>
                                         @foreach ($projects as $prj)
                                             <option value="{{$prj->project_id}}">{{$prj->project_name}}</option>
                                         @endforeach
@@ -109,7 +110,7 @@
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="amount">Amount</label> 
+                                    <label for="amount">Amount</label>
                                     <input type="text" min="0.01" style="text-align: right" type="text" class="form-control currency" name="amount" id="amount" placeholder="" value="0.00">
                                 </div>
                             </div>
@@ -118,7 +119,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="purpose">Purpose</label> 
+                                    <label for="purpose">Purpose</label>
                                     <textarea style="resize:none" class="form-control" id="purpose" name="purpose" rows="4" placeholder=""></textarea>
                                 </div>
                             </div>
@@ -127,7 +128,7 @@
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="purpose">Attachments</label> 
+                                    <label for="purpose">Attachments</label>
                                     <span class="btn btn-success col fileinput-button">
                                         <i class="fas fa-plus"></i>
                                         <span>Browse files</span>
@@ -195,3 +196,14 @@
         });
     });
 </script> 
+
+<script>
+    function myFunction() {
+      var x = document.getElementById("projectName").value;
+      document.getElementById("clientName").value = "Client Name: " + x;
+    }
+
+    functio loadProject() {
+        document.getElementById("projectName").selectedIndex = -1;
+    }
+</script>
