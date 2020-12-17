@@ -21,9 +21,9 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="dateRequested">Requested Date</label>
-                                    <div class="input-group date" id="dateRequested" data-target-input="nearest">
-                                    <input type="text" id="dateRequested" name="dateRequested" class="form-control datetimepicker-input" data-target="#dateRequested" value="{{date('m/d/Y')}}" readonly/>
-                                        <div class="input-group-append" data-target="#dateRequested" data-toggle="datetimepicker">
+                                    <div class="input-group date" data-target-input="nearest">
+                                        <input type="text" id="dateRequested" name="dateRequested" class="form-control datetimepicker-input" readonly/>
+                                        <div class="input-group-append" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
                                     </div>
@@ -34,6 +34,7 @@
                                 <div class="form-group">
                                     <label for="reportingManager">Reporting Manager</label>
                                     <select id="reportingManager" name="reportingManager" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                                        <option selected disabled hidden style='display: none' value=''></option>
                                         @foreach ($mngrs as $rm)
                                             <option value="{{$rm->RMID}}">{{$rm->RMName}}</option>
                                         @endforeach
@@ -46,8 +47,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="projectName">Project Name</label>
-                                    <select id="projectName" name="projectName" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;" onload="loadProject()" onchange="myFunction()">
-                                        <option disabled selected value>-- Select Project Name --</option>
+                                    <select id="projectName" name="projectName" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;" onchange="showDetails(this.value)">
+                                        <option selected disabled hidden style='display: none' value=''></option>
                                         @foreach ($projects as $prj)
                                             <option value="{{$prj->project_id}}">{{$prj->project_name}}</option>
                                         @endforeach
@@ -55,6 +56,7 @@
                                 </div>
                             </div>
                             
+                            <input id="clientID" name="clientID" type="hidden" class="form-control" placeholder="" readonly>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="clientName">Client Name</label>
@@ -67,13 +69,13 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="dateNeeded">Date Needed</label>
-                                    <div class="input-group date" id="dateNeeded" data-target-input="nearest">
-                                        <input id="dateNeeded" name="dateNeeded" type="text" class="form-control datetimepicker-input" data-target="#dateNeeded"/>
-                                        <div class="input-group-append" data-target="#dateNeeded" data-toggle="datetimepicker">
+                                    <div class="input-group date" id="reservationdate" data-target-input="nearest" aria-readonly="true">
+                                        <input type="text" id="dateNeeded" name="dateNeeded" class="form-control datetimepicker-input" data-target="#reservationdate" readonly/>
+                                        <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
                                     </div>
-                                </div>
+                                </div>         
                             </div>
 
                             <div class="col-md-3">
@@ -92,7 +94,7 @@
                                         <option>CAD</option>
                                         <option>EUR</option>
                                         <option>PHP</option>
-                                        <option>USD</option>
+                                        <option>USD</option> 
                                     </select>
                                 </div>
                             </div>
@@ -177,33 +179,38 @@
     </div>
 @endsection
 
-<script> 
-    $(document).ready(function(){
-        $('#yn').bootstrapToggle();
+<script>
+    $(function () {
+        $('.select2').select2()
 
-        $('input.currency').keyup(function(event) {
-
-            // skip for arrow keys
-            if(event.which >= 37 && event.which <= 40) return;
-
-            // format number
-            $(this).val(function(index, value) {
-                return value
-                .replace(/\D/g, "")
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                ;
-            });
-        });
-    });
-</script> 
+        //Initialize Select2 Elements
+        $('.select2bs4').select2({
+        theme: 'bootstrap4'
+        })
+    })
+</script>
 
 <script>
-    function myFunction() {
-      var x = document.getElementById("projectName").value;
-      document.getElementById("clientName").value = "Client Name: " + x;
-    }
-
-    functio loadProject() {
-        document.getElementById("projectName").selectedIndex = -1;
+    function showDetails(id) {
+        console.log('hello');
+        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        }
+        else {// code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        
+        xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                var txt = xmlhttp.responseText.replace("[", "");
+                txt = txt.replace("]", "");
+                var res = JSON.parse(txt);
+                document.getElementById("clientName").value = res.clientName;
+                document.getElementById("clientID").value = res.clientID;
+                //document.getElementById("clientName").value = 'hello';
+            }
+        }
+        xmlhttp.open("GET","/get-client/"+id,true);
+        xmlhttp.send();
     }
 </script>
