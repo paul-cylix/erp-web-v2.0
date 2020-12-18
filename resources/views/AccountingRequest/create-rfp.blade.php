@@ -8,7 +8,13 @@
                     <h3 class="card-title">Request For Payment</h3>
                 </div>
 
-                <form action="">
+                @if (Session::has('form_submitted'))
+                    <div class="alert alert-success" role="alert">
+                        {{Session::get('form_submitted')}}
+                    </div>
+                @endif
+                <form method="POST" action="{{route('wfm.createRFP')}}">
+                    @csrf
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3">
@@ -22,18 +28,19 @@
                                 <div class="form-group">
                                     <label for="dateRequested">Requested Date</label>
                                     <div class="input-group date" data-target-input="nearest">
-                                        <input type="text" id="dateRequested" name="dateRequested" class="form-control datetimepicker-input" readonly/>
+                                        <input type="text" id="dateRequested" name="dateRequested" class="form-control datetimepicker-input" value="{{date('m/d/Y')}}" readonly/>
                                         <div class="input-group-append" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> 
 
+                            <input id="RMName" name="RMName" type="hidden" class="form-control" placeholder="" readonly>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="reportingManager">Reporting Manager</label>
-                                    <select id="reportingManager" name="reportingManager" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                                    <select id="reportingManager" name="reportingManager" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;" onchange="getRMName(this)">
                                         <option selected disabled hidden style='display: none' value=''></option>
                                         @foreach ($mngrs as $rm)
                                             <option value="{{$rm->RMID}}">{{$rm->RMName}}</option>
@@ -162,7 +169,7 @@
                         <div class="row"> 
                             <div class="col-md-1">
                                 <div class="form-group">
-                                    <button style="width:100%" type="submit" class="btn btn-primary">Submit</button>
+                                    <input style="width:100%" type="submit" class="btn btn-primary" value="Submit"/>
                                 </div>
                             </div>
 
@@ -212,5 +219,10 @@
         }
         xmlhttp.open("GET","/get-client/"+id,true);
         xmlhttp.send();
+    }
+
+    function getRMName(sel) {
+        var rm_txt = sel.options[sel.selectedIndex].text;
+        document.getElementById("RMName").value = rm_txt;
     }
 </script>

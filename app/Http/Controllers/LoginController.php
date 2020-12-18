@@ -1,14 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Auth;
-
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
 
 class LoginController extends Controller
 {
-    public function logout(Request $request) {
+    public function logout() {
         Auth::logout();
         return redirect('/login');
+    }
+
+    public function getCompanyList() {
+
     }
 }

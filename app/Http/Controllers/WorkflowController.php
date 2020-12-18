@@ -34,21 +34,56 @@ class WorkflowController extends Controller
         }
     }
 
+    function getGUID(){
+        if (function_exists('com_create_guid')){
+            return com_create_guid();
+        }
+        else {
+            mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
+            $charid = strtoupper(md5(uniqid(rand(), true)));
+            $hyphen = chr(45);// "-"
+            $uuid = chr(123)// "{"
+                .substr($charid, 0, 8).$hyphen
+                .substr($charid, 8, 4).$hyphen
+                .substr($charid,12, 4).$hyphen
+                .substr($charid,16, 4).$hyphen
+                .substr($charid,20,12)
+                .chr(125);// "}"
+            return $uuid;
+        }
+    }
+
     public function createRFP(Request $request) {
+        $dateRequested = date_create($request->dateRequested);
+        $dateNeeded = date_create($request->dateNeeded);
+
+        mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
+            $charid = strtoupper(md5(uniqid(rand(), true)));
+            $hyphen = chr(45);// "-"
+            $GUID = chr(123)// "{"
+                .substr($charid, 0, 8).$hyphen
+                .substr($charid, 8, 4).$hyphen
+                .substr($charid,12, 4).$hyphen
+                .substr($charid,16, 4).$hyphen
+                .substr($charid,20,12)
+                .chr(125);// "}" 
+
         DB::table('accounting.request_for_payment')->insert([
-            'DATE' => $request->dateRequested,
+            'DATE' => date_format($dateRequested, 'Y-m-d'),
             'REQREF' => $request->referenceNumber,
-            'Deadline' => date($request->dateNeeded, 'Y-m-d'),
+            'Deadline' => date_format($dateNeeded, 'Y-m-d'),
             'AMOUNT' => number_format($request->amount, 2, '.', ''),
             'STATUS' => 'In Progress',
             'UID' => Auth::user()->id,
             'FNAME' => Auth::user()->fname,
             'LNAME' => Auth::user()->lname,
             'DEPARTMENT' => Auth::user()->department,
-            'REPORTING_MANAGER' => '',
+            'REPORTING_MANAGER' => $request->RMName,
             'POSITION' => Auth::user()->positionName,
-            'GUID' => trim(com_create_guid(), '{}')
+            'GUID' => $GUID,
+            'ISRELEASED' => '0',
+            'TITLEID' => '1'
         ]);
-
+        return back()->with('form_submitted', 'Request has been submitted!');
     }
 }
