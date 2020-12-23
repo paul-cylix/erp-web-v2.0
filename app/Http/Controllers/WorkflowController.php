@@ -34,6 +34,14 @@ class WorkflowController extends Controller
         }
     }
 
+    public function getReference($reqForm) {
+        if ($reqForm == 'RFP') {
+            $queryREF = DB::select("SELECT LPAD(IFNULL((SELECT MAX(SUBSTRING(REQREF, 10)) FROM accounting.`request_for_payment` WHERE YEAR(TS)=YEAR(CURDATE()) AND TITLEID = " . Auth::user()->CID . " AND  (REQREF  NOT  LIKE '%AM%' OR REQREF  NOT  LIKE '%PM%')), 0) + 1, 4, 0) 'REF'");
+            $REF = 'RFP-' . date('Y') . '-' . $queryREF[0]->REF;
+            return $REF;
+        }
+    }
+
     function getGUID(){
         if (function_exists('com_create_guid')){
             return com_create_guid();
@@ -49,6 +57,8 @@ class WorkflowController extends Controller
                 .substr($charid,16, 4).$hyphen
                 .substr($charid,20,12)
                 .chr(125);// "}"
+            $uuid = trim($uuid, '{');
+            $uuid = trim($uuid, '}');
             return $uuid;
         }
     }
@@ -57,16 +67,19 @@ class WorkflowController extends Controller
         $dateRequested = date_create($request->dateRequested);
         $dateNeeded = date_create($request->dateNeeded);
 
-        mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
-            $charid = strtoupper(md5(uniqid(rand(), true)));
-            $hyphen = chr(45);// "-"
-            $GUID = chr(123)// "{"
-                .substr($charid, 0, 8).$hyphen
-                .substr($charid, 8, 4).$hyphen
-                .substr($charid,12, 4).$hyphen
-                .substr($charid,16, 4).$hyphen
-                .substr($charid,20,12)
-                .chr(125);// "}" 
+        mt_srand((double)microtime()*10000);
+        $charid = strtoupper(md5(uniqid(rand(), true)));
+        $hyphen = chr(45);
+        $GUID = chr(123)
+            .substr($charid, 0, 8).$hyphen
+            .substr($charid, 8, 4).$hyphen
+            .substr($charid,12, 4).$hyphen
+            .substr($charid,16, 4).$hyphen
+            .substr($charid,20,12)
+            .chr(125);
+        $GUID = trim($GUID, '{');
+        $GUID = trim($GUID, '}');
+ 
 
         DB::table('accounting.request_for_payment')->insert([
             'DATE' => date_format($dateRequested, 'Y-m-d'),

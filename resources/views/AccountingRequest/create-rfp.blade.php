@@ -9,11 +9,34 @@
                 </div>
 
                 @if (Session::has('form_submitted'))
-                    <div class="alert alert-success" role="alert">
-                        {{Session::get('form_submitted')}}
+                    <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Transaction Successful</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group"> 
+                                                    <p>Transaction is successfully saved.</p>
+                                                </div>                            
+                                            </div>
+                                        </div> 
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 @endif
-                <form method="POST" action="{{route('wfm.createRFP')}}">
+                <form id="formfield" method="POST" action="{{route('wfm.createRFP')}}" onsubmit="return showReference()">
                     @csrf
                     <div class="card-body">
                         <div class="row">
@@ -96,12 +119,11 @@
                                 <div class="form-group">
                                     <label for="currency">Currency</label>
                                     <select id="currency" name="currency" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                        <option selected="selected">PHP</option>
-                                        <option>AUD</option>
-                                        <option>CAD</option>
-                                        <option>EUR</option>
-                                        <option>PHP</option>
-                                        <option>USD</option> 
+                                        <option value="PHP" selected="selected">PHP</option>
+                                        <option value="AUD">AUD</option>
+                                        <option value="CAD">CAD</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option> 
                                     </select>
                                 </div>
                             </div>
@@ -110,9 +132,9 @@
                                 <div class="form-group">
                                     <label for="modeOfPayment">Mode of Payment</label>
                                     <select id="modeOfPayment" name="modeOfPayment" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                        <option selected="selected">Cash</option>
-                                        <option>Check</option>
-                                        <option>Credit to Account</option>
+                                        <option value="Cash" selected="selected">Cash</option>
+                                        <option value="Check">Check</option>
+                                        <option value="Credit to Account">Credit to Account</option>
                                     </select>
                                 </div>
                             </div>
@@ -146,30 +168,10 @@
                             </div>
                         </div>
 
-                        {{-- <div class="row">
-                            <div class="col-md-3">
-                                <div class="card card-default">
-                                    <div class="card-header">
-                                        <h3 class="card-title">Attachments</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="actions" class="row">
-                                            <div class="col-lg-3">
-                                                <span class="btn btn-success col fileinput-button">
-                                                    <i class="fas fa-plus"></i>
-                                                    <span>Browse files</span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
-
                         <div class="row"> 
                             <div class="col-md-1">
                                 <div class="form-group">
-                                    <input style="width:100%" type="submit" class="btn btn-primary" value="Submit"/>
+                                    <input style="width:100%" type="submit" class="btn btn-primary" value="Submit"/>                                
                                 </div>
                             </div>
 
@@ -179,11 +181,13 @@
                                 </div>
                             </div> 
                         </div>
-                    </div>
+                    </div> 
                 </form>
             </div>
         </section>
     </div>
+
+    
 @endsection
 
 <script>
@@ -192,15 +196,19 @@
 
         //Initialize Select2 Elements
         $('.select2bs4').select2({
-        theme: 'bootstrap4'
+            theme: 'bootstrap4'
         })
-    })
+    });
+
+    $('#submit').click(function(){
+        alert('submitting');
+        $('#formfield').submit();
+    });
 </script>
 
 <script>
     function showDetails(id) {
-        console.log('hello');
-        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+        if (window.XMLHttpRequest) {
             xmlhttp = new XMLHttpRequest();
         }
         else {// code for IE6, IE5
@@ -210,15 +218,36 @@
         xmlhttp.onreadystatechange=function() {
             if (xmlhttp.readyState==4 && xmlhttp.status==200) {
                 var txt = xmlhttp.responseText.replace("[", "");
-                txt = txt.replace("]", "");
+                txt = txt.replace("]", ""); 
                 var res = JSON.parse(txt);
                 document.getElementById("clientName").value = res.clientName;
                 document.getElementById("clientID").value = res.clientID;
-                //document.getElementById("clientName").value = 'hello';
             }
         }
         xmlhttp.open("GET","/get-client/"+id,true);
         xmlhttp.send();
+    }
+
+    function showReference() {
+        if (window.XMLHttpRequest) {
+            xmlhttp = new XMLHttpRequest();
+        }
+        else {
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        
+        xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                var txt = xmlhttp.responseText.replace("[", "");
+                txt = txt.replace("]", "");
+                var res = JSON.parse(txt);
+                document.getElementById("referenceNumber").value = res.REF;
+            }
+        }
+        xmlhttp.open("GET","/get-reference/RFP", true);
+        xmlhttp.send();
+
+        return true;
     }
 
     function getRMName(sel) {

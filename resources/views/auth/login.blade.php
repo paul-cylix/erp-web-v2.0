@@ -4,7 +4,7 @@
             <div class="login-logo">
                 <a href="#"><b>Cylix Technologies </b>Inc.</a>
             </div>
-
+            
             <div class="card">
                 <div class="card-body login-card-body">
                     <p class="login-box-msg">Sign in to start your session</p>
@@ -33,7 +33,9 @@
                         <div class="form-group">
                             <label for="reportingManager">Company</label>
                             <select id="reportingManager" name="reportingManager" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                <option selected disabled hidden style='display: none' value=''></option>
+                                @foreach ($companyList as $cl)
+                                    <option value="{{$cl->title_id}}">{{$cl->title_name}}</option>
+                                @endforeach
                             </select>
                         </div>
 

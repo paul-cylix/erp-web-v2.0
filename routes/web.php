@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\WorkflowController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,15 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('auth.login');
-});
+Route::get('/', [LoginController::class, 'getCompanyList']);
 
 Route::get('logout', '\App\Http\Controllers\LoginController@logout');
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('index');
-})->name('index');
+})->name('index'); 
 
 Route::get('/index', function () {
     return view('index');
@@ -36,6 +35,7 @@ Route::get('/create-rfp', function () {
 Route::get('/create-rfp', [WorkflowController::class, 'getRFP_InitData']);
 Route::get('/get-client/{clientID}', [WorkflowController::class, 'getClientName']);
 Route::post('/submit-rfp', [WorkflowController::class, 'createRFP'])->name('wfm.createRFP');
+Route::get('/get-reference/{reqForm}', [WorkflowController::class, 'getReference']);
 
 Route::get('/create-re', function () {
     return view('AccountingRequest.create-reimbursement');
