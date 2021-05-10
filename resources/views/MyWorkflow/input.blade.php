@@ -8,6 +8,10 @@
                     <h3 class="card-title">@yield('title')</h3>
                 </div>
 
+                {{-- TBC pagination ERROR --}}
+              
+
+
                 <form action="">
                     <div class="card-body">
                         <div class="row">
@@ -27,17 +31,65 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                @foreach ($posts as $post)
+                                                    <tr>
+                                                        <td><a href="/inputs/{{ $post->ID }}">{{$post->REFERENCE}}</a></td>
+                                                        <td>{{$post->RequestType}}</td>
+                                                        <td>{{$post->Date}}</td>
+
+                                                        <td>{{$post->Project}}</td>
+                                                        <td>{{$post->Initiator}}</td>
+                                                        <td class="text-right">{{ number_format($post->Amount,2)}} </td>
+                                                        <td>
+                                                            <a href="/inputs/{{ $post->ID }}" class="btn btn-info">Open</a>
+                                                            {{-- <a href="#" class="btn btn-secondary">View Status</a> --}}
+                                                        <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus({{ $post->ID }})">View Status</a>
+
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
 
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="viewStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-xl" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-body" id="employee_detail">
+                    
+                                                        <table class="table table-striped table-responsive-xl" id="myTableId">
+                                                            <thead class="table-dark">
+                                                                <tr>
+                                                                <th scope="col">Approver</th>
+                                                                <th scope="col">Status</th>
+                                                                <th scope="col">Approved By</th>
+                                                                <th scope="col">Approved Date</th>
+                                                                <th scope="col">Comments</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="tdata">
+                                                            </tbody>
+                                                            </table>
+                                                
+                                            </div>
+                                            <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" onclick="toBeDelete()" data-dismiss="modal">Close</button>                                    
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+
                                     <div class="card-footer clearfix">
                                         <ul class="pagination pagination-sm m-0 float-right">
-                                            <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+                                            {{-- <li>{{ $postsCount }}</li> --}}
+                                            {{-- <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
                                             <li class="page-item"><a class="page-link" href="#">1</a></li>
                                             <li class="page-item"><a class="page-link" href="#">2</a></li>
                                             <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+                                            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li> --}}
+
+                                            <div>{{ $posts->links() }}</div>
                                         </ul>
                                         </div>
                                 </div>
@@ -51,8 +103,8 @@
 
 @endsection
 
-<script>
+{{-- <script>
     $('#myModal').on('shown.bs.modal', function () {
         $('#myInput').trigger('focus')
     })
-</script>
+</script> --}}

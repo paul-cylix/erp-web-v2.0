@@ -10,4 +10,5 @@ class RequestForPayment extends Model
     use HasFactory;
 
     protected $table = 'accounting.request_for_payment';
+
 }

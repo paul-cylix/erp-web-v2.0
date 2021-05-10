@@ -508,7 +508,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Dashboard</h1>
+            <h1 class="m-0">Dashboards</h1>
           </div><!-- /.col --> 
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -554,7 +554,7 @@
             <!-- small box -->
             <div class="small-box bg-warning">
               <div class="inner">
-                <h3>44</h3>
+                <h3>43</h3>
 
                 <p>Clarifications</p>
               </div>

@@ -15,7 +15,6 @@
 
         <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.3/dist/alpine.js" defer></script>
-        
 
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
         <!-- Font Awesome -->
@@ -24,19 +23,20 @@
         <link rel="stylesheet" href="{{asset('assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css')}}">
         <!-- Theme style -->
         <link rel="stylesheet" href="{{asset('assets/dist/css/adminlte.min.css')}}">
-        
         <!-- Ionicons -->
         <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
         <!-- Tempusdominus Bootstrap 4 -->
-        <link rel="stylesheet" href="{{asset('assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')}}"> 
+        <link rel="stylesheet" href="{{asset('assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')}}">
         <!-- JQVMap -->
         <link rel="stylesheet" href="{{asset('assets/plugins/jqvmap/jqvmap.min.css')}}">
         <!-- overlayScrollbars -->
         <link rel="stylesheet" href="{{asset('assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css')}}">
+        {{-- login css --}}
+        <link rel="stylesheet" href="{{asset('assets/plugins/login-css/style.css')}}">
         <!-- Daterange picker -->
         <link rel="stylesheet" href="{{asset('assets/plugins/daterangepicker/daterangepicker.css')}}">
         <!-- summernote -->
-        <link rel="stylesheet" href="{{asset('assets/plugins/summernote/summernote-bs4.min.css')}}">  
+        <link rel="stylesheet" href="{{asset('assets/plugins/summernote/summernote-bs4.min.css')}}">
         <!-- daterange picker -->
         <link rel="stylesheet" href="{{asset('assets/plugins/daterangepicker/daterangepicker.css')}}">
         <!-- Bootstrap Color Picker -->
@@ -50,11 +50,14 @@
         <link rel="stylesheet" href="{{asset('assets/plugins/bs-stepper/css/bs-stepper.min.css')}}">
         <!-- dropzonejs -->
         <link rel="stylesheet" href="{{asset('assets/plugins/dropzone/min/dropzone.min.css')}}"> 
+
+
     </head>
     <body>
         <div class="font-sans text-gray-900 antialiased">
             {{ $slot }}
         </div>
+        
 
     
 <!-- jQuery -->
