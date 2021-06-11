@@ -78,7 +78,7 @@ Route::group(['middleware'=>['AuthCheck']], function(){
     // Workflow Controller
     Route::get('/participants', [WorkflowController::class, 'getParticipants']);//no-entry
         // view participants by id 
-        Route::get('/participants/{class}/{id}',[WorkflowController::class, 'getParticipantsByID'])->name(('part.single.post'));
+        Route::get('/participants/{class}/{id}/{frmname}',[WorkflowController::class, 'getParticipantsByID'])->name(('part.single.post'));
 
 
 
@@ -95,15 +95,21 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
     Route::get('/inputs', [WorkflowController::class, 'getInputs']);
         // View by ID
-        Route::get('/inputs/{id}',[WorkflowController::class, 'getInputsByID'])->name(('npu.single.post'));
-            // Modal Approve, Withdraw
+        // Route::get('/inputs/{id}',[WorkflowController::class, 'getInputsByID'])->name(('npu.single.post'));
+        Route::get('/inputs/{class}/{id}/{frmname}',[WorkflowController::class, 'getInputsByID'])->name(('npu.single.post'));
+
+            // RE
+            // Approve // Rejected
+            Route::post('/inputs/approved-re',[WorkflowController::class, 'approvedRENpu'])->name(('npu.approved.re'));
+            Route::post('/inputs/rejected-re',[WorkflowController::class, 'rejectedRENpu'])->name(('npu.rejected.re'));
+
+
+            // RFP
+            // Approve, Clarify, Withdraw, 
             Route::post('/inputs/approved',[WorkflowController::class, 'approvedByIDRemarksInputs'])->name(('npu.approved.post'));
-
             Route::post('/inputs/clarify',[WorkflowController::class, 'clarifyBtnInputs'])->name(('npu.clarify.post'));
-
             Route::post('/inputs/reject',[WorkflowController::class, 'rejectBtnInputs'])->name(('npu.reject.post'));
 
-            // Route::post('/inputs/withdraw',[WorkflowController::class, 'withdrawBtnInputs'])->name(('npu.withdraw.post'));
 
             
 
@@ -111,29 +117,58 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
 
     Route::get('/approvals', [WorkflowController::class, 'getApprovals']);
-        Route::get('/approval-status/{id}',[WorkflowController::class,'viewAppStatus'])->name('app.status');
+        // Route::get('/approval-status/{id}',[WorkflowController::class,'viewAppStatus'])->name('app.status');
+        Route::get('/approval-status/{FRM_CLASS}/{id}',[WorkflowController::class,'viewAppStatus'])->name('app.status');
+
+        // Route::get('/test/{FRM_CLASS}/{id}',[WorkflowController::class,'viewAppStatuss'])->name('app.statuss');
+
+
+        
         // view by single id approvals
-        Route::get('/approvals/{id}',[WorkflowController::class, 'getApprovalByID'])->name(('app.single.post'));
-        // Route::get('/approvals/{id}/{path}/{filename}',[WorkflowController::class, 'getApprovalByID'])->name(('view.attachments.post'));
+        // Route::get('/approvals/{id}',[WorkflowController::class, 'getApprovalByID'])->name(('app.single.post'));
 
-        Route::get('/approvals/download/{file}',[WorkflowController::class, 'downloadFile'])->name(('download.file.post'));
+        Route::get('/approvals/{class}/{id}/{frmname}',[WorkflowController::class, 'getApprovalByID'])->name(('app.single.post'));
 
-
-        // view sequence
-        // Route::get('/approvals/{id}',[WorkflowController::class, 'viewApprovalSequence']);
+            // RFP
             //Modal Approve, Rejected, Clarity bytton
             Route::post('/approvals/approved',[WorkflowController::class, 'approvedByIDRemarks'])->name(('app.approved.post'));
 
             Route::post('/approvals/save-files',[WorkflowController::class, 'saveFilesAndTable'])->name(('save.table.attachment'));
 
-                // Route::post('/approvals-rfp/upload-files',[WorkflowController::class, 'appUploadFiles'])->name('app.uploadfiles'); //Upload files in approval
-
-
             Route::post('/approvals/rejected',[WorkflowController::class, 'rejectedByIDRemarks'])->name(('app.rejected.post'));
+            
             Route::post('/approvals/clarity',[WorkflowController::class, 'clarificationByIDRemarks'])->name(('app.clarification.post'));
 
+
+            // RE
+            //Approve Reimbursement in Approvals by Reporting Manager 
+            Route::post('/approvals/approved-re',[WorkflowController::class, 'approvedREApp'])->name(('app.approved.re'));
+            //Rejected Reimbursement in Approvals by Reporting Manager 
+            Route::post('/approvals/rejected-re',[WorkflowController::class, 'rejectedREApp'])->name(('app.rejected.re'));
+            //Clarify Reimbursement in Approvals by Reporting Manager // Clarify also works with Inputs Clarification
+            Route::post('/approvals/clarify-re',[WorkflowController::class, 'clarifyREApp'])->name(('app.clarify.re'));
+
+            // PC
+            // Approval
+            Route::post('/approvals/approved-pc',[WorkflowController::class, 'approvedPCApp'])->name(('app.approved.pc'));
+            // Initiator Part -- Approval
+            Route::post('/approvals/approved-pc-init',[WorkflowController::class, 'approvedPCAppInit'])->name(('app.approved.pc.init'));
+            // Rejected
+            Route::post('/approvals/rejected-pc',[WorkflowController::class, 'rejectedPCApp'])->name(('app.rejected.pc'));
+            // Clarify
+            Route::post('/approvals/clarify-pc',[WorkflowController::class, 'clarifyPCApp'])->name(('app.clarify.pc'));
+
+
+
+
+ 
+
+      
+
+
+
                 
-                // Route::post('/approvals/editform',[WorkflowController::class, 'editableForm'])->name(('app.editform.post'));
+  
 
 
 
@@ -142,24 +177,36 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
     Route::get('/in-progress', [WorkflowController::class, 'getInProgress']); 
         // view by single in progress post
-        // Route::get('/in-progress-view',[WorkflowController::class, 'getInProgressByID'])->name(('inp.single.post'));
-        Route::get('/in-progress/{id}',[WorkflowController::class, 'getInProgressByID'])->name(('inp.single.post'));
-            // Modal Withdraw button
+        // Route::get('/in-progress/{id}',[WorkflowController::class, 'getInProgressByID'])->name(('inp.single.post'));
+        // View by id single post
+        Route::get('/in-progress/{class}/{id}/{frmname}',[WorkflowController::class, 'getInProgressByID'])->name(('inp.single.post'));
+
+            // RFP withdraw in-progress Workflow
             Route::post('/approvals/withdraw',[WorkflowController::class, 'withdrawnByIDRemarks'])->name(('inp.withdraw.post'));
+            // RE
+            Route::post('/in-progress/withdraw',[WorkflowController::class, 'inpREWithdraw'])->name(('inp.withdraw.re'));
+            // PC
+            Route::post('/in-progress/withdraw-pc',[WorkflowController::class, 'inpPCWithdraw'])->name(('inp.withdraw.pc'));
+
+
+
 
 
 
     // Clarification
     Route::get('/clarifications', [WorkflowController::class, 'getClarification']);//no-entry
         //Clarification by Id
-        Route::get('/clarifications/{id}', [WorkflowController::class, 'getClarificationByID']);
+        Route::get('/clarifications/{class}/{id}/{frmname}',[WorkflowController::class, 'getClarificationByID'])->name(('cla.single.post'));
+        // Get Comments
+        // Route::get('/clarifications-comments/{id}',[WorkflowController::class,'viewClaComments'])->name('cla.comments');
 
-        Route::get('/clarifications-comments/{id}',[WorkflowController::class,'viewClaComments'])->name('cla.comments');
+        Route::get('/clarifications-comments/{FRM_CLASS}/{id}',[WorkflowController::class,'viewClaComments'])->name('cla.comments');
 
+
+
+
+        // RFP
         // Edit Table
-        // Route::get('/clarifications-liquidation/{id}',[WorkflowController::class,'viewLiqTable'])->name('cla.liqTable');
-
-
             // Modal Withdraw button with Remarks
             Route::post('/clarifications/withdraw',[WorkflowController::class, 'clarifyWithdrawBtnRemarks'])->name(('cla.withdraw.post'));
 
@@ -169,12 +216,31 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
             Route::post('/clarifications/replynoedit',[WorkflowController::class, 'clarifyReplyBtnNoEdit'])->name(('cla.replynoedit.post'));
 
-
             Route::post('/clarifications/reject',[WorkflowController::class, 'clarifyRejectBtnRemarks'])->name(('cla.reject.post'));
 
             Route::post('/clarifications/saveEdit',[WorkflowController::class, 'saveEditable'])->name(('cla.saveEdit.post'));
 
 
+        // RE
+        // Reply button
+            Route::post('/clarification/reply-re',[WorkflowController::class, 'claREReply'])->name('cla.reply.re');
+
+            Route::post('/clarification/approved-re',[WorkflowController::class, 'claREapproved'])->name('cla.approved.re');
+
+
+        // PC
+        // Reply button
+            Route::post('/clarification/reply-pc',[WorkflowController::class, 'claPCReply'])->name('cla.reply.pc');
+        // Reply Initiator - no edit main table
+            Route::post('/clarification/reply-pc-init',[WorkflowController::class, 'claPCReplyInit'])->name('cla.reply.pc.init');
+
+        
+        // Reply Clarification Approver
+            Route::post('/clarification/reply-pc-apprvr',[WorkflowController::class, 'claPCReplyApprvr'])->name('cla.reply.pc.apprvr');
+
+
+        // Withdraw
+            Route::post('/clarification/withdraw-pc',[WorkflowController::class, 'claPCWithdraw'])->name(('cla.withdraw.pc'));
 
             
 
@@ -186,14 +252,18 @@ Route::group(['middleware'=>['AuthCheck']], function(){
     // Approved
     Route::get('/approved', [WorkflowController::class, 'getApproved']);
         //Approved by Id
-        Route::get('/approved/{id}', [WorkflowController::class, 'getApprovedByID']);
+        // Route::get('/approved/{id}', [WorkflowController::class, 'getApprovedByID']);
+        Route::get('/approved/{class}/{id}/{frmname}',[WorkflowController::class, 'getApprovedByID'])->name(('appd.single.re'));
 
 
 
     //Withdrawn
     Route::get('/withdrawn', [WorkflowController::class, 'getWithdrawn']);
         //Withdrawn by Id
-        Route::get('/withdrawn/{id}', [WorkflowController::class, 'getWithdrawByID']);
+        // Route::get('/withdrawn/{id}', [WorkflowController::class, 'getWithdrawByID']);
+
+        Route::get('/withdrawn/{class}/{id}/{frmname}',[WorkflowController::class, 'getWithdrawByID'])->name(('wit.single.re'));
+
 
         
 
@@ -201,8 +271,9 @@ Route::group(['middleware'=>['AuthCheck']], function(){
     // Rejected
     Route::get('/rejected', [WorkflowController::class, 'getRejected']);
         //Rejected by id
-        Route::get('/rejected/{id}', [WorkflowController::class, 'getrejectedByID']);
-
+        // Route::get('/rejected/{id}', [WorkflowController::class, 'getrejectedByID']);
+        
+        Route::get('/rejected/{class}/{id}/{frmname}',[WorkflowController::class, 'getrejectedByID'])->name(('rej.single.re'));
 
 
 
@@ -217,17 +288,32 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
 
     // Accounting Request Controller
-    // Route::get('/create-rfp', [AccountingRequestController::class, 'gotoRFP']);
+    // RFP
         Route::get('/create-rfp', [AccountingRequestController::class, 'getReportingMgr']);
         Route::get('/get-client/{clientID}', [AccountingRequestController::class, 'getClientName']);
+        Route::get('/get-ref', [AccountingRequestController::class, 'getReqRef']);
+
+
         Route::post('/create-rfp', [AccountingRequestController::class, 'saveRFP'])->name('save.rfp');
             Route::post('/create-rfp/upload-files',[AccountingRequestController::class, 'rfpUploadFiles'])->name('rfp.uploadfiles'); // Upload Files
             // Route::post('/create-rfp/store-files', [AccountingRequestController::class, 'storeFiles'])->name('store.files');
            
 
-
+    // RE 
     Route::get('/create-re', [AccountingRequestController::class, 'createReimbursement']);
+
+    Route::post('/create-re', [AccountingRequestController::class, 'saveRE'])->name('save.re');
+
+
+
+    // PC
     Route::get('/create-pc', [AccountingRequestController::class, 'createPettyCash']);
+
+    Route::post('/create-pc', [AccountingRequestController::class, 'savePC'])->name('save.pc');
+
+
+
+
     Route::get('/create-ca', [AccountingRequestController::class, 'createCashAdvance']);
 
     // HR Request Controller
@@ -251,9 +337,82 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
     // Sales Order Controller
     Route::get('/create-sof-delivery', [SalesOrderRequestController::class, 'createSofDelivery']);
+
+        // Save Delivery
+        Route::post('saveDLV',[SalesOrderRequestController::class, 'saveDLV'])->name('post.saveDLV');
+
+
+
+
+
+
     Route::get('/create-sof-project', [SalesOrderRequestController::class, 'createSofProject']);
+
+        // Get Address
+        Route::get('getaddress/{id}',[SalesOrderRequestController::class, 'getAddress'])->name('get.address');
+
+        // Get Contacts
+        Route::get('getcontacts/{id}',[SalesOrderRequestController::class, 'getContacts'])->name('get.contacts');
+
+        // Get Business List
+        Route::get('getbusinesslist/{id}',[SalesOrderRequestController::class, 'getBusinessList'])->name('get.businesslist');
+
+        // Route::get('/getbusinesslist/{id}',[SalesOrderRequestController::class, 'getBusinessList'])->name('get.businesslist');
+
+
+        // Get Setup Project
+        Route::get('getsetupproject/{id}',[SalesOrderRequestController::class, 'getSetupProject'])->name('get.setupproject');
+
+        // Get Setup Project
+        Route::get('getdelegates/{id}',[SalesOrderRequestController::class, 'getdelegates'])->name('get.delegates');
+
+        // get Coordinator
+        Route::get('getcoordinator/{id}/{coordID}',[SalesOrderRequestController::class, 'getcoordinator'])->name('get.coordinator');
+        
+        // Ajax insert System Name
+        Route::post('postsystemname',[SalesOrderRequestController::class, 'postSystemName'])->name('post.systemname');
+
+        // Ajax insert Document Name
+        Route::post('postdocumentname',[SalesOrderRequestController::class, 'postDocumentName'])->name('post.documentname');
+
+        // save prj
+        Route::post('savePRJ',[SalesOrderRequestController::class, 'savePRJ'])->name('post.savePRJ');
+
+        // withdaaw
+        Route::post('/withdraw-sof', [WorkflowController::class, 'withdrawSOF'])->name('withdraw.sof');
+
+        // approved
+        Route::post('/approved-sof', [WorkflowController::class, 'approvedSOF'])->name('approved.sof');
+
+        // rejected
+        Route::post('/rejected-sof', [WorkflowController::class, 'rejectedSOF'])->name('rejected.sof');
+
+        // clarify
+        Route::post('/clarify-sof', [WorkflowController::class, 'clarifySOF'])->name('clarify.sof');
+
+        // Reply
+        Route::post('/reply-sof', [WorkflowController::class, 'replySOF'])->name('reply.sof');
+
+
+
+
+
+
     Route::get('/create-sof-demo', [SalesOrderRequestController::class, 'createSofDemo']);
+    // save Demo
+        Route::post('saveDMO',[SalesOrderRequestController::class, 'saveDMO'])->name('post.saveDMO');
+
+
+
+
+
     Route::get('/create-sof-poc', [SalesOrderRequestController::class, 'createSofPoc']);
+    // save PCO 
+        Route::post('savePOC',[SalesOrderRequestController::class, 'savePOC'])->name('post.savePOC');
+
+
+
+
     Route::get('/sof-pending', [SalesOrderRequestController::class, 'SofPending']);
 
     // Supply Chain Controller

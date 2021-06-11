@@ -16,9 +16,11 @@
                             <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled >Withdraw</button></div>        
                             <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
                             <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right"  data-toggle="modal" data-target="#initApproveMdl">Approve</button></div>
+
                         <?php
                         }else{
                         ?>
+                        
                             <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
                             <div class="col-md-1 float-right" ><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled>Reply</button></div>     
                             <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" data-toggle="modal" data-target="#clarityModal">Clarify</button></div>                    
@@ -402,7 +404,7 @@
             closeOnClickOutside: false,
             closeOnEsc: false,        
             })
-        </Script>
+    </Script>
     @enderror
 
     @error('liquidationTable')              

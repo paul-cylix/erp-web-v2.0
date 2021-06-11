@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title')</title>
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -299,7 +300,7 @@ max-width: 60%; */
           </div>
         </div>
         
-        <div class="form-inline">
+        {{-- <div class="form-inline">
           <div class="input-group" data-widget="sidebar-search">
             <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
             <div class="input-group-append">
@@ -308,7 +309,7 @@ max-width: 60%; */
               </button>
             </div>
           </div>
-        </div>
+        </div> --}}
   
         <nav class="mt-2" id="mt-2">
           <ul class="nav nav-pills nav-sidebar flex-column" id="idUl" data-widget="treeview" role="menu" data-accordion="false">
@@ -593,6 +594,21 @@ max-width: 60%; */
     $('#reservationdate').datetimepicker({
         format: 'L'
     });
+    $('#projectStart').datetimepicker({
+        format: 'L'
+    });
+    $('#projectEnd').datetimepicker({
+        format: 'L'
+    });
+    $('#downPaymentDateReceived').datetimepicker({
+        format: 'L'
+    });
+    $('#dateOfInvoice').datetimepicker({
+        format: 'L'
+    });
+    $('#invoiceDateNeeded').datetimepicker({
+        format: 'L'
+    });
     //Date range picker
     $('#reservation').daterangepicker()
     //Date range picker with time picker
@@ -737,6 +753,166 @@ $(function(){
 
 
 
+<script>
+  function viewClaComments(FRM_CLASS,id){
+
+  $.get('/clarifications-comments/'+FRM_CLASS+'/'+id,function(comments){
+      
+    var asd = document.getElementById('messagecontainer');
+
+
+    if (comments.length > 0){
+
+
+      for (var i = 0; i<comments.length; i++){
+    var claMessage= comments[i]['MESSAGE'];
+    var claSender= comments[i]['UserFullName'];
+    var claRecipient= comments[i]['SENDERNAME'];
+    var claTs= new Date(comments[i]['TS']);
+    claTs = claTs.toString().slice(0, 24);
+    var claParentID= comments[i]['ParentID'];
+    var claUserLevel= comments[i]['USERLEVEL'];
+    var frmName= comments[i]['FRM_NAME'];
+
+    
+    $('#messagesLabelForm').text(frmName);
+
+    if(claParentID == 0){
+
+        $('#messagecontainer').append('<div class="container" style="margin-bottom: 20px;">'+
+                                        '<div class="row">'+
+                                        
+                                            '<div class="col text-center">'+  
+                                            '<img src="http://dummyimage.com/60" alt="" style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);">'+
+                                            '</div>'+
+                                            
+                                            '<div class="col-11" >'+
+                                            '<div class="container">'+
+
+                                                '<div class="row">'+
+
+                                                    '<div class="col main-content" style="background-color: #dee1e3;  border-radius: 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); padding:10px 15px 10px 15px; ">'+
+                                                        
+                                                        '<div class="row">'+
+
+                                                            '<div class="sender-name col" style="font-size: 14px; font-weight:bold;">'+claSender+
+                                                            
+                                                            '</div>'+
+                                                            '<div class="col text-right"style="font-size: 14px;">'+claTs+
+                                                            
+                                                            '</div>'+
+                                                            
+                                                        '</div>'+
+
+                                                        '<div class="row">'+
+                                                            '<div class="recipeint-name col"style="font-size: 14px;" >To: '+claRecipient+
+                                                                
+                                                            '</div>'+
+                                                            '<div class="col text-right"style="font-size: 14px;">'+claUserLevel+
+                                                                
+                                                            '</div>'+
+
+                                                        '</div>'+
+                                                        '<div class="row" >'+
+                                                            '<div class="comment-content col" style="margin-top: 10px;">'+claMessage+
+                                                                
+                                                            '</div>'+
+                                                        '</div>'+
+
+                                                        
+                                                    '</div>'+
+                                                '</div>'+
+
+                                        
+                                            '</div>'+
+                                            '</div>'+
+
+                                        '</div>'+
+                                    '</div>'
+         );
+    }else{
+        $('#messagecontainer').append('<div class="container"  style="margin-bottom: 20px;">'+
+                                        '<div class="row">'+
+                                        
+                                            '<div class="col text-right" style="padding-right:16px;">'+
+                                            '<img src="http://dummyimage.com/60" alt="" style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);">'+
+                                            '</div>'+
+                                            
+                                            '<div class="col-10" >'+
+                                            '<div class="container">'+
+
+                                                '<div class="row">'+
+                                                    '<div class="col main-content" style="background-color: #dee1e3;  border-radius: 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); padding:10px 15px 10px 15px; ">'+
+                                                        '<div class="row">'+
+
+                                                            '<div class="sender-name col" style="font-size: 14px; font-weight:bold;">'+claSender+
+                                                            
+                                                            '</div>'+
+                                                            '<div class="col text-right"style="font-size: 14px;">'+claTs+
+                                                
+                                                            '</div>'+
+                                                            
+                                                        '</div>'+
+                                                        '<div class="row">'+
+                                                            '<div class="recipeint-name col"style="font-size: 14px;" >To: '+claRecipient+
+                                                                
+                                                            '</div>'+
+                                                            '<div class="col text-right"style="font-size: 14px;">'+claUserLevel+
+                                                                
+                                                            '</div>'+
+
+                                                        '</div>'+
+                                                        '<div class="row" >'+
+                                                            '<div class="comment-content col" style="margin-top: 10px;">'+claMessage+
+                                                                
+                                                            '</div>'+
+                                                        '</div>'+
+                                                        
+                                                    '</div>'+
+                                                '</div>'+
+
+                            
+                                            '</div>'+
+                                            '</div>'+
+
+                                        '</div>'+
+                                    '</div>'
+         );
+
+   
+    }   
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+    } else {
+      
+      $('#messagecontainer').append('<div class="container"> <h6> no comments </h6> </div>'  );
+      
+    }
+    
+
+})
+}
+
+
+function deleteComments(){
+// console.log('test');
+$('#messagecontainer').empty();
+}
+
+</script>
+
 
 
 
@@ -749,15 +925,9 @@ $(function(){
 
 <script>
 
-  function viewStatus(id){
-      // alert(id);
-      $.get('/approval-status/'+id,function(status){
-
-        
-         
-      // var countKey = Object.keys(status).length;
-
-      // console.log(countKey);
+  function viewStatus(FRM_CLASS,id){
+      // alert(status);
+      $.get('/approval-status/'+FRM_CLASS+'/'+id,function(status){
 
       for (var i = 0; i<status.length; i++){
           var uidChecker= status[i]['Approved_By'];

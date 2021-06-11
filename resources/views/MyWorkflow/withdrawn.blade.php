@@ -29,17 +29,20 @@
                                             <tbody>
                                                 @foreach ($posts as $post)
                                                 <tr>
-                                                    <td><a href="/withdrawn/{{ $post->ID }}">{{$post->REFERENCE}}</a></td>
+                                                    <td><a href="/withdrawn/{{$post->FRM_CLASS}}/{{ $post->ID }}/{{ $post->RequestType }}">{{$post->REFERENCE}}</a></td>
                                                     <td>{{$post->RequestType}}</td>
                                                     <td>{{$post->Date}}</td>
                                                     <td>{{$post->Project}}</td>
                                                     <td>{{$post->Initiator}}</td>
                                                     <td class="text-right">{{ number_format($post->Amount,2)}} </td>
                                                     <td>
-                                                        <a href="/withdrawn/{{ $post->ID }}" class="btn btn-info">Open</a>
-                                                        {{-- <a href="#" class="btn btn-secondary">View Status</a> --}}
-                                                        <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus({{ $post->ID }})">View Status</a>
+                                                        {{-- <a href="/withdrawn/{{ $post->ID }}" class="btn btn-info">Open</a> --}}
+                                                        <a href="/withdrawn/{{$post->FRM_CLASS}}/{{ $post->ID }}/{{ $post->RequestType }}" class="btn btn-info">Open</a>
 
+                                                        {{-- <a href="#" class="btn btn-secondary">View Status</a> --}}
+                                                        {{-- <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus({{ $post->ID }})">View Status</a> --}}
+                                                        <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus('{{$post->FRM_CLASS}}',{{ $post->ID }})">View Status</a>
+                                                        
                                                     </td>
                                                 </tr>
                                             @endforeach

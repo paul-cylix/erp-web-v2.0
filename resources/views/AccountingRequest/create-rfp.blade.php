@@ -1,31 +1,10 @@
 @extends('layouts.base')
 @section('title', 'Request For Payment') 
 @section('content')
+
 @if(Session::get('form_submitted'))
 {{-- <div class="container" ><div class="alert alert-danger" role="alert">{{ Session::get('error_submit') }}</div></div> --}}
-<style>
-    .img-div{
-	position:relative;
-	display:block;
-	width:300px;
-	height:40px;
-	line-height:40px;
-	margin:4px 0;
-	border:1px solid #999;
-	border-radius:6px;
-	padding:0 8px;
-}
-.delete-image{
-	position:relative;
-	display:inline-block;
-	float:right;
-	height:40px;
-	line-height:40px;
-	margin-left:20px;
-	text-decoration:none;
-	padding:0 8px;
-}
-</style>
+
 <Script>
     swal({
         text: "{!! Session::get('form_submitted') !!}",
@@ -37,18 +16,22 @@
         if (okay) {
         window.location.href = "in-progress";
         }});
-    </Script>
+</Script>
 @endif
+
+
+
 
 <form id="formfield " method="POST" action="{{ route('save.rfp') }}"  class="form-horizontal"  enctype="multipart/form-data" > 
 
     <div class="row" style="margin-top: -20px;"> 
         <div class="col-md-1">
             <div class="form-group">
-                <input style="width:100%;"  type="submit" class="btn btn-primary" onclick="submitAll()" id="submit-all" value="Submit"/>                                
+                <input style="width:100%;"  type="submit" class="btn btn-primary" id="submit-all" value="Submit"/>                                
             </div>
         </div>
 
+       
         <div class="col-md-1">
             <div class="form-group">
                 <a style="width:100%" href="/dashboard" class="btn btn-secondary">Cancel</a> 
@@ -106,7 +89,9 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="referenceNumber">Reference Number</label>
-                                    <input type="text" class="form-control" id="referenceNumber" name="referenceNumber" placeholder="" value= {{ $ref1 }} readonly>
+                                    <input type="text" class="form-control" id="referenceNumber" name="referenceNumber" placeholder="RFP-{{ date("Y") }}-" value= "" readonly>
+                                    <span class="text-danger">@error('referenceNumber'){{ $message }}@enderror</span>
+
                                 </div>
                             </div>
 
@@ -170,7 +155,7 @@
                                         @foreach ($clients as $prj)
                                              <option>{{$prj->business_fullname}}</option>
                                         @endforeach
-                                    </select> --}}
+                                    </select> --}} 
                                     
                                     <input id="clientName" name="clientName" type="text" class="form-control" placeholder="" readonly >
                                 </div>
@@ -241,7 +226,7 @@
                                     <textarea style="resize:none" class="form-control" id="purpose" name="purpose" rows="4" placeholder=""></textarea>
                                     <span class="text-danger">@error('purpose'){{ $message }}@enderror</span>
                                     {{-- Json Array --}}
-                                    <input type="hidden" name="liquidationTable" value="" id="liquidationTable">
+               
                                 </div>
                                 
                             </div>
@@ -521,22 +506,16 @@ var main = [];
 
     $(document).ready(function() {
       $('input[type="file"]').on("change", function() {
-       
-
         let files = this.files;
         console.log(files);
         console.dir(this.files[0]);
-
         $('#attachmentsTable tbody tr').remove();
-            
             for(var i = 0; i<files.length; i++){
             var tmppath = URL.createObjectURL(files[i]);
-                
                 var semi = [];
                 semi.push(files[i]['name'],files[i]['type'],files[i]['size'],tmppath);
                 main.push(semi);
                 console.log(main);
-
                             $('#attachmentsTable tbody').append('<tr>'+
                                             '<td>'+files[i]['name']+'</td>'+
                                             '<td>'+files[i]['type']+'</td>'+
@@ -545,16 +524,13 @@ var main = [];
                                             "<td><a href='"+tmppath+"' target='_blank' class='btn btn-secondary'>View</a></td>"+
                                             '</tr>'
                             );
-
                             //add code to copy to public folder in erp-web
             }
       });
     });
-
     $("#attachmentsTable").on('click', '.btnDelete', function () {
     $(this).closest('tr').remove();
 });
-
 </script>
 
 
@@ -625,6 +601,7 @@ var mlist = [];
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/dropzone.js"></script>
 {{-- Sweet ALert --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous"></script>
+
 {{-- @if(Session::has('form_submitted'))
 <Script>
   swal({
@@ -645,8 +622,23 @@ var mlist = [];
 
 
 
+{{-- New Get Ref --}}
+{{-- <script>
+    function getRef(){
+        var elemRef = document.getElementById('referenceNumber');
+        var ourRequest = new XMLHttpRequest();
+        ourRequest.open('GET', '/get-ref' , true);
+        ourRequest.onload = function(){
+            var referenceNumber = JSON.parse(ourRequest.responseText);
 
+        console.log(referenceNumber);
+        elemRef.value=referenceNumber;
+        console.log(elemRef.value);
 
+        };
+        ourRequest.send();
+    }
+</script> --}}
 
 
 

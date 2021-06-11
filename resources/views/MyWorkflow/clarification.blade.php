@@ -41,20 +41,21 @@
                                             <tbody>
                                                 @foreach ($posts as $post)
                                                 <tr>
-                                                    <td><a href="/clarifications/{{ $post->ID }}">{{$post->REFERENCE}}</a></td>
+                                                    <td><a href="/clarifications/{{$post->FRM_CLASS}}/{{ $post->ID }}/{{ $post->RequestType }}">{{$post->REFERENCE}}</a></td>
                                                     <td>{{$post->RequestType}}</td>
                                                     <td>{{$post->Date}}</td>
                                                     <td>{{$post->Project}}</td>
                                                     <td>{{$post->Initiator}}</td>
                                                     <td class="text-right">{{ number_format($post->Amount,2)}} </td>
                                                     <td>
-                                                        <a href="/clarifications/{{ $post->ID }}" class="btn btn-info">Open</a>
-                                                        {{-- <a href="#" class="btn btn-secondary">View Status</a> --}}
-                                                        <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus({{ $post->ID }})">View Status</a>
-                                                        {{-- <a href="#" class="btn btn-warning">Messages</a> --}}
-                                                        {{-- <a href="javascript:void(0)" class="btn btn-warning" data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments({{ $post->ID }})">Comments</a> --}}
-                                                        <a href="javascript:void(0)" class="btn btn-warning" data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments({{ $post->ID }})">Comments</a>
+                                                        {{-- <a href="/clarifications/{{ $post->ID }}" class="btn btn-info">Open</a> --}}
+                                                        <a href="/clarifications/{{$post->FRM_CLASS}}/{{ $post->ID }}/{{ $post->RequestType }}" class="btn btn-info">Open</a>
+                                                        {{-- <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus({{ $post->ID }})">View Status</a> --}}
+                                                        <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus('{{$post->FRM_CLASS}}',{{ $post->ID }})">View Status</a>
 
+                                                        {{-- <a href="javascript:void(0)" class="btn btn-warning" data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments({{ $post->ID }})">Comments</a> --}}
+
+                                                        <a href="javascript:void(0)" class="btn btn-warning" data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments('{{$post->FRM_CLASS}}',{{ $post->ID }})">Comments</a>
 
                                                     </td>
                                                 </tr>
@@ -101,7 +102,8 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         <div class="container">
-                                                            <H6 >Request For Payment</H6>
+                                                            <H6 id="messagesLabelForm" ></H6>
+
                                                             <hr>
                                                         </div>
                                                     </div>
@@ -109,115 +111,10 @@
 
                                                 <div class="row">
                                                     <div class="col-md-12" id="messagecontainer">
- 
-                                                        
-                                                        
-
-                                                        {{-- Start --}}
-                                                       {{-- <div class="container" style="margin-bottom: 20px;">
-                                                           <div class="row">
-                                                            
-                                                               <div class="col text-center">    
-                                                                <img src="http://dummyimage.com/60" alt="" style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);">
-                                                               </div>
-                                                               
-                                                               <div class="col-11" >
-                                                                <div class="container">
-
-                                                                    <div class="row">
-
-                                                                        <div class="col main-content" style="background-color: #dee1e3;  border-radius: 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); padding:10px 15px 10px 15px; ">
-                                                                            
-                                                                            <div class="row">
-
-                                                                                <div class="sender-name col" style="font-size: 14px; font-weight:bold;">
-                                                                                    Paul Iverson Cortez
-                                                                                </div>
-                                                                                <div class="col text-right"style="font-size: 14px;">
-                                                                                     April 26, 2021 2:51 PM
-                                                                                </div>
-                                                                                
-                                                                            </div>
-
-                                                                            <div class="row">
-                                                                                <div class="recipeint-name col"style="font-size: 14px;" >
-                                                                                    To: Stephen Cortez 
-                                                                                </div>
-                                                                                <div class="col text-right"style="font-size: 14px;">
-                                                                                   Reporting Manager
-                                                                               </div>
-
-                                                                            </div>
-                                                                            <div class="row" >
-                                                                                <div class="comment-content col" style="margin-top: 10px;">
-                                                                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nulla amet placeat sunt eius vero sint quis ipsa accusamus, alias cum.
-                                                                                </div>
-                                                                            </div>
-
-                                                                            
-                                                                        </div>
-                                                                    </div>
-
-                                                          
-                                                                </div>
-                                                               </div>
-
-                                                           </div>
-                                                       </div>
-
-                                                        <div class="container"  style="margin-bottom: 20px;">
-                                                            <div class="row">
-                                                            
-                                                                <div class="col text-right" style="padding-right:16px;">    
-                                                                <img src="http://dummyimage.com/60" alt="" style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);">
-                                                                </div>
-                                                                
-                                                                <div class="col-10" >
-                                                                <div class="container">
-
-                                                                    <div class="row">
-                                                                        <div class="col main-content" style="background-color: #dee1e3;  border-radius: 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); padding:10px 15px 10px 15px; ">
-                                                                            <div class="row">
-
-                                                                                <div class="sender-name col" style="font-size: 14px; font-weight:bold;">
-                                                                                    Paul Iverson Cortez
-                                                                                </div>
-                                                                                <div class="col text-right"style="font-size: 14px;">
-                                                                                    April 26, 2021 2:51 PM
-                                                                               </div>
-                                                                                
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="recipeint-name col"style="font-size: 14px;" >
-                                                                                    To: Stephen Cortez 
-                                                                                </div>
-                                                                                <div class="col text-right"style="font-size: 14px;">
-                                                                                   Reporting Manager
-                                                                               </div>
-
-                                                                            </div>
-                                                                            <div class="row" >
-                                                                                <div class="comment-content col" style="margin-top: 10px;">
-                                                                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nulla amet placeat sunt eius vero sint quis ipsa accusamus, alias cum.
-                                                                                </div>
-                                                                            </div>
-                                                                            
-                                                                        </div>
-                                                                    </div>
-
-                                                
-                                                                </div>
-                                                                </div>
-
-                                                            </div>
-                                                        </div>  --}}
-                                                         {{-- end --}}
 
                                                     </div>
                                                 </div>
-                    
-
-                                                
+                                                                 
                                             </div>
                                             <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="deleteComments()">Close</button>                                    
@@ -244,7 +141,7 @@
 
 @endsection
 
-<script>
+{{-- <script>
       function viewClaComments(id){
     
       $.get('/clarifications-comments/'+id,function(comments){
@@ -377,5 +274,5 @@ function deleteComments(){
     $('#messagecontainer').empty();
 }
 
-</script>
+</script> --}}
 

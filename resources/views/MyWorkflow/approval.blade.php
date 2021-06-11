@@ -12,8 +12,7 @@
                         <div class="col-md-12">
                             <div class="card card-default"> 
                                 <div class="card-body table-responsive p-0">
-                                    {{-- <input style="background-position: 10px 12px; background-repeat: no-repeat; width: 100%; font-size: 16px; padding: 12px 20px 12px 25px; border: 1px solid #ddd; margin-bottom: 12px;" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search..."> --}}
-                                    <table id="myTable" class="table table-hover text-nowrap">
+                                     <table id="myTable" class="table table-hover text-nowrap">
                                         <thead>
                                             <tr>
                                                 <th>Reference</th>
@@ -28,34 +27,30 @@
                                         <tbody>
                                             @foreach ($posts as $post)
                                                 <tr id ="sid{{ $post->ID }}">
-                                                    <td><a href="/approvals/{{ $post->ID }}">{{$post->REFERENCE}}</a></td>
+                                                    <td><a href="/approvals/{{$post->FRM_CLASS}}/{{ $post->ID }}/{{ $post->RequestType }}">{{$post->REFERENCE}}</a></td>
                                                     <td>{{$post->RequestType}}</td>
                                                     <td>{{$post->Date}}</td>
                                                     <td>{{$post->Project}}</td>
                                                     <td>{{$post->Initiator}}</td>
                                                     <td class="text-right">{{ number_format($post->Amount,2)}} </td>
                                                     <td>
-                                                        {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Open</button> --}}
-                                                        <a href="/approvals/{{ $post->ID }}" class="btn btn-info">Open</a>
-                                                        {{-- <button id="viewSequence"  class="btn btn-secondary editbtn" data-toggle="modal">{{ $post->ID }}</button> --}}
-                                                        {{-- <a href="#" class="btn btn-secondary" id="viewStatus">View</a> --}}
-                                                        {{-- <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal" id="{{ $post->ID }}">View</button> --}}
-                                                        {{-- <a href="javascript:void(0)" class="btn btn-secondary" onclick="editstatus({{ $post->ID }})" data-toggle="modal" data-target="#statusEditModal" >View</a> --}}
+                                                        {{-- <a href="/approvals/{{ $post->ID }}" class="btn btn-info">Open</a> --}}
+                                                        <a href="/approvals/{{$post->FRM_CLASS}}/{{ $post->ID }}/{{ $post->RequestType }}" class="btn btn-info">Open</a>
 
+                                                        <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus('{{$post->FRM_CLASS}}',{{ $post->ID }})">View Status</a>
 
-                                                        <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus({{ $post->ID }})">View Status</a>
-                                                        {{-- <a href="#"class="btn btn-secondary" id="viewStatus" data-toggle="modal" onclick="viewStatus(this.value)" data-target="#viewStatusModal" value="{{ $post->ID }}">View</a> --}}                                
-                                                        {{-- <button class="btn btn-secondary" id="viewStatus" data-toggle="modal" onclick="viewStatus(this.value)" data-target="#viewStatusModal" value="{{ $post->ID }}">View</button> --}}
-                                                        <a href="javascript:void(0)" class="btn btn-warning" data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments({{ $post->ID }})">Comments</a>
+                                                        {{-- <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus({{ $post->ID }})">View Status</a> --}}
+                                                        {{-- <a href="javascript:void(0)" class="btn btn-warning" data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments({{ $post->ID }})">Comments</a> --}}
+
+                                                        <a href="javascript:void(0)" class="btn btn-warning" data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments('{{$post->FRM_CLASS}}',{{ $post->ID }})">Comments</a>
 
                                                     </td>
-                                                </tr>
-                                                
-                                            @endforeach
-                                            
+                                                </tr>                                              
+                                            @endforeach                                         
                                         </tbody>
                                     </table>
                                 </div>
+
                                     <!-- Modal Messages-->
                                     <div class="modal fade" id="viewMessagesModal" tabindex="-1" role="dialog"  aria-labelledby="viewMessagesModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
                                         <div class="modal-dialog modal-xl" role="document" >
@@ -65,7 +60,7 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         <div class="container">
-                                                            <H6 >Request For Payment</H6>
+                                                            <H6 id="messagesLabelForm"></H6>
                                                             <hr>
                                                         </div>
                                                     </div>
@@ -73,115 +68,8 @@
 
                                                 <div class="row">
                                                     <div class="col-md-12" id="messagecontainer">
- 
-                                                        
-                                                        
-
-                                                        {{-- Start --}}
-                                                       {{-- <div class="container" style="margin-bottom: 20px;">
-                                                           <div class="row">
-                                                            
-                                                               <div class="col text-center">    
-                                                                <img src="http://dummyimage.com/60" alt="" style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);">
-                                                               </div>
-                                                               
-                                                               <div class="col-11" >
-                                                                <div class="container">
-
-                                                                    <div class="row">
-
-                                                                        <div class="col main-content" style="background-color: #dee1e3;  border-radius: 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); padding:10px 15px 10px 15px; ">
-                                                                            
-                                                                            <div class="row">
-
-                                                                                <div class="sender-name col" style="font-size: 14px; font-weight:bold;">
-                                                                                    Paul Iverson Cortez
-                                                                                </div>
-                                                                                <div class="col text-right"style="font-size: 14px;">
-                                                                                     April 26, 2021 2:51 PM
-                                                                                </div>
-                                                                                
-                                                                            </div>
-
-                                                                            <div class="row">
-                                                                                <div class="recipeint-name col"style="font-size: 14px;" >
-                                                                                    To: Stephen Cortez 
-                                                                                </div>
-                                                                                <div class="col text-right"style="font-size: 14px;">
-                                                                                   Reporting Manager
-                                                                               </div>
-
-                                                                            </div>
-                                                                            <div class="row" >
-                                                                                <div class="comment-content col" style="margin-top: 10px;">
-                                                                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nulla amet placeat sunt eius vero sint quis ipsa accusamus, alias cum.
-                                                                                </div>
-                                                                            </div>
-
-                                                                            
-                                                                        </div>
-                                                                    </div>
-
-                                                          
-                                                                </div>
-                                                               </div>
-
-                                                           </div>
-                                                       </div>
-
-                                                        <div class="container"  style="margin-bottom: 20px;">
-                                                            <div class="row">
-                                                            
-                                                                <div class="col text-right" style="padding-right:16px;">    
-                                                                <img src="http://dummyimage.com/60" alt="" style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);">
-                                                                </div>
-                                                                
-                                                                <div class="col-10" >
-                                                                <div class="container">
-
-                                                                    <div class="row">
-                                                                        <div class="col main-content" style="background-color: #dee1e3;  border-radius: 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); padding:10px 15px 10px 15px; ">
-                                                                            <div class="row">
-
-                                                                                <div class="sender-name col" style="font-size: 14px; font-weight:bold;">
-                                                                                    Paul Iverson Cortez
-                                                                                </div>
-                                                                                <div class="col text-right"style="font-size: 14px;">
-                                                                                    April 26, 2021 2:51 PM
-                                                                               </div>
-                                                                                
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="recipeint-name col"style="font-size: 14px;" >
-                                                                                    To: Stephen Cortez 
-                                                                                </div>
-                                                                                <div class="col text-right"style="font-size: 14px;">
-                                                                                   Reporting Manager
-                                                                               </div>
-
-                                                                            </div>
-                                                                            <div class="row" >
-                                                                                <div class="comment-content col" style="margin-top: 10px;">
-                                                                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nulla amet placeat sunt eius vero sint quis ipsa accusamus, alias cum.
-                                                                                </div>
-                                                                            </div>
-                                                                            
-                                                                        </div>
-                                                                    </div>
-
-                                                
-                                                                </div>
-                                                                </div>
-
-                                                            </div>
-                                                        </div>  --}}
-                                                         {{-- end --}}
-
                                                     </div>
-                                                </div>
-                    
-
-                                                
+                                                </div>                                                          
                                             </div>
                                             <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="deleteComments()">Close</button>                                    
@@ -197,12 +85,7 @@
                                     <div class="modal fade" id="viewStatusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
                                         <div class="modal-dialog modal-xl" role="document">
                                         <div class="modal-content">
-                                            {{-- <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Approval Sequence</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                            </div> --}}
+
                                             <div class="modal-body" id="employee_detail">
                     
                                                         <table class="table table-striped table-responsive-xl" id="myTableId">
@@ -216,43 +99,6 @@
                                                               </tr>
                                                             </thead>
                                                             <tbody id="tdata">
-
-                                                              {{-- <tr>
-                                                                <td id="row1-1"></td>
-                                                                <td id="row1-2"></td>
-                                                                <td id="row1-3"></td>
-                                                                <td id="row1-4"></td>
-                                                                <td id="row1-5"></td>
-                                                              </tr>
-                                                              <tr>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                              </tr>
-                                                              <tr>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                              </tr>
-                                                              <tr>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                              </tr>
-                                                              <tr>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                                <td id="row1"></td>
-                                                              </tr> --}}
-
                                                             </tbody>
                                                           </table>
                                               
@@ -263,17 +109,11 @@
                                         </div>
                                         </div>
                                     </div>
+                                    {{-- End Modal --}}
 
                                 {{-- Pagination --}}    
                                 <div class="card-footer clearfix">
                                     <ul class="pagination pagination-sm m-0 float-right">
-                                        {{-- <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">&raquo;</a></li> --}}
-
-                                        {{-- Pagination Real--}}
                                         <div>{{ $posts->links() }}</div>
                                     
                                     </ul>
@@ -317,7 +157,7 @@ function myFunction() {
 }
 </script>
 
-<script>
+{{-- <script>
     function viewClaComments(id){
   
     $.get('/clarifications-comments/'+id,function(comments){
@@ -450,7 +290,7 @@ function deleteComments(){
   $('#messagecontainer').empty();
 }
 
-</script>
+</script> --}}
 
 {{-- view status --}}
 {{-- <script>

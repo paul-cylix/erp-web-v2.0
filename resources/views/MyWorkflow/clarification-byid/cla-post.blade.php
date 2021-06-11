@@ -166,10 +166,7 @@ if($editableChecker){
                                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                             </div>
                                     <span class="text-danger">@error('dateNeeded'){{ $message }}@enderror</span>
-
                                         </div>
-            
-                    
                                     </div>         
                                 </div>
             
@@ -242,7 +239,7 @@ if($editableChecker){
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="card card-gray">
-                                        <h5 class="card-header">Attachments</h5>
+                                        <h5 class="card-header">Attachmentssss</h5>
                                         <div class="card-body" >
     
                                             <div class="row">
