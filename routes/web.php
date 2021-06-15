@@ -414,6 +414,10 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
 
     Route::get('/sof-pending', [SalesOrderRequestController::class, 'SofPending']);
+    Route::get('/datatable', [SalesOrderRequestController::class, 'datatable'])->name('datatable.get');
+    Route::get('pending-approved/{id}',[SalesOrderRequestController::class, 'pendingApproved'])->name('pending.approved');
+
+
 
     // Supply Chain Controller
 

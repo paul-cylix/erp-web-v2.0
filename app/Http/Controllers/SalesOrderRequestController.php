@@ -1619,17 +1619,25 @@ class SalesOrderRequestController extends Controller
 
 
 
-
-
-
-
-
-
-
-
     public function SofPending() { 
         $posts = DB::select("call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '1', '2020-01-01', '2020-12-31', 'True')");
-        return view('SalesOrderRequest.sof-pending', compact('posts'));
-    //return $posts;
+        $pendings = DB::select("SELECT ID,SOID, PO,REF 'REF',FRMNAME,CLIENTNAME 'Client',PROJECTNAME 'Project',AMOUNT 'ProjectCost' ,OUTSTANDING 'Outstanding',`STATUS` 'Status',DEADLINED 'Deadline',Initiator FROM sales_order.forapprovalso WHERE STATUS='PENDING'");
+        return view('SalesOrderRequest.sof-pending', compact('posts','pendings'));
+    }
+
+
+        public function pendingApproved($id){
+         
+            DB::update("UPDATE sales_order.`forapprovalso` a SET a.`STATUS` = 'Approved'  WHERE a.`SOID` = $id ");
+            DB::update("UPDATE sales_order.`sales_orders` a SET a.`Status` = 'In Progress'  WHERE a.`id` = $id ");
+            DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'Not Started'  WHERE a.`PROCESSID` = $id AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`COMPID` = '1'  ");
+            DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress'  WHERE a.`PROCESSID` = $id AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`COMPID` = '1' AND a.`ORDERS` = '0' ");
+
+            return back()->with('form_submitted', 'The request is now In Progress.');
+        }
+
+
+    public function datatable(){
+        return view('SalesOrderRequest.datatable');
     }
 }
