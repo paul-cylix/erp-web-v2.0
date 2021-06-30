@@ -1,18 +1,28 @@
 @extends('layouts.base')
 @section('title', 'Request For Payment') 
 @section('content')
-    <div class="row">
 
+
+@if(Session::get('form_submitted'))
+<Script>
+swal({
+text: "{!! Session::get('form_submitted') !!}",
+icon: "success",
+closeOnClickOutside: false,
+closeOnEsc: false,        
+})
+.then(okay => {
+if (okay) {
+window.location.href = "/inputs";
+}});
+</Script>
+@endif
+
+    <div class="row">
         <div class="col-md-12" style="margin: -20px 0 20px 0 " >
             <div class="form-group" style="margin: 0 -5px 0 -5px;">
                     <div class="col-md-1 float-left"><a href="/inputs" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>                  
-                    {{-- <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled>Reply</button></div>     
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" data-toggle="modal" data-target="#clarifyModal">Clarify</button></div>                    
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " data-toggle="modal" data-target="#withdrawModal"  >Withdraw</button></div>        
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" data-toggle="modal" data-target="#rejectModal">Reject</button></div>      
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right"  data-toggle="modal" data-target="#approveModal">Approve</button></div>    --}}
-                    
+
 
                     {{-- Checker Inputs --}}
                     <?php 
@@ -45,8 +55,6 @@
             </div> 
         </div> 
         
-
-
         <div class="col-md-12">
             <div class="card card-gray">
                 <div class="card-header">
@@ -143,10 +151,20 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            @php
+                            $foo = $post->AMOUNT;
+                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                        @endphp
+                    
+                    <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input id="amount" name="amount" type="text" class="form-control text-right" value="{{ $myAMount }}"  readonly >
+
+                            {{-- <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="amount">Amount</label>
-                                    <input id="amount" name="amount" type="text" class="form-control" value="{{ $post->AMOUNT }}"  readonly >
+                                    <input id="amount" name="amount" type="text" class="form-control" value="{{ $post->AMOUNT }}"  readonly > --}}
                                 </div>
                             </div>
                         </div>
@@ -161,70 +179,45 @@
                             </div>
                         </div>
 
-                        {{-- Attachments --}}
+                        @if (!empty($filesAttached))
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="card card-gray">
-                                    <h5 class="card-header">Attachments</h5>
-                                    <div class="card-body" >
-
-                                        <div class="row">
-                                            @php($count=0)
-                                            @foreach ($filesAttached as $file)
-                                            @php($count++)
-                                            
-                                            <div class="col-sm-2" id="{{ $count }}">
-
-                                                <div class="dropdown show" >
-                                                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                                    </div>
-                                                </div>
-                                                <div class="card">
-
-                                                    <?php
-                                                        if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                            <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                                        <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                            # code...
-                                                        } 
-                                                    ?>
-                                
-                                                    <div class="card-body" style="padding: 5px; ">
-                                                    <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>  
-
-                                            @endforeach
-                                        </div>   
+                        <div class="col-md-12">
+                            <div class="card card-gray">
+                        
+                                <div class="card-header" style="height:50px;">
+                                    <div class="row ">
+                                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
                                     </div>
+                                </div>
+                                <div class="card-body" >
+                                    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                                        <table id= "attachmentsTable"class="table table-hover" >
+                                            <thead >
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Temporary Path</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody >
+                                                @foreach ($filesAttached as $file )
+                                                <tr>
+                                                    <td>{{ $file->filename }}</td>
+                                                    <td>{{ $file->fileExtension }}</td>
+                                                    <td>{{ $file->filepath }}</td>
+                                                    <td><a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
+                                </div>
                             </div>
                         </div>
-                        {{-- End Attachments --}}
-
-                        @if(Session::get('form_submitted'))
-                        <Script>
-                            swal({
-                                text: "{!! Session::get('form_submitted') !!}",
-                                icon: "success",
-                                closeOnClickOutside: false,
-                                closeOnEsc: false,        
-                                })
-                                .then(okay => {
-                                if (okay) {
-                                window.location.href = "/inputs";
-                                }});
-                            </Script>
+                        </div>
                         @endif
-
+                 
                             <!-- Modal Approve-->
                             <div class="modal fade"  id="approveModal" tabindex="-1" role="dialog" aria-labelledby="approveModal" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
@@ -260,45 +253,6 @@
                                 </div>
                                 </div>
                             </div>
-                        
-
-                          <!-- Modal Withdraw-->
-                            {{-- <div class="modal fade"  id="withdrawModal" tabindex="-1" role="dialog" aria-labelledby="withdrawModal" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-dark" >
-                                    <h5 class="modal-title" id="withdrawModalLabel">Withdraw Request</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                    </div>
-                                    <form action="{{ route('npu.withdraw.post') }}" method="POST">
-                                        @csrf
-                                    <div class="modal-body">
-                                        <div class="container-fluid">
-                                            <div class="row">
-                                                <div class="col-md-12">                     
-                                                    <label for="withdrawRemarks">Remarks</label>
-                                                    <div class="card-body">
-                                                        <div class="form-floating">
-                                                            <input type="hidden" value="{{ $post->ID }}" name="idName">
-                                                            <textarea class="form-control" placeholder="Leave a comment here" name="withdrawRemarks" id="withdrawRemarks" style="height: 100px"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                    <input type="submit" class="btn btn-primary" value="Proceed">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    </div>
-                                    </form>
-                                </div>
-                                </div>
-                            </div> --}}
-
-
                             {{-- Modal For Clarity - Approver --}}
                             <div class="modal fade"  id="clarifyModal" tabindex="-1" role="dialog" aria-labelledby="clarifyModal" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
@@ -309,34 +263,25 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                     </div>
-
-
                                     <form action="{{ route('npu.clarify.post') }}" method="POST">
                                         @csrf
                                     <div class="modal-body">
                                         <div class="container-fluid">
-
-
 
                                         {{-- Dropdown Recipient --}}
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label for="clarityRecipient">Choose Recipient</label>
                                                 <select id="clarityRecipient" name="clarityRecipient" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                                    <option value="">To</option>
+                                                    {{-- <option value="">To</option> --}}
                                                     @foreach($getRecipientNameInputs as $recipientInputs)
                                                         <option value="{{ $recipientInputs->uid }}">{{ $recipientInputs->Name }} </option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                         </div>
-
-
                                         <input type="hidden" name="inputsInpId" value=" {{ $inputsInpId }}">
                                         <input type="hidden" name="refNumberNpu" id="" value="{{ $post->REQREF }}">
-
-
-
 
                                             <div class="row">
                                                 <div class="col-md-12">                     
@@ -350,10 +295,6 @@
                                                 </div>
                                             </div>
                                           
-                                    
-
-
-
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -364,8 +305,6 @@
                                 </div>
                                 </div>
                             </div>
-
-
 
                             {{-- Modal For Reject - Approver --}}
                             <div class="modal fade"  id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModal" aria-hidden="true">
@@ -402,30 +341,6 @@
                                 </div>
                                 </div>
                             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                     </div> 
             </div>

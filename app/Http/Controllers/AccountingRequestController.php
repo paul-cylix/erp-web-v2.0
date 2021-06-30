@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use phpDocumentor\Reflection\PseudoTypes\True_;
-
+use Illuminate\Support\Facades\log;
 class AccountingRequestController extends Controller
 {
 
@@ -125,8 +125,11 @@ class AccountingRequestController extends Controller
                 'payeeName'=>'required',
                 'currency'=>'required',
                 'modeOfPayment'=>'required',
-                'amount'=>'required',
+                'amount'=>'required|not_in:0',
                 'purpose'=>'required'
+                
+
+
             ]);
 
 
@@ -341,10 +344,13 @@ class AccountingRequestController extends Controller
 
             // $this->rfpIdGlobal ='$rfpID';
             // $this->guidGlobal ='$GUID';
-
+            
+            Log::debug($request);
+            
             if($request->hasFile('file')){
 
                 foreach($request->file as $file) {
+
 
                     $completeFileName = $file->getClientOriginalName();
                     $fileNameOnly = pathinfo($completeFileName, PATHINFO_FILENAME);
@@ -517,9 +523,16 @@ class AccountingRequestController extends Controller
             'dateNeeded'=>'required',
             'payeeName'=>'required',
             'amount'=>'required',
-            'purpose'=>'required'
+            'purpose'=>'required|min:2',
+            'file'=>'required'
+            // 'xdData'=>'required_without_all:tdArray',
+            // 'tdData'=>'required_without:xdArray'
+            
         ]);
 
+      
+
+        
         $ref = DB::select("SELECT IFNULL((SELECT MAX(SUBSTR(a.`REQREF`,9)) FROM accounting.`reimbursement_request` a WHERE YEAR(TS) = YEAR(NOW()) AND a.`TITLEID` = '1'), FALSE) +1 AS 'ref'");
         $ref = $ref[0]->ref;
         $ref = str_pad($ref, 4, "0", STR_PAD_LEFT); 
@@ -835,7 +848,10 @@ class AccountingRequestController extends Controller
                 'currency'=>'required',
                 'modeOfPayment'=>'required',
                 'amount' => 'required|numeric|between:1,1000',
-                'purpose'=>'required'
+                'purpose'=>'required',
+                // 'file'=>'required'
+
+         
             ]);
 
             $dataREQREF = DB::select("SELECT IFNULL((SELECT MAX(SUBSTRING(REQREF ,10)) FROM accounting.`petty_cash_request` WHERE YEAR(TS)=YEAR(NOW()) AND TITLEID = '1'),0) + 1 'REF'");
@@ -884,7 +900,6 @@ class AccountingRequestController extends Controller
                 'CLIENT_ID' =>   $request->clientID,
                 'TITLEID' => session('LoggedUser_CompanyID')
 
-                
             ]);
 
             //Insert general.actual_sign

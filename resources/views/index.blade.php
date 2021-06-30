@@ -87,13 +87,13 @@
       <a href="/create-rfp" class="list-group-item list-group-item-action">Payment</a>
       <a href="/create-re" class="list-group-item list-group-item-action">Reimbursement</a>
       <a href="/create-pc" class="list-group-item list-group-item-action">Petty Cash</a>
-      <a href="/create-ca" class="list-group-item list-group-item-action">Cash Advance</a>
+      {{-- <a href="/create-ca" class="list-group-item list-group-item-action">Cash Advance</a> --}}
     </div>
   </div>
 </div>
 </div>
 
-<div class="panel panel-default">
+{{-- <div class="panel panel-default">
 <div class="panel-heading" role="tab" id="headingTwo">
   <h4 class="panel-title">
   <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -112,9 +112,9 @@
     </div>
   </div>
 </div>
-</div>
+</div> --}}
 
-<div class="panel panel-default">
+{{-- <div class="panel panel-default">
 <div class="panel-heading" role="tab" id="headingThree">
   <h4 class="panel-title">
   <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
@@ -132,9 +132,9 @@
     </div>
   </div>
 </div>
-</div>
+</div> --}}
 
-<div class="panel panel-default">
+{{-- <div class="panel panel-default">
 <div class="panel-heading" role="tab" id="headingFour">
   <h4 class="panel-title">
   <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
@@ -151,9 +151,9 @@
     </div>
   </div>
 </div>
-</div>
+</div> --}}
 
-<div class="panel panel-default">
+{{-- <div class="panel panel-default">
 <div class="panel-heading" role="tab" id="headingFive">
   <h4 class="panel-title">
   <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
@@ -171,7 +171,12 @@
     </div>
   </div>
 </div>
-</div>
+</div> --}}
+
+
+
+
+
 
 <div class="panel panel-default">
 <div class="panel-heading" role="tab" id="headingSix">
@@ -195,8 +200,28 @@
 </div>
 </div>
 
+{{-- <div class="panel panel-default">
+  <div class="panel-heading" role="tab" id="headingSix">
+    <h4 class="panel-title">
+    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#colapseNine" aria-expanded="false" aria-controls="colapseNine">
+      <i class="fa fa-truck" aria-hidden="true"></i>
+      Supply Chain
+    </a>
+  </h4>
+  </div>
+  <div id="colapseNine" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+    <div class="panel-body">
+      <div class="list-group">
+        <a href="/create-ar-internal" class="list-group-item list-group-item-action">Materials Request</a>
+        <a href="/create-sof-project" class="list-group-item list-group-item-action">Release Stocks</a>
+        <a href="/create-sof-demo" class="list-group-item list-group-item-action">RMA</a>
+      </div>
+    </div>
+  </div>
+</div> --}}
 
 
+{{-- 
 <div class="panel panel-default">
 <div class="panel-heading" role="tab" id="headingSeven">
   <h4 class="panel-title">
@@ -210,13 +235,12 @@
   <div class="panel-body">
     <div class="list-group">
 
-      {{-- accordion 1 --}}
       <div class="panel-subheading " role="tab" id="headingMR">
           <a class="collapsed list-group-item list-group-item-action" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseMR" aria-expanded="false" aria-controls="collapseMR">
             Materials Request
           </a>
       </div>
-      {{-- accordion 1a --}}
+    
       <div id="collapseMR" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingMR">
         <div class="panel-body">
           <div class="list-group">
@@ -227,13 +251,13 @@
         </div>
       </div>
 
-      {{-- accordion 2--}}
+     
       <div class="panel-subheading " role="tab" id="headingAR">
         <a class="collapsed list-group-item list-group-item-action" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseAR" aria-expanded="false" aria-controls="collapseAR">
           Assets Request
         </a>
     </div>
-    {{-- accordion 2a --}}
+  
     <div id="collapseAR" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingAR">
       <div class="panel-body">
         <div class="list-group">
@@ -241,18 +265,18 @@
           <a href="/create-ar-delivery" class="list-group-item list-group-item-action indention">Delivery</a>
           <a href="/create-ar-demo" class="list-group-item list-group-item-action indention">Demo</a>
           <a href="/create-ar-poc" class="list-group-item list-group-item-action indention">POC</a>
-          <a href="/create-ar-pending" class="list-group-item list-group-item-action indention">Pending</a>
+          <a href="/create-ar-internal" class="list-group-item list-group-item-action indention">Internal</a>
         </div>
       </div>
     </div>
 
-      {{-- accordion 3 --}}
+    
       <div class="panel-subheading " role="tab" id="headingSR">
         <a class="collapsed list-group-item list-group-item-action" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSR" aria-expanded="false" aria-controls="collapseSR">
           Supplies Request
         </a>
     </div>
-    {{-- accordion 3a --}}
+
     <div id="collapseSR" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSR">
       <div class="panel-body">
         <div class="list-group">
@@ -267,7 +291,35 @@
     </div>
   </div>
 </div>
-</div>
+</div> --}}
+
+{{-- <div class="panel panel-default">
+  <div class="panel-heading" role="tab" id="headingEight">
+    <h4 class="panel-title">
+    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+      <i class="fas fa-user-cog" aria-hidden="true"></i>
+      System Settings
+    </a>
+  </h4>
+  </div>
+  <div id="collapseEight" class="panel-collapse collapse in role="tabpanel" aria-labelledby="headingEight">
+    <div class="panel-body">
+      <div class="list-group">
+        <a href="/create-ot" class="list-group-item list-group-item-action">Payment Terms Setup</a>
+        <a href="/create-leave" class="list-group-item list-group-item-action">Business Type</a>
+        <a href="/create-itinerary" class="list-group-item list-group-item-action">Business Nature</a>
+        <a href="/create-ir" class="list-group-item list-group-item-action">Brand Setup</a>
+        <a href="/create-ot" class="list-group-item list-group-item-action">Item Category Setup</a>
+        <a href="/create-leave" class="list-group-item list-group-item-action">Item Sub-Category Setup</a>
+        <a href="/create-itinerary" class="list-group-item list-group-item-action">Unit of Measure Setup</a>
+        <a href="/create-ir" class="list-group-item list-group-item-action">Warehouse Locations</a>
+        <a href="/create-ot" class="list-group-item list-group-item-action">Storage Location</a>
+        <a href="/create-leave" class="list-group-item list-group-item-action">Bin Location</a>
+      </div>
+    </div>
+  </div>
+  </div> --}}
+  
 </div>
 {{-- end accordion --}}
 </div>

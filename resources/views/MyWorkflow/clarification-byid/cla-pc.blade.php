@@ -97,6 +97,8 @@
     <form action="{{ route('cla.reply.pc') }}" method="POST" enctype="multipart/form-data">
             @csrf
                 <div class="modal-body">
+                    <div class="p-3 mb-2 bg-danger text-white d-none" id="myError"></div>
+
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-12">                     
@@ -112,7 +114,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                <input type="submit" class="btn btn-primary" value="Proceed">
+                <input type="submit" class="btn btn-primary" value="Proceed" id="replyEditableForm">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
      
@@ -223,11 +225,15 @@
                             </div>         
                         </div>
 
+                        @php
+                        $foo = $post->REQUESTED_AMT;
+                        $myAMount = number_format((float)$foo, 2, '.', ''); 
+                        @endphp
          
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="amount">Amount</label>
-                                <input id="amount" name="amount" type="text" class="form-control" value="{{ $post->REQUESTED_AMT }}">
+                                <input id="amount" name="amount" type="text" class="form-control text-right" value="{{ $myAMount }}">
                                 <span class="text-danger">@error('amount'){{ $message }}@enderror</span>
                             </div>
                         </div>
@@ -247,100 +253,68 @@
                     <label class="btn btn-primary" style="font-weight:normal;">
                         Attach files <input type="file" name="file[]" class="form-control-file" id="customFile" multiple hidden>
                     </label>
+                    <span class="text-danger">@error('file'){{ $message }}@enderror</span>
+
     </form>           
 
-                    {{-- Attachments of no edit --}}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card card-gray">
-        
-                                <div class="card-header" style="height:50px;">
-                                    <div class="row ">
-                                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                    </div>
-                                </div>
-                                {{-- Card body --}}
-                                <div class="card-body" >
-                
-                                    {{-- Table attachments --}}
-                                    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
-                                        <table id= "attachmentsTable"class="table table-hover" >
-                                            <thead >
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Type</th>
-                                                {{-- <th>Size</th> --}}
-                                                <th>Temporary Path</th>
-                                                <th>Actions</th>
 
-                                            </tr>
-                                            </thead>
-                                            <tbody >
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    {{-- Table attachments End--}}                                                               
-                                </div>
-                                {{-- Card body END --}}                                  
-                            </div>
-                        </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-gray">
+
+                <div class="card-header" style="height:50px;">
+                    <div class="row ">
+                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
                     </div>
-                    {{-- End Attachments --}}
+                </div>
+                {{-- Card body --}}
+                <div class="card-body" >
 
-                    {{-- Show only if Not empty --}}
-                    @if (!empty($attachmentsDetails))
-                            {{-- Gallery --}}
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="card card-gray">
+                    {{-- Table attachments --}}
+                    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                        <table id= "attachmentsTable"class="table table-hover" >
+                            <thead >
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                {{-- <th>Size</th> --}}
+                                <th>Temporary Path</th>
+                                <th>Actions</th>
 
-                                        <div class="card-header" style="height:50px;">
-                                            <div class="row ">
-                                                <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                            </div>
-                                        </div>
-                                        <div class="card-body" >
-                                            <div class="row">       
-                                                @foreach ($attachmentsDetails as $file)
-                                                <div class="col-sm-2" >
+                            </tr>
+                            </thead>
+                            <tbody id="initTbody">
+                                @foreach ($attachmentsDetails as $file )
+                                <tr>
+                                    <td>{{ $file->filename }}</td>
+                                    <td>{{ $file->fileExtension }}</td>
+                                    <td>{{ $file->filepath }}</td>
+                                    <td>
+                                        <a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
+                                        <a class="btn btn-danger" onclick="removedAttach(this)"  >Delete<input type="hidden" value="{{ $file->id }}"><input type="hidden" value="{{ $file->filepath }}"><input type="hidden" value="{{ $file->filename }}"></a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    {{-- Table attachments End--}}                                                                                       
+                </div>
+                {{-- Card body END --}}                            
+            </div>
+        </div>
+    </div>
 
-                                                    <div class="dropdown show" >
-                                                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                                        <div class="dropdown-menu dropdown-menu-right">
-                                                            <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                                            <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                                            <a class="dropdown-item" onclick="removedAttached(this)" style="cursor: pointer;" >Delete<input type="hidden" value="{{ $file->id }}"><input type="hidden" value="{{ $file->filepath }}"><input type="hidden" value="{{ $file->filename }}"></a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="card">
 
-                                                        <?php
-                                                            if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                                <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                                        <?php
-                                                            }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                                            <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                                        <?php
-                                                            }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                                # code...
-                                                            } 
-                                                        ?>
-                                    
-                                                        <div class="card-body" style="padding: 5px; ">
-                                                        <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>  
 
-                                                @endforeach
-                                            </div>   
-                                        </div>
-                                        
-                                        </div>
-                                </div>
-                            </div>
-                            {{-- End Attachments --}}
-                    @endif
+
+
+
+
+
+
+
+
 
         {{-- Not initiator  --}}
         @else
@@ -351,29 +325,43 @@
                     <div class="col-md-1 float-left"><a href="/clarifications" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>
                     
+                    {{-- Initiator --}}
                     @if (!empty($recipientCheck))
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" data-toggle="modal" data-target="#replyModal">Reply</button></div>
-                    @elseif (!empty($senderCheck))         
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" data-toggle="modal" data-target="#replyModal">Reply</button></div>                  
-                    @else
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled >Reply</button></div>                            
-                    @endif
-                    
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled >Withdraw</button></div>        
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" disabled>Approve</button></div>   
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" disabled>Approve</button></div>  
+
+                    {{-- Recipient --}}
+                    @elseif (!empty($senderCheck))         
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled>Reply</button></div> 
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled >Withdraw</button></div>        
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" data-toggle="modal" data-target="#approveModalModed">Approve</button></div>    
+                    {{-- Sender --}}
+
+                    @else
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled >Reply</button></div>
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled >Withdraw</button></div>        
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" disabled>Approve</button></div>                              
+                    @endif
+                    
+                  
             </div> 
         </div> 
 
-        
+        {{-- Moded = same function as the reply --}}
         
         <!-- Modal Reply recipient -->
-        <div class="modal fade"  id="replyModal" tabindex="-1" role="dialog" aria-labelledby="replyModal" aria-hidden="true">
+        <div class="modal fade"  id="approveModalModed" tabindex="-1" role="dialog" aria-labelledby="approveModalModed" aria-hidden="true">
             <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-dark" >
-                <h5 class="modal-title" id="replyModalLabel">Reply Request</h5>
+                <h5 class="modal-title" id="approveModalModedLabel">Reply Request</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -404,6 +392,61 @@
             </div>
         </div>
         {{-- End Reply Modal recipient --}}
+
+
+        <!-- Modal Reply recipient -->
+        <div class="modal fade"  id="replyModal" tabindex="-1" role="dialog" aria-labelledby="replyModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-dark" >
+                <h5 class="modal-title" id="replyModalLabel">Reply Request</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <form action="{{ route('cla.reply.pc.apprvr') }}" method="POST">
+                    @csrf
+                <div class="modal-body">
+                    <div class="p-3 mb-2 bg-danger text-white d-none" id="myError"></div>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">                     
+                                <label for="replyRemarks">Remarks</label>
+                                <div class="card-body">
+                                    <div class="form-floating">
+                                        <input type="hidden" value="{{ $post->id }}" name="pcID">
+                                        <textarea class="form-control" placeholder="Leave a comment here" name="replyRemarks" id="replyRemarksreplyEditableForm" style="height: 100px"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Proceed" id="replybyMgr">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+                </form>
+            </div>
+            </div>
+        </div>
+        {{-- End Reply Modal recipient --}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
       
  
         <div class="col-md-12">
@@ -484,13 +527,16 @@
                                 </div>         
                             </div>
 
-                
+                            @php
+                            $foo = $post->REQUESTED_AMT;
+                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                            @endphp
 
 
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="amount">Amount</label>
-                                    <input id="amount" name="amount" type="text" class="form-control" value="{{ $post->REQUESTED_AMT }}"  readonly >
+                                    <input id="amount" name="amount" type="text" class="form-control" value="{{ $myAMount }}"  readonly >
                                 </div>
                             </div>
                         </div>
@@ -505,55 +551,44 @@
                             </div>
                         </div>
 
-                        {{-- Attachments of no edit --}}
+                        {{-- Attachments --}}
+                        @if (!empty($attachmentsDetails))
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="card card-gray">
-                                    <div class="card-header" style="height:50px;">
-                                        <div class="row ">
-                                            <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                        </div>
+                        <div class="col-md-12">
+                            <div class="card card-gray">
+                                <div class="card-header" style="padding: 5px 20px 5px 20px; ">
+                                <div class="row">
+                                    <div class="col" style="font-size:18px; padding-top:5px;">Attachments</div>                                          
+                                </div>
+                                </div>
+                                <div class="card-body" >
+                                    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                                        <table id= "attachmentsTable"class="table table-hover" >
+                                            <thead >
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Temporary Path</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody >
+                                                @foreach ($attachmentsDetails as $file )
+                                                <tr>
+                                                    <td>{{ $file->filename }}</td>
+                                                    <td>{{ $file->fileExtension }}</td>
+                                                    <td>{{ $file->filepath }}</td>
+                                                    <td><a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-
-                                    <div class="card-body" >
-                                        <div class="row">       
-                                            @forelse ($attachmentsDetails as $file)
-                                            <div class="col-sm-2" >
-
-                                                <div class="dropdown show" >
-                                                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                                    </div>
-                                                </div>
-                                                <div class="card">
-
-                                                    <?php
-                                                        if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                            <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                                        <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                            # code...
-                                                        } 
-                                                    ?>
-                                
-                                                    <div class="card-body" style="padding: 5px; ">
-                                                    <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>  
-                                            @empty
-                                            <span style="margin-left: 12px;">no attachments</span>
-                                            @endforelse
-                                        </div>   
-                                    </div>
-                                    </div>
+                                </div>
                             </div>
                         </div>
+                        </div>
+                        @endif
                         {{-- End Attachments --}}
 
 
@@ -708,10 +743,15 @@
                                 </div>         
                             </div>
 
+                            @php
+                            $foo = $post->REQUESTED_AMT;
+                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                            @endphp
+
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="amount">Amount</label>
-                                    <input id="amount" name="amount" type="text" class="form-control" value="{{ $post->REQUESTED_AMT }}"  readonly >
+                                    <input id="amount" name="amount" type="text" class="form-control" value="{{ $myAMount }}"  readonly >
                                 </div>
                             </div>
                         </div>
@@ -729,7 +769,7 @@
                     {{-- Expense Details --}}
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="card card-default">
+                            <div class="card card-gray">
                                 <div class="card-header" style="padding: 5px 20px 5px 20px; ">
                                     <div class="row">
                                         <div class="col" style="font-size:18px; padding-top:5px;">Expense Details</div>                                          
@@ -769,6 +809,14 @@
                                 {{-- <span >Total Amount:</span> --}}
                                 </div>
                                 </div>
+                                @php
+                                $foo = $subtotalExpenseDetails[0]->total ;
+                                $myAMount = number_format((float)$foo, 2, '.', ''); 
+                                @endphp
+            
+                                <div class="container">
+                                <h6  class="text-right">Subtotal Amount: <span id ="xdTotalAmount">{{ $myAMount }}</span></h6>
+                                </div>
                                 </div>
                             </div>
                         </div>                                    
@@ -778,7 +826,7 @@
                     {{-- Transportation Details --}}
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="card card-default">
+                            <div class="card card-gray">
                                 <div class="card-header" style="padding: 5px 20px 5px 20px; ">
 
                                     <div class="row">
@@ -823,6 +871,13 @@
                                     {{-- <span >Total Amount:</span> --}}
                                     </div>
                                     </div>
+                                    @php
+                                    $foo = $subtotalTranspoDetails[0]->total ;
+                                    $myAMount = number_format((float)$foo, 2, '.', ''); 
+                                    @endphp
+                                    <div class="container">
+                                    <h6  class="text-right">Subtotal Amount: <span id ="tdTotalAmount">{{ $myAMount }}</span></h6>
+                                    </div>
                                 </div>
                             </div>
                         </div>                                    
@@ -843,6 +898,8 @@
 
    
                     <div class="modal-body">
+                    <div class="p-3 mb-2 bg-danger text-white d-none" id="myError"></div>
+
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-12">                     
@@ -857,11 +914,7 @@
                                             <input type="hidden" name="guid" value="{{ $post->GUID }}">
                                             <input id="clientID" name="clientID" type="hidden" class="form-control" value="{{ $post->CLIENT_ID }}">
                                             <input id="mainID" name="mainID" type="hidden" class="form-control" >
-                               
-
-
-
-                                            <textarea class="form-control" placeholder="Leave a comment here" name="replyRemarks" id="replyRemarks" style="height: 100px"></textarea>
+                                            <textarea class="form-control" placeholder="Leave a comment here" name="replyRemarks" id="replyRemarksrequired" style="height: 100px"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -869,7 +922,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Proceed">
+                    <input type="submit" class="btn btn-primary" value="Proceed" id="replyInitEditAttached">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 
@@ -883,100 +936,60 @@
             <label class="btn btn-primary" style="font-weight:normal;">
                 Attach files <input type="file" name="file[]" class="form-control-file" id="customFile" multiple hidden>
             </label>
+            <span class="text-danger">@error('file'){{ $message }}@enderror</span>
+
             </form>
 
-                    {{-- Attachments of no edit --}}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card card-gray">
+{{-- Attachments of no edit --}}
+<div class="row">
+<div class="col-md-12">
+<div class="card card-gray">
+
+<div class="card-header" style="height:50px;">
+    <div class="row ">
+        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
+    </div>
+</div>
+{{-- Card body --}}
+<div class="card-body" >
+
+    {{-- Table attachments --}}
+    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+        <table id= "attachmentsTable"class="table table-hover" >
+            <thead >
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                {{-- <th>Size</th> --}}
+                <th>Temporary Path</th>
+                <th>Actions</th>
+
+            </tr>
+            </thead>
+            <tbody id="initTbody">
+                @foreach ($attachmentsDetails as $file )
+                <tr>
+                    <td>{{ $file->filename }}</td>
+                    <td>{{ $file->fileExtension }}</td>
+                    <td>{{ $file->filepath }}</td>
+                    <td>
+                        <a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
+                        <a class="btn btn-danger" onclick="removedAttach(this)"  >Delete<input type="hidden" value="{{ $file->id }}"><input type="hidden" value="{{ $file->filepath }}"><input type="hidden" value="{{ $file->filename }}"></a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    {{-- Table attachments End--}}                                                                                       
+</div>
+{{-- Card body END --}}                            
+</div>
+</div>
+</div>
+{{-- End Attachments --}}
+
         
-                                <div class="card-header" style="height:50px;">
-                                    <div class="row ">
-                                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                    </div>
-                                </div>
-                                {{-- Card body --}}
-                                <div class="card-body" >
-                
-                                    {{-- Table attachments --}}
-                                    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
-                                        <table id= "attachmentsTable"class="table table-hover" >
-                                            <thead >
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Type</th>
-                                                {{-- <th>Size</th> --}}
-                                                <th>Temporary Path</th>
-                                                <th>Actions</th>
-
-                                            </tr>
-                                            </thead>
-                                            <tbody >
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    {{-- Table attachments End--}}                                                               
-                                </div>
-                                {{-- Card body END --}}                                  
-                            </div>
-                        </div>
-                    </div>
-                    {{-- End Attachments --}}
-                    {{-- Attachments --}}    
-                    
-
-                    {{-- Attachments of no edit --}}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card card-gray">
-
-                                <div class="card-header" style="height:50px;">
-                                    <div class="row ">
-                                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                    </div>
-                                </div>
-
-                                <div class="card-body" >
-                                    <div class="row">       
-                                        @foreach ($attachmentsDetails as $file)
-                                        <div class="col-sm-2" >
-
-                                            <div class="dropdown show" >
-                                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                                    <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                                    <a class="dropdown-item" onclick="removedAttached(this)" style="cursor: pointer;" >Delete<input type="hidden" value="{{ $file->id }}"><input type="hidden" value="{{ $file->filepath }}"><input type="hidden" value="{{ $file->filename }}"></a>
-                                                </div>
-                                            </div>
-                                            <div class="card">
-
-                                                <?php
-                                                    if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                        <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                                <?php
-                                                    }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                                    <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                                <?php
-                                                    }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                        # code...
-                                                    } 
-                                                ?>
-                            
-                                                <div class="card-body" style="padding: 5px; ">
-                                                <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                                </div>
-                                            </div>
-                                        </div>  
-
-                                        @endforeach
-                                    </div>   
-                                </div>
-                                
-                                </div>
-                        </div>
-                    </div>
-                    {{-- End Attachments --}}
 
 
                     {{-- Modal --}}
@@ -1001,6 +1014,12 @@
                                                     <div class="form-group">
                                                         <label>Date</label>
                                                         <input type="date" class="form-control" aria-describedby="helpId" id="dateXD">
+                                                        <script>
+                                                            var today = new Date();
+                                                            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                                                            var data = date;
+                                                            document.getElementById("dateXD").valueAsDate = new Date(data);
+                                                        </script>
                                                         <span class="text-danger" id="dateErrXD"></span>                                                  
                                                     </div>
                                                 </div>
@@ -1071,6 +1090,12 @@
                                                     <div class="form-group">
                                                         <label>Date</label>
                                                         <input type="date" class="form-control" aria-describedby="helpId" id="dateTD">
+                                                        <script>
+                                                            var today = new Date();
+                                                            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                                                            var data = date;
+                                                            document.getElementById("dateTD").valueAsDate = new Date(data);
+                                                        </script>
                                                         <span class="text-danger" id="dateErrTD"></span>                                                  
                                                     </div>
                                                 </div>
@@ -1139,23 +1164,37 @@
 
         @else
 
+        {{-- TBC --}}
+        {{-- Clarify by approver --}}
         <div class="col-md-12" style="margin: -20px 0 20px 0 " >
             <div class="form-group" style="margin: 0 -5px 0 -5px;">
                     <div class="col-md-1 float-left"><a href="/clarifications" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
                     
-                    @if (!empty($recipientCheck))
+                   
+                    @if (!empty($recipientCheck)) 
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" data-toggle="modal" data-target="#replyModal">Reply</button></div>
-                    @elseif (!empty($senderCheck))         
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" data-toggle="modal" data-target="#replyModal">Reply</button></div>                  
-                    @else
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled >Reply</button></div>                            
-                    @endif
-
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled >Withdraw</button></div>        
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
-                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" disabled>Approve</button></div>   
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" disabled>Approve</button></div>  
+
+                    @elseif (!empty($senderCheck))         
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled>Reply</button></div> 
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled >Withdraw</button></div>        
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" data-toggle="modal" data-target="#approvedModalModedCLA">Approve</button></div>   
+
+                    @else
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled >Reply</button></div> 
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled >Withdraw</button></div>        
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" disabled>Approve</button></div>  
+                    @endif
+
+                     
             </div> 
         </div> 
 
@@ -1167,6 +1206,45 @@
             <div class="modal-content">
                 <div class="modal-header bg-dark" >
                 <h5 class="modal-title" id="replyModalLabel">Reply Request</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+        <form action="{{ route('cla.reply.pc.apprvr') }}" method="POST">
+            @csrf
+                <div class="modal-body">
+                    <div class="p-3 mb-2 bg-danger text-white d-none" id="myError"></div>
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">                     
+                                <label for="replyRemarks">Remarks</label>
+                                <div class="card-body">
+                                    <div class="form-floating">
+                                        <input type="hidden" value="{{ $post->id }}" name="pcID">
+                                        <textarea class="form-control" placeholder="Leave a comment here" name="replyRemarks" id="replyRemarksRecipientApprover" style="height: 100px"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Proceed" id="replyRecipientApprover">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+        </form>
+            </div>
+            </div>
+        </div>
+        {{-- End reply Modal --}}
+
+          <!-- Modal approve-->
+          <div class="modal fade"  id="approvedModalModedCLA" tabindex="-1" role="dialog" aria-labelledby="approvedModalModedCLA" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-dark" >
+                <h5 class="modal-title" id="approvedModalModedCLALabel">Reply Request</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -1196,7 +1274,25 @@
             </div>
             </div>
         </div>
-        {{-- End reply Modal --}}
+        {{-- End approve Modal --}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         <div class="col-md-12">
@@ -1276,10 +1372,15 @@
                                 </div>         
                             </div>
 
+                            @php
+                            $foo = $post->REQUESTED_AMT;
+                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                            @endphp
+
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="amount">Amount</label>
-                                    <input id="amount" name="amount" type="text" class="form-control" value="{{ $post->REQUESTED_AMT }}"  readonly >
+                                    <input id="amount" name="amount" type="text" class="form-control text-right" value="{{ $myAMount }}"  readonly >
                                 </div>
                             </div>
                         </div>
@@ -1297,7 +1398,7 @@
                         {{-- Expense Details --}}
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="card card-default">
+                                <div class="card card-gray">
                                     <div class="card-header" style="padding: 5px 20px 5px 20px; ">
                                         <div class="row">
                                             <div class="col" style="font-size:18px; padding-top:5px;">Expense Details</div>                                          
@@ -1322,7 +1423,12 @@
                                                         <td>{{ $xdData->date_ }}</td>
                                                         <td>{{ $xdData->EXPENSE_TYPE }}</td>
                                                         <td>{{ $xdData->DESCRIPTION }}</td>
-                                                        <td>{{ $xdData->AMOUNT }}</td>
+                                                     
+@php
+$foo = $xdData->AMOUNT;
+$myAMount = number_format((float)$foo, 2, '.', ''); 
+@endphp
+                                                        <td>{{ $myAMount }}</td>
                                                         <td><button type="button"  class="btn btn-danger " disabled>Delete</button></td>
                                                     </tr>
                                                 @empty
@@ -1339,6 +1445,14 @@
                                     {{-- <span >Total Amount:</span> --}}
                                     </div>
                                     </div>
+                                    @php
+                                    $foo = $subtotalExpenseDetails[0]->total ;
+                                    $myAMount = number_format((float)$foo, 2, '.', ''); 
+                                    @endphp
+                
+                                    <div class="container">
+                                    <h6  class="text-right">Subtotal Amount: <span id ="xdTotalAmount">{{ $myAMount }}</span></h6>
+                                    </div>
                                     </div>
                                 </div>
                             </div>                                    
@@ -1348,7 +1462,7 @@
                         {{-- Transportation Details --}}
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="card card-default">
+                                <div class="card card-gray">
                                     <div class="card-header" style="padding: 5px 20px 5px 20px; ">
 
                                         <div class="row">
@@ -1379,7 +1493,12 @@
                                                         <td>{{ $tdData->DESTINATION_TO }}</td>
                                                         <td>{{ $tdData->MOT }}</td>
                                                         <td>{{ $tdData->DESCRIPTION }}</td>
-                                                        <td>{{ $tdData->AMT_SPENT }}</td>
+
+@php
+$foo = $tdData->AMT_SPENT;
+$myAMount = number_format((float)$foo, 2, '.', ''); 
+@endphp
+                                                        <td>{{ $myAMount }}</td>
                                                         <td><button type="button"  class="btn btn-danger " disabled>Delete</button></td>
                                                     </tr>
                                                 @empty
@@ -1395,63 +1514,59 @@
                                         {{-- <span >Total Amount:</span> --}}
                                         </div>
                                         </div>
+                            @php
+                            $foo = $subtotalTranspoDetails[0]->total ;
+                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                            @endphp
+                            <div class="container">
+                            <h6  class="text-right">Subtotal Amount: <span id ="tdTotalAmount">{{ $myAMount }}</span></h6>
+                            </div>
                                     </div>
                                 </div>
                             </div>                                    
                         </div>
                         {{-- Transportation details --}}
 
-
-                        {{-- Attachments of no edit --}}
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card card-gray">
-                                    <div class="card-header" style="height:50px;">
-                                        <div class="row ">
-                                            <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="card-body" >
-                                        <div class="row">       
-                                            @forelse ($attachmentsDetails as $file)
-                                            <div class="col-sm-2" >
-
-                                                <div class="dropdown show" >
-                                                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                                    </div>
-                                                </div>
-                                                <div class="card">
-
-                                                    <?php
-                                                        if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                            <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                                        <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                            # code...
-                                                        } 
-                                                    ?>
-                                
-                                                    <div class="card-body" style="padding: 5px; ">
-                                                    <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>  
-                                            @empty
-                                            <span style="margin-left: 12px;">no attachments</span>
-                                            @endforelse
-                                        </div>   
-                                    </div>
-                                    </div>
-                            </div>
-                        </div>
-                        {{-- End Attachments --}}
+        {{-- Attachments --}}
+        @if (!empty($attachmentsDetails))
+        <div class="row">
+        <div class="col-md-12">
+            <div class="card card-gray">
+                <div class="card-header" style="padding: 5px 20px 5px 20px; ">
+                <div class="row">
+                    <div class="col" style="font-size:18px; padding-top:5px;">Attachments</div>                                          
+                </div>
+                </div>
+                <div class="card-body" >
+                    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                        <table id= "attachmentsTable"class="table table-hover" >
+                            <thead >
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Temporary Path</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody >
+                                @foreach ($attachmentsDetails as $file )
+                                <tr>
+                                    <td>{{ $file->filename }}</td>
+                                    <td>{{ $file->fileExtension }}</td>
+                                    <td>{{ $file->filepath }}</td>
+                                    <td><a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a></td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        @endif
+        {{-- End Attachments --}}
+           
 
         @endif
 
@@ -1474,7 +1589,7 @@
 </script>
 
 {{-- Attachments --}}
-<script>
+{{-- <script>
     var main = [];
         $(document).ready(function() {
           $('input[type="file"]').on("change", function() {
@@ -1504,10 +1619,82 @@
         $("#attachmentsTable").on('click', '.btnDelete', function () {
         $(this).closest('tr').remove();
     });
+</script> --}}
+
+<script>
+    $('#replyEditableForm').on('click', function(){
+        if ($.trim($("#replyRemarks").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Reply remarks is required.');
+        return false;
+        }
+    })
 </script>
 
-{{-- Remove Attachment in Gallery --}}
 <script>
+    $('#replybyMgr').on('click', function(){
+        if ($.trim($("#replyRemarksreplyEditableForm").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Reply remarks is required.');
+        return false;
+        }
+    })
+</script>
+
+<script>
+    $('#replyInitEditAttached').on('click', function(){
+        if ($.trim($("#replyRemarksrequired").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Reply remarks is required.');
+        return false;
+        }
+    })
+</script>
+
+<script>
+    $('#replyRecipientApprover').on('click', function(){
+        if ($.trim($("#replyRemarksRecipientApprover").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Reply remarks is required.');
+        return false;
+        }
+    })
+</script>
+
+
+
+<script>
+    var main = [];
+        $(document).ready(function() {
+          $('input[type="file"]').on("change", function() {
+            let files = this.files;
+            console.log(files);
+            console.dir(this.files[0]);
+            $('#attachmentsTable tbody .keytodeleteattachedfile').remove();
+                for(var i = 0; i<files.length; i++){
+                var tmppath = URL.createObjectURL(files[i]);
+                    var semi = [];
+                    semi.push(files[i]['name'],files[i]['type'],files[i]['size'],tmppath);
+                    main.push(semi);
+                    console.log(main);
+                                $("#attachmentsTable tbody:last-child").append('<tr class="keytodeleteattachedfile">'+
+                                                '<td>'+files[i]['name']+'</td>'+
+                                                '<td>'+files[i]['type']+'</td>'+
+                                                '<td>'+tmppath+'</td>'+
+                                                "<td><a href='"+tmppath+"' target='_blank' class='btn btn-secondary'>View</a></td>"+
+                                                '</tr>'
+                                );
+                }
+          });
+        });
+        $("#attachmentsTable").on('click', '.btnDelete', function () {
+        $(this).closest('tr').remove();
+    });
+</script>
+
+
+{{-- Remove Attachment in Gallery --}}
+{{-- <script>
     objectAttached = [];
         function removedAttached(elem){
             var attachedArray = [];
@@ -1528,7 +1715,152 @@
             document.getElementById("deleteAttached").value = attachedJson;
 
         }
+</script> --}}
+
+<script>
+    objectAttached = [];
+        function removedAttach(elem){
+            var attachedArray = [];
+            var x =  $(elem).parent("td").parent("tr").fadeOut(300);
+            var idAttached = $(elem).children("input").val();
+            var pathAttached = $(elem).children("input").next().val();
+            var fileNameAttached = $(elem).children("input").next().next().val();
+
+            attachedArray.push(idAttached,pathAttached,fileNameAttached);
+    
+            objectAttached.push(attachedArray);
+            console.log(attachedArray);
+            console.log(objectAttached);
+
+            var attachedJson = JSON.stringify(objectAttached);
+            document.getElementById("deleteAttached").value = attachedJson;
+            var sa = document.getElementById("deleteAttached");
+            console.log(sa);
+        }
 </script>
+
+
+{{-- Expense Details --}}
+<script>
+    function getExpenseData(){
+        var dateXD = $('#dateXD').val();
+        var typeXD = $('#typeXD').val(); 
+        var amountXD = $('#amountXD').val(); 
+        var remarksXD = $('#remarksXD').val(); 
+
+    
+    
+        var amountXDChecker = false;
+        var remarksXDChecker = false;
+    
+    
+        if(amountXD){
+            amountXDChecker = true;
+            $('#amountErrXD').text('');
+    
+        }else{
+            $('#amountErrXD').text('Amount is required!');
+            $('#xpsuccessdiv').addClass('d-none');
+    
+        }
+    
+        if(remarksXD){
+            remarksXDChecker = true;
+            $('#remarksErrXD').text('');
+        }else{
+            $('#remarksErrXD').text('Remarks is required!');
+            $('#xpsuccessdiv').addClass('d-none');
+        }
+    
+        if(amountXDChecker && remarksXDChecker){
+    
+            $('#xdTable tbody').append('<tr>'+
+                                                '<td>'+dateXD+'</td>'+
+                                                '<td>'+typeXD+'</td>'+
+                                                '<td>'+remarksXD+'</td>'+
+                                                '<td>'+amountXD+'</td>'+
+                                                '<td>'+
+                                                    '<a class="btn btn-danger removeXDRow" onClick ="deleteXDRow()" >Delete</a>'+
+                                                '</td>'+
+                                            '</tr>'
+            );
+            xdUpdateData()
+        
+            $('#xpsuccessdiv').removeClass('d-none')
+            $('#amountXD').val(''); 
+            $('#remarksXD').val(''); 
+           
+      
+        }
+    
+    }
+    
+    
+    function deleteXDRow(){
+        $('#xdTable').on('click','tr a.removeXDRow',function(e){
+        e.preventDefault();
+        $(this).closest('tr').remove();
+        xdUpdateData()
+        });
+    
+    }
+    
+    
+    function xdUpdateData(){
+    
+    var objectXD = [];
+    var myAmtXD = 0 ;
+    
+    $("#xdTable > #xdTbody > tr").each(function () {
+            var dateXD = $(this).find('td').eq(0).text();
+            var typeXD = $(this).find('td').eq(1).text();
+            var remarksXD = $(this).find('td').eq(2).text();
+            var amountXD = $(this).find('td').eq(3).text();
+      
+         
+            var listXD = [];
+            listXD.push(dateXD,typeXD,remarksXD,amountXD);
+            objectXD.push(listXD);
+
+            
+        });
+
+
+    
+        // if(objectXD.length){
+        //     var xdJsonData = JSON.stringify(objectXD);
+        //     $( "#xdData" ).val(xdJsonData);
+        //     alert('true')
+        //     } else {
+        //     $( "#xdData" ).val("");
+        //     alert('false')
+        // }
+
+        var xdJsonData = JSON.stringify(objectXD);
+        $( "#xdData" ).val(xdJsonData);
+
+
+    
+        for(var i = 0; i<objectXD.length; i++){
+                    var numAmt = objectXD[i]['3'];
+                    myAmtXD += parseFloat(numAmt);
+            
+        }
+    
+        $('#xdTotalAmount').text(myAmtXD);
+        console.log(objectXD);
+        console.log(objectXD.length);
+       
+
+        // getTotalAmount();
+        console.log($( "#xdData" ).val());
+        
+    }
+    
+    </script>
+
+{{-- ExpenseDetails --}}
+
 
 {{-- Transportation Details --}}
 <script>
@@ -1549,20 +1881,14 @@
         var remarksTDChecker = false;
     
     
-        if(dateTD){
-            dateTDChecker = true;
-            $('#dateErrTD').text('');
-        }else{
-            $('#dateErrTD').text('Date is required!');
-        }
-    
-    
         if(amountTD){
             amountTDChecker = true;
             $('#amountErrTD').text('');
     
         }else{
             $('#amountErrTD').text('Amount is required!');
+            $('#tdsuccessdiv').addClass('d-none');
+    
         }
     
     
@@ -1571,6 +1897,8 @@
             $('#fromErrTD').text('');
         }else{
             $('#fromErrTD').text('Destination from is required!');
+            $('#tdsuccessdiv').addClass('d-none');
+    
         }
     
         if(toTD){
@@ -1578,6 +1906,8 @@
             $('#toErrTD').text('');
         }else{
             $('#toErrTD').text('Destination to is required!');
+            $('#tdsuccessdiv').addClass('d-none');
+    
         }
     
         if(remarksTD){
@@ -1585,9 +1915,11 @@
             $('#remarksErrTD').text('');
         }else{
             $('#remarksErrTD').text('Remarks is required!');
+            $('#tdsuccessdiv').addClass('d-none');
+    
         }
     
-        if(dateTDChecker && amountTDChecker && fromTDChecker && toTDChecker && remarksTDChecker){
+        if(amountTDChecker && fromTDChecker && toTDChecker && remarksTDChecker){
     
     
             $('#tdTable tbody').append('<tr>'+
@@ -1603,11 +1935,13 @@
                                             '</tr>'
             );
             tdUpdateData()
-            $('#dateErrTD').text('');
-            $('#amountErrTD').text('');
-            $('#fromErrTD').text('');
-            $('#toErrTD').text('');
-            $('#remarksErrTD').text('');
+        
+            $('#tdsuccessdiv').removeClass('d-none')
+            $('#amountTD').val(''); 
+            $('#fromTD').val(''); 
+            $('#toTD').val(''); 
+            $('#remarksTD').val('');
+        
         }
     
     }
@@ -1626,7 +1960,7 @@
     function tdUpdateData(){
     
     var objectTD = [];
-    var myAmt = 0 ;
+    var myAmtTD = 0 ;
     
     $("#tdTable > #tdTbody > tr").each(function () {
             var dateTD = $(this).find('td').eq(0).text();
@@ -1635,124 +1969,30 @@
             var typeTD = $(this).find('td').eq(3).text();
             var remarksTD = $(this).find('td').eq(4).text();
             var amountTD = $(this).find('td').eq(5).text();
-         
+            
             var listTD = [];
             listTD.push(dateTD,fromTD,toTD,typeTD,remarksTD,amountTD);
             objectTD.push(listTD);
-
-        
-            var tdJsonData = JSON.stringify(objectTD);
-            $( "#tdData" ).val(tdJsonData);
-
+    
 
         });
+    
+        var tdJsonData = JSON.stringify(objectTD);
+        $( "#tdData" ).val(tdJsonData);
 
-        console.log(objectTD);
-
-    }
-</script>
-
-{{-- Expense Details --}}
-<script>
-    function getExpenseData(){
-        var dateXD = $('#dateXD').val();
-        var typeXD = $('#typeXD').val(); 
-        var amountXD = $('#amountXD').val(); 
-        var remarksXD = $('#remarksXD').val(); 
-        // console.log(dateXD,typeXD,amountXD,remarksXD);
-    
-        var dateXDChecker = false;
-        // var typeXDChecker = false;
-        var amountXDChecker = false;
-        var remarksXDChecker = false;
-    
-    
-    if(dateXD){
-        dateXDChecker = true;
-        $('#dateErrXD').text('');
-    
-    }else{
-        $('#dateErrXD').text('Date is required!');
-        
-    }
-    
-    if(amountXD){
-        amountXDChecker = true;
-        $('#amountErrXD').text('');
-    
-    }else{
-        $('#amountErrXD').text('Amount is required!');
-    }
-    
-    if(remarksXD){
-        remarksXDChecker = true;
-        $('#remarksErrXD').text('');
-    
-    }else{
-        $('#remarksErrXD').text('Remarks is required!');
-    }
-    
-    
-    if(dateXDChecker && amountXDChecker && remarksXDChecker ){
-    
-        $('#xdTable tbody').append('<tr>'+
-                                            '<td>'+dateXD+'</td>'+
-                                            '<td>'+typeXD+'</td>'+
-                                            '<td>'+remarksXD+'</td>'+
-                                            '<td>'+amountXD+'</td>'+
-                                            '<td>'+
-                                                '<a class="btn btn-danger removeXDRow" onClick ="deleteXDRow()" >Delete</a>'+
-                                            '</td>'+
-                                        '</tr>'
-            );
-            xdUpdateData()
-            $('#dateErrXD').text('');
-            $('#amountErrXD').text('');
-            $('#remarksErrXD').text('');
-    
+        for(var i = 0; i<objectTD.length; i++){
+                    var numAmt = objectTD[i]['5'];
+                    myAmtTD += parseFloat(numAmt);
+            
         }
-    }
     
-    
-    
-    function deleteXDRow(){
-        $('#xdTable').on('click','tr a.removeXDRow',function(e){
-        e.preventDefault();
-        $(this).closest('tr').remove();
-        xdUpdateData()
-        });
-
-     
-    }
-    
-    
-    function xdUpdateData(){
-    
-        var objectXD = [];
-        var myAmt = 0 ;
-    
-      
+        $('#tdTotalAmount').text(myAmtTD);
+        console.log(objectTD);
         
-
-        $("#xdTable > #xdTbody > tr").each(function () {
-                var dateXD = $(this).find('td').eq(0).text();
-                var typeXD = $(this).find('td').eq(1).text();
-                var remarksXD = $(this).find('td').eq(2).text();
-                var amountXD = $(this).find('td').eq(3).text();
-             
-                var listXD = [];
-                listXD.push(dateXD,typeXD,remarksXD,amountXD);
-                objectXD.push(listXD);
     
-                var xdJsonData = JSON.stringify(objectXD);
-                $( "#xdData" ).val(xdJsonData);
-
-            });
-
-            console.log(objectXD);
-
     }
-</script>
+    
+    </script>
     
 @endsection
 {{-- Dropzone start --}}

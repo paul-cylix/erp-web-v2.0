@@ -431,7 +431,16 @@ Route::group(['middleware'=>['AuthCheck']], function(){
         Route::get('/create-ar-delivery', [SupplyChainRequestController::class, 'createARDelivery']);
         Route::get('/create-ar-demo', [SupplyChainRequestController::class, 'createARDemo']);
         Route::get('/create-ar-poc', [SupplyChainRequestController::class, 'createARPOC']);
-        Route::get('/create-ar-pending', [SupplyChainRequestController::class, 'createARPending']);
+
+        Route::get('/create-ar-internal', [SupplyChainRequestController::class, 'createARInternal']);
+        Route::get('/create-ar-internal-ajax', [SupplyChainRequestController::class, 'createARInternalAjax']);
+        Route::get('/create-ar-internal-details', [SupplyChainRequestController::class, 'createARInternaldetails']);
+
+        Route::get('/ar-internal-listitem-details/{id}',[SupplyChainRequestController::class,'getListitemDetails']);
+
+        Route::get('/mr-cart', [SupplyChainRequestController::class, 'mrCart']);
+        
+
 
         // Supplies Request Controller
         Route::get('/create-sr-project', [SupplyChainRequestController::class, 'createSRProject']);

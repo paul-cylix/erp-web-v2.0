@@ -541,7 +541,7 @@ class WorkflowController extends Controller
                 $payeeDetails = $queryPayeeName[0];
                 $expenseType = DB::select("SELECT type FROM accounting.`expense_type_setup`");
                 $currencyType = DB::select("SELECT CurrencyName FROM accounting.`currencysetup`");
-                $liqTableCondition = DB::select("SELECT COUNT(*) AS myNumLiq FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`TYPE` = 'Request for Payment' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`USER_GRP_IND` = 'Initiator' AND a.`STATUS` = 'In Progress'");
+                $liqTableCondition = DB::select("SELECT COUNT(*) AS myNumLiq FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`TYPE` = 'Request for Payment' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`ORDERS` = '3' AND a.`STATUS` = 'In Progress'");
                 $liqTableCondition = $liqTableCondition[0]->myNumLiq;
 
 
@@ -603,19 +603,21 @@ class WorkflowController extends Controller
                 $post = DB::table('accounting.reimbursement_request')->where('ID',$id)->first();
                 $expenseDetails = DB::select("SELECT * FROM accounting.`reimbursement_expense_details` a WHERE a.`REID` = $id");
                 $transpoDetails = DB::select("SELECT * FROM accounting.`reimbursement_request_details` a WHERE a.`REID` = $id");
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`reimbursement_expense_details` a WHERE a.`REID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`reimbursement_request_details` a WHERE a.`REID` = $id;");
                 $queinitName = DB::select("SELECT a.`UID`,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.`UID`) AS 'NAME' FROM accounting.`reimbursement_request` a WHERE a.`ID` = $id");
                 $initName  = $queinitName[0]->NAME;     
                 $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Reimbursement Request' AND a.`REQID` =$id");
                 $initCheck = DB::select("SELECT IFNULL ((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`ORDERS` = 5 AND a.`STATUS` = 'In Progress'), FALSE) AS initQue;");
 
-
+                
                 $getRecipientName = DB::select("SELECT a.uid,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.uid) AS 'Name'
                 FROM (SELECT initid AS 'uid' FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = 'Reimbursement Request' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND initid <> '".session('LoggedUser')."'
                 UNION ALL SELECT UID_SIGN AS 'uid'  FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = 'Reimbursement Request' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND `status` = 'Completed' AND uid_sign <> '".session('LoggedUser')."') a GROUP BY uid;");
 
                 $qeInProgressID = DB::select("SELECT IFNULL((SELECT ID AS inpId FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In progress'), FALSE) AS inpId;");
 
-                return view('MyWorkflow.approval-byid.app-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','initCheck','getRecipientName','qeInProgressID'));
+                return view('MyWorkflow.approval-byid.app-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','initCheck','getRecipientName','qeInProgressID','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
 
@@ -639,13 +641,16 @@ class WorkflowController extends Controller
                 $expenseDetails = DB::select("SELECT * FROM accounting.`petty_cash_expense_details` a WHERE a.`PCID` = $id");
                 $transpoDetails = DB::select("SELECT * FROM accounting.`petty_cash_request_details` a WHERE a.`PCID` = $id");
 
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`petty_cash_expense_details` a WHERE a.`PCID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`petty_cash_request_details` a WHERE a.`PCID` = $id;");
+
                 $getRecipientName = DB::select("SELECT a.uid,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.uid) AS 'Name'
                 FROM (SELECT initid AS 'uid' FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = 'Petty Cash Request' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND initid <> '".session('LoggedUser')."'
                 UNION ALL SELECT UID_SIGN AS 'uid'  FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = 'Petty Cash Request' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND `status` = 'Completed' AND uid_sign <> '".session('LoggedUser')."') a GROUP BY uid;");
 
                 $getInProgressID = DB::select("SELECT IFNULL((SELECT ID AS inpId FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`FRM_CLASS` = 'PETTYCASHREQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In progress'), FALSE) AS inpId;");
                 
-                return view('MyWorkflow.approval-byid.app-pc', compact('post','initName','attachmentsDetails','initCheck','acctngCheck','expenseType','transpoSetup','acknowledgementCheck','expenseDetails','transpoDetails','getRecipientName','getInProgressID'));
+                return view('MyWorkflow.approval-byid.app-pc', compact('post','initName','attachmentsDetails','initCheck','acctngCheck','expenseType','transpoSetup','acknowledgementCheck','expenseDetails','transpoDetails','getRecipientName','getInProgressID','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
             if($class === 'SALES_ORDER_FRM'){
@@ -1261,7 +1266,7 @@ class WorkflowController extends Controller
                     return back()->with('form_submitted', 'The request has been approved.');
                                  
                 }elseif(!empty($request->acknowledgementCheck)){
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' 
+                    DB::update("UPDATE general.`actual_sign` SET `DoneApproving` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' 
                     WHERE `status` = 'In Progress' AND PROCESSID = '".$request->pcID."' AND `FRM_CLASS` = 'PETTYCASHREQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                     DB::update("UPDATE accounting.`petty_cash_request` a SET a.`STATUS` = 'Completed' WHERE a.`id` = '".$request->pcID."' ");
                     return back()->with('form_submitted', 'The request has been approved.');
@@ -1317,12 +1322,23 @@ class WorkflowController extends Controller
 
             public function approvedPCAppInit(Request $request){
 
+
+
+                // $request->validate([
+                //     'file'=>'required'
+                // ]);
+
+
+
+
                 $mainID =DB::select("SELECT IFNULL(( SELECT a.`Main_office_id` FROM general.`setup_project` a WHERE a.`project_id` = '".$request->projectID."' LIMIT 1 ), FALSE) AS mainID;");
                 
 
-                if (!empty($request->xdData) == true || !empty($request->tdData) == true) {
+                // if (!empty($request->xdData) == true || !empty($request->tdData) == true) {
 
-                    if(!empty($request->xdData) == true){
+                    if (strlen($request->xdData) > 3 || strlen($request->tdData) > 3) {
+
+                    if(strlen($request->xdData) > 3){
                       
                         $expenseDetails = $request->xdData;
                         $expenseDetails =json_decode($expenseDetails,true);
@@ -1357,9 +1373,10 @@ class WorkflowController extends Controller
 
 
                 }
-
-                if(!empty($request->tdData) == true){
-
+                
+                if(strlen($request->tdData) > 3){
+                // if(!empty($request->tdData) == true){
+                    
                         DB::table('accounting.reimbursement_request_details')->where('REID', $request->reID)->delete();
 
                         $transpoDetails = $request->tdData;
@@ -1419,6 +1436,7 @@ class WorkflowController extends Controller
                 }
 
                 if($request->hasFile('file')){
+                    DB::table('repository.petty_cash')->where('REFID', $request->pcID)->delete();
                     foreach($request->file as $file) {
                         $completeFileName = $file->getClientOriginalName();
                         $fileNameOnly = pathinfo($completeFileName, PATHINFO_FILENAME);
@@ -1467,7 +1485,7 @@ class WorkflowController extends Controller
 
                     return back()->with('form_submitted', 'Your request is now In Progress.'); 
                 } else {
-                    return back()->with('form_error', 'Request Failed, Please provide records!');
+                    return back()->with('form_error', 'Failed, Please complete required fields');
                 }
 
 
@@ -1485,16 +1503,30 @@ class WorkflowController extends Controller
             //Approve Reimbursement in Approvals by Reporting Manager 
             public function approvedREApp(Request $request){
 
+
+                // dd('shit');
                 // For Initiator Only // Approve and Completed Main RE
                 if (!empty(intval($request->apprCheckinit))){
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                    DB::update("UPDATE general.`actual_sign` SET `DoneApproving` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                     DB::update("UPDATE accounting.`reimbursement_request` a SET a.`STATUS` = 'Completed'  WHERE a.`ID` = '".$request->reID."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");      
                     return back()->with('form_submitted', 'The request has been approved.');
+
+                  
                     
                 }else{
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                    
+                    DB::update("UPDATE general.`actual_sign` SET 
+                    `status` = 'Completed',
+                    `UID_SIGN` = '".session('LoggedUser')."',
+                    `SIGNDATETIME` = NOW(),
+                    `ApprovedRemarks` = '" .$request->approvedRemarks. "'
+                    WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' 
+                    AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND
+                     `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                     DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
                     return back()->with('form_submitted', 'The request has been approved.');
+                  
+
                 }
             }
 
@@ -1543,7 +1575,7 @@ class WorkflowController extends Controller
 
                 // Acknowledgement of Accounting - Approval
                 if($testerCount == True){
-                    $acknowledgementAcc = DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'Completed', a.`UID_SIGN` = '".session('LoggedUser')."', a.`TS` = NOW(), a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->approvedRemarks."' WHERE a.`REFERENCE` = '".$request->refNumberApp."' AND a.`STATUS` = 'In Progress' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND  a.`ORDERS` = '4' AND a.`PROCESSID` = '".$request->idName."';");
+                    $acknowledgementAcc = DB::update("UPDATE general.`actual_sign` a SET a.`DoneApproving` ='1',a.`STATUS` = 'Completed', a.`UID_SIGN` = '".session('LoggedUser')."', a.`TS` = NOW(), a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->approvedRemarks."' WHERE a.`REFERENCE` = '".$request->refNumberApp."' AND a.`STATUS` = 'In Progress' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND  a.`ORDERS` = '4' AND a.`PROCESSID` = '".$request->idName."';");
                     $isReleasedRfp = DB::update("UPDATE accounting.`request_for_payment` a SET a.`ISRELEASED` = '1' AND a.`STATUS` = 'Completed'  WHERE a.`ID` = '".$request->idName."' AND a.`REQREF` = '".$request->refNumberApp."';");
                     return back()->with('form_submitted', 'The request has been approved.');
                 
@@ -1557,12 +1589,15 @@ class WorkflowController extends Controller
 
             
             public function saveFilesAndTable(Request $request){
+                
 
                 $request->validate([
 
-                    'liquidationTable'=>'required',
-                    'file'=>'required',
+                    'liquidationTable'=>'min:3',
+                    // 'file'=>'required',
 
+                ],[
+                    'liquidationTable.min'=>'The Liquidation Table field is required.'
                 ]);
 
 
@@ -1574,12 +1609,13 @@ class WorkflowController extends Controller
 
 
                 $liquidationDataTable = $request->liquidationTable;
-                $liquidationDataTable =json_decode($liquidationDataTable,true);
+                $liquidationDataTable = json_decode($liquidationDataTable,true);
                 $liquidationDataCount = count($liquidationDataTable);
+                // return($liquidationDataTable);
                     
           
 
-                        $liqdata = [];
+                        // $liqdata = [];
                         for($i = 0; $i <count($liquidationDataTable); $i++) {
                             $liqdata[] = [
 
@@ -1607,6 +1643,7 @@ class WorkflowController extends Controller
                         DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
                    
                         if($request->hasFile('file')){
+                           DB::table('repository.rfp')->where('REFID', $request->idName)->delete();
 
                             foreach($request->file as $file) {
             
@@ -1824,8 +1861,9 @@ class WorkflowController extends Controller
                 $queryPayeeName = DB::select("SELECT Payee,FRM_NAME FROM general.`actual_sign` AS a WHERE a.`PROCESSID` = $id AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_CLASS` = 'requestforpayment'ORDER BY a.`Payee` LIMIT 1");
                 // $queryPayeeName = DB::select("SELECT Payee,FRM_NAME FROM general.`actual_sign` AS a WHERE a.`PROCESSID` = $id ORDER BY a.`Payee` DESC");
                 $payeeDetails = $queryPayeeName[0];
+                
                 $filesAttached = DB::select("SELECT * FROM general.`attachments` a WHERE a.`REQID` = $id");
-                return view('MyWorkflow.in-progress-byid.inp-post', compact('post','postDetails','payeeDetails','initName','qeLiquidationTable','filesAttached'));
+                return view('MyWorkflow.in-progress-byid.inp-post', compact('post','postDetails','payeeDetails','initName','qeLiquidationTable','filesAttached','qeSubTotal'));
             }
 
             if($class === 'REIMBURSEMENT_REQUEST'){
@@ -1837,11 +1875,15 @@ class WorkflowController extends Controller
                 // Initiator Name
                 $queinitName = DB::select("SELECT a.`UID`,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.`UID`) AS 'NAME' FROM accounting.`reimbursement_request` a WHERE a.`ID` = $id");
                 $initName  = $queinitName[0]->NAME;     
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`reimbursement_expense_details` a WHERE a.`REID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`reimbursement_request_details` a WHERE a.`REID` = $id;");
+
+
 
                 // Attachments
                 $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Reimbursement Request' AND a.`REQID` =$id");
                 
-                return view('MyWorkflow.in-progress-byid.inp-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails'));
+                return view('MyWorkflow.in-progress-byid.inp-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','subtotalExpenseDetails','subtotalTranspoDetails'));
                 
             }
 
@@ -1857,8 +1899,13 @@ class WorkflowController extends Controller
 
                 // Attachments
                 $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Petty Cash Request' AND a.`REQID` =$id");
+
+
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`petty_cash_expense_details` a WHERE a.`PCID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`petty_cash_request_details` a WHERE a.`PCID` = $id;");
+
                 
-                return view('MyWorkflow.in-progress-byid.inp-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails'));
+                return view('MyWorkflow.in-progress-byid.inp-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
 
@@ -2066,6 +2113,9 @@ class WorkflowController extends Controller
             // $queryPayeeName = DB::select("SELECT Payee,FRM_NAME FROM general.`actual_sign` AS a WHERE a.`PROCESSID` = $id ORDER BY a.`Payee` DESC");
             $payeeDetails = $queryPayeeName[0];
 
+            $qeSubTotal = DB::select("SELECT SUM(Amount) subTotalAmount FROM accounting.`rfp_liquidation` a WHERE a.`RFPID` = $id");
+     
+
             // check clarification of initiator / Approver
             $initCheck = DB::select("SELECT IFNULL ((SELECT COUNT(*) FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id 
             AND a.`frm_class` = 'requestforpayment' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification' AND a.`INITID` = '" .session('LoggedUser'). "'), FALSE) AS clarifyInitCheck;");           
@@ -2090,8 +2140,10 @@ class WorkflowController extends Controller
             $recipient = $queRecipient[0]->recipient;
             // Query Liquidation Table if edit
             $queLiquidatedT = DB::select("SELECT * FROM accounting.`rfp_liquidation` a WHERE a.`RFPID` = $id");
+   
+
             $filesAttached = DB::select("SELECT * FROM general.`attachments` a WHERE a.`REQID` = $id");
-            return view('MyWorkflow.clarification-byid.cla-post', compact('post','postDetails','payeeDetails','initCheck','initName','editableChecker','mgrs','mgrsId','projects','currencyType','recipient','queLiquidatedT','expenseType','filesAttached'));
+            return view('MyWorkflow.clarification-byid.cla-post', compact('post','qeSubTotal','postDetails','payeeDetails','initCheck','initName','editableChecker','mgrs','mgrsId','projects','currencyType','recipient','queLiquidatedT','expenseType','filesAttached'));
          
             }
 
@@ -2122,7 +2174,10 @@ class WorkflowController extends Controller
                 $recipientCheck = DB::select("SELECT IFNULL((SELECT a.`CurrentReceiver` FROM general.`actual_sign` a WHERE a.`FRM_CLASS` = 'reimbursement_request' AND a.`PROCESSID` = $id AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification' AND a.`CurrentReceiver` = '".session('LoggedUser')."' ), FALSE) AS recipientCheck;");
                 $recipientCheck = $recipientCheck[0]->recipientCheck;
 
-                return view('MyWorkflow.clarification-byid.cla-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','mgrs','mgrsId','projects','expenseType','transpoSetup','replyEditChecker','initChecker','recipientCheck'));
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`reimbursement_expense_details` a WHERE a.`REID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`reimbursement_request_details` a WHERE a.`REID` = $id;");
+
+                return view('MyWorkflow.clarification-byid.cla-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','mgrs','mgrsId','projects','expenseType','transpoSetup','replyEditChecker','initChecker','recipientCheck','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
         
@@ -2161,7 +2216,10 @@ class WorkflowController extends Controller
 
                 $transpoSetup = DB::select("SELECT MODE FROM accounting.`transpo_setup`");
 
-                return view('MyWorkflow.clarification-byid.cla-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails','tableCheck','mgrsId','mgrs','projects','initRecipientCheck','recipientCheck','senderCheck','expenseType','transpoSetup'));
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`petty_cash_expense_details` a WHERE a.`PCID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`petty_cash_request_details` a WHERE a.`PCID` = $id;");
+
+                return view('MyWorkflow.clarification-byid.cla-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails','tableCheck','mgrsId','mgrs','projects','initRecipientCheck','recipientCheck','senderCheck','expenseType','transpoSetup','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
 
@@ -2275,6 +2333,13 @@ class WorkflowController extends Controller
             // Reply Button in Clarification - Initiator - Not Editable
             public function clarifyReplyBtnNoEdit(Request $request){
 
+                $request->validate([
+
+                    // 'liquidationTable'=>'min:3',
+                    'file'=>'required'
+
+                ]);
+
                 $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->idName."' AND a.`FRM_NAME` = 'Request for Payment' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC");
                 $notifCount = count($notif);
 
@@ -2298,6 +2363,7 @@ class WorkflowController extends Controller
                     'ACTUALID' => $nActualId,
                     'SENDTOACTUALID' =>'0',
                     'UserFullName' =>session('LoggedUser_FullName'),
+                    
 
                    ]);
 
@@ -2352,7 +2418,7 @@ class WorkflowController extends Controller
                 $toDeleteFile =json_decode($toDeleteFile,true);
                 
         
-                if(count($toDeleteFile) != null) {
+                if(!empty($toDeleteFile)) {
                 for($i = 0; $i <count($toDeleteFile); $i++) {
                 $idAttachment = $toDeleteFile[$i]['0'];
                 $pathAttachment = $toDeleteFile[$i]['1'];
@@ -2367,6 +2433,8 @@ class WorkflowController extends Controller
 
                 // Upload
                 if($request->hasFile('file')){
+                DB::table('repository.rfp')->where('REFID', $request->idName)->delete();
+
 
                     foreach($request->file as $file) {
 
@@ -2416,12 +2484,6 @@ class WorkflowController extends Controller
             
             
 
-
-
-
-
-
-
                 return back()->with('form_submitted', 'Your request is now In Progress.');
                 } else {
                 return back()->with('form_submitteds', 'Reply Error');
@@ -2436,6 +2498,8 @@ class WorkflowController extends Controller
             public function clarifyReplyBtnRemarks(Request $request){
 
 
+                // dd($request->toDelete);
+
                 $request->validate([
                     'reportingManager'=>'required',
                     'projectName'=>'required',
@@ -2444,14 +2508,13 @@ class WorkflowController extends Controller
                     'currency'=>'required',
                     'modeOfPayment'=>'required',
                     'amount'=>'required',
-                    'purpose'=>'required'
+                    'purpose'=>'required',
+                    // 'file'=>'required'
                 ]);
               
 
                 $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->idName."' AND a.`FRM_NAME` = 'Request for Payment' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC ");
                 $notifCount = count($notif);
-
-
                 
                 if($notif == True){
                     $project_name = DB::select("SELECT project_name FROM general.`setup_project` WHERE `project_id` = '" . $request->projectName . "'");             
@@ -2517,8 +2580,10 @@ class WorkflowController extends Controller
             $toDeleteFile = $request->toDelete;
             $toDeleteFile =json_decode($toDeleteFile,true);
             
+
+            
             // newly added
-            if(count($toDeleteFile) > 0) {
+            if(!empty($toDeleteFile)) {
             for($i = 0; $i <count($toDeleteFile); $i++) {
                $idAttachment = $toDeleteFile[$i]['0'];
                $pathAttachment = $toDeleteFile[$i]['1'];
@@ -2529,10 +2594,14 @@ class WorkflowController extends Controller
 
                DB::table('general.attachments')->where('id', $idAttachment)->delete();
             }
+
             }
 
             // File Upload
             if($request->hasFile('file')){
+
+               DB::table('repository.rfp')->where('REFID', $request->idName)->delete();
+
 
                 foreach($request->file as $file) {
 
@@ -2636,25 +2705,31 @@ class WorkflowController extends Controller
 
                     if($checkOrder == True){
 
-                    DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Completed', a.`UID_SIGN` = '".session('LoggedUser')."',
+                    DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'In Progress', a.`UID_SIGN` = '".session('LoggedUser')."',
                         a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->approveRemarks. "', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0' 
                        WHERE a.`PROCESSID` = '".$request->idName."' AND a.`FRM_CLASS` = 'REQUESTFORPAYMENT' AND a.`STATUS` = 'For Clarification' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
-                    DB::update("UPDATE accounting.`request_for_payment` a SET a.`STATUS` = 'Completed', a.`ISRELEASED` = '1' WHERE a.`ID` = '".$request->idName."' ");
+                    
+                       DB::update("UPDATE accounting.`request_for_payment` a SET a.`STATUS` = 'In Progress', a.`ISRELEASED` = '1' WHERE a.`ID` = '".$request->idName."' ");
                        return back()->with('form_submitted', 'Your request is now Approved.');
        
+                        // DD('true');
+
                     } else {
                     
                     // Actual Sign of for Clarification to Completed
-                    DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Completed', a.`UID_SIGN` = '".session('LoggedUser')."',
+                    DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'In Progress', a.`UID_SIGN` = '".session('LoggedUser')."',
                         a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->approveRemarks. "', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0' 
                        WHERE a.`PROCESSID` = '".$request->idName."' AND a.`FRM_CLASS` = 'REQUESTFORPAYMENT' AND a.`STATUS` = 'For Clarification' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
 
                     // Actual sign of Not Started to In Progress
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
+                    // DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
 
                     // RFP back to in Progress
                     DB::update("UPDATE accounting.`request_for_payment` a SET a.`STATUS` = 'In Progress', a.`ISRELEASED` = '0' WHERE a.`ID` = '".$request->idName."' ");
                        return back()->with('form_submitted', 'Your request is now Approved.');
+
+                    // DD('false');
+
 
                     }
 
@@ -2674,12 +2749,16 @@ class WorkflowController extends Controller
             }
 
             public function claPCReplyInit(Request $request){
-// doge
+
+                // $request->validate([
+                //     'file'=>'required'
+                // ]);
+
 
                 $mainID = DB::select("SELECT IFNULL(( SELECT a.`Main_office_id` FROM general.`setup_project` a WHERE a.`project_id` = '".$request->projectID."' LIMIT 1 ), FALSE) AS mainID;");
                 
-                if (!empty($request->xdData) == true || !empty($request->tdData) == true) {
-
+                // if (!empty($request->xdData) == true || !empty($request->tdData) == true) {
+                    if (strlen($request->xdData) > 3 || strlen($request->tdData) > 3) {
 
                     $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->pcID."' AND a.`FRM_NAME` = 'Petty Cash Request' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC");
                
@@ -2710,7 +2789,8 @@ class WorkflowController extends Controller
                        WHERE a.`PROCESSID` = '".$request->pcID."' AND a.`FRM_NAME` = 'Petty Cash Request' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
 
               
-                    if(!empty($request->xdData) == true){
+                    // if(!empty($request->xdData) == true){
+                        if(strlen($request->xdData) > 3){
                       
                             DB::table('accounting.petty_cash_expense_details')->where('PCID', $request->pcID)->delete();
 
@@ -2748,7 +2828,9 @@ class WorkflowController extends Controller
 
                     }
 
-                    if(!empty($request->tdData) == true){
+                    // if(!empty($request->tdData) == true){
+                        if(strlen($request->tdData) > 3){
+
 
                             DB::table('accounting.petty_cash_request_details')->where('PCID', $request->pcID)->delete();
 
@@ -2810,6 +2892,8 @@ class WorkflowController extends Controller
 
                     // File Upload
                     if($request->hasFile('file')){
+                    DB::table('repository.petty_cash')->where('REFID', $request->pcID)->delete();
+
                         foreach($request->file as $file) {
                             $completeFileName = $file->getClientOriginalName();
                             $fileNameOnly = pathinfo($completeFileName, PATHINFO_FILENAME);
@@ -2836,7 +2920,6 @@ class WorkflowController extends Controller
                                 'UID' => session('LoggedUser'),
                                 'Ext' => $extension
                             ]);
-
 
                             $insert_doc = DB::table('general.attachments')->insert([
                                 'INITID' => session('LoggedUser'),
@@ -2929,7 +3012,7 @@ class WorkflowController extends Controller
                 //     $request->deleteAttached. " => deleteAttached"
                 // );
 
-
+                // claREReply
 
                 $request->validate([
                     'reportingManager'=>'required',
@@ -2937,7 +3020,8 @@ class WorkflowController extends Controller
                     'dateNeeded'=>'required',
                     'payeeName'=>'required',
                     'amount' => 'required|numeric|between:1,1000',
-                    'purpose'=>'required'
+                    'purpose'=>'required',
+                    // 'file'=>'required'
                 ]);
               
 
@@ -2982,8 +3066,12 @@ class WorkflowController extends Controller
 
 
                     // Clarity Edit
-                    DB::update("UPDATE accounting.`petty_cash_request` a SET a.`STATUS` = 'In Progress', a.`REPORTING_MANAGER` = '".$rMName."', a.`DEADLINE` = '".$request->dateNeeded."', 
-                    a.`REQUESTED_AMT` = '".$request->amount."', a.`TS` = NOW()   
+                    DB::update("UPDATE accounting.`petty_cash_request` a SET
+                    a.`STATUS` = 'In Progress',
+                    a.`REPORTING_MANAGER` = '".$rMName."', 
+                    a.`DEADLINE` = '".$request->dateNeeded."', 
+                    a.`REQUESTED_AMT` = '".$request->amount."', 
+                    a.`TS` = NOW()   
                     WHERE a.`ID` = '".$request->pcID."' ");
 
                     // For clarification to in progress
@@ -3001,21 +3089,31 @@ class WorkflowController extends Controller
                     $toDeleteFile =json_decode($toDeleteFile,true);
                     
                     // newly added
-                    if(count($toDeleteFile) > 0) {
-                    for($i = 0; $i <count($toDeleteFile); $i++) {
-                    $idAttachment = $toDeleteFile[$i]['0'];
-                    $pathAttachment = $toDeleteFile[$i]['1'];
-                    $fileNameAttachment = $toDeleteFile[$i]['2'];
+             
 
-                    $public_path = public_path($pathAttachment.'/'.$fileNameAttachment);
-                    unlink($public_path);
+                    if(!empty($toDeleteFile)) {
+                        for($i = 0; $i <count($toDeleteFile); $i++) {
+                           $idAttachment = $toDeleteFile[$i]['0'];
+                           $pathAttachment = $toDeleteFile[$i]['1'];
+                           $fileNameAttachment = $toDeleteFile[$i]['2'];
+            
+                           $public_path = public_path($pathAttachment.'/'.$fileNameAttachment);
+                           unlink($public_path);
+            
+                           DB::table('general.attachments')->where('id', $idAttachment)->delete();
+                        }
+            
+                        }
+            
 
-                    DB::table('general.attachments')->where('id', $idAttachment)->delete();
-                    }
-                    }
+
+
+
 
                     // File Upload
                     if($request->hasFile('file')){
+                        DB::table('repository.petty_cash')->where('REFID', $request->pcID)->delete();
+                        
                         foreach($request->file as $file) {
                             $completeFileName = $file->getClientOriginalName();
                             $fileNameOnly = pathinfo($completeFileName, PATHINFO_FILENAME);
@@ -3095,17 +3193,23 @@ class WorkflowController extends Controller
             public function claREReply(Request $request){
 
 
+
+                // dd($request->tdData,$request->xdData);
+                // dd($request->xdData);
+
                 $request->validate([
                     'reportingManager'=>'required',
                     'projectName'=>'required',
                     'dateNeeded'=>'required',
                     'payeeName'=>'required',
                     'amount'=>'required',
-                    'purpose'=>'required'
+                    'purpose'=>'required',
+             
                 ]);
 
+                if (strlen($request->xdData) > 3 || strlen($request->tdData) > 3) {
 
-                if (!empty($request->xdData) == true || !empty($request->tdData) == true) {
+                // if (!empty($request->xdData) == true || !empty($request->tdData) == true) {
 
 
                     $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->reID."' AND a.`FRM_NAME` = 'Reimbursement Request' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC");
@@ -3134,7 +3238,7 @@ class WorkflowController extends Controller
                        WHERE a.`ID` = '".$request->reID."' ");
            
                        // For clarification to in progress
-                       DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+                       DB::update("UPDATE general.`actual_sign` a SET a.`Amount` = '".$request->amount."', a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
                        WHERE a.`PROCESSID` = '".$request->reID."' AND a.`FRM_NAME` = 'Reimbursement Request' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
 
                   
@@ -3162,8 +3266,8 @@ class WorkflowController extends Controller
                     WHERE a.`id` = '".$request->reID."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
                 
               
-                    if(!empty($request->xdData) == true){
-                      
+                    if(strlen($request->xdData) > 3){
+
                             DB::table('accounting.reimbursement_expense_details')->where('REID', $request->reID)->delete();
 
                             $expenseDetails = $request->xdData;
@@ -3201,7 +3305,7 @@ class WorkflowController extends Controller
 
                     }
 
-                    if(!empty($request->tdData) == true){
+                    if(strlen($request->tdData) > 3){
 
                             DB::table('accounting.reimbursement_request_details')->where('REID', $request->reID)->delete();
 
@@ -3262,6 +3366,8 @@ class WorkflowController extends Controller
                     }
 
                     if($request->hasFile('file')){
+                    DB::table('repository.reimbursement')->where('REFID', $request->reID)->delete();
+
                         foreach($request->file as $file) {
                             $completeFileName = $file->getClientOriginalName();
                             $fileNameOnly = pathinfo($completeFileName, PATHINFO_FILENAME);
@@ -3308,7 +3414,7 @@ class WorkflowController extends Controller
 
                 return back()->with('form_submitted', 'Your request is now In Progress.');               
                 } else {
-                return back()->with('form_error', 'Request Failed, Please provide records!');
+                return back()->with('form_error', 'Please complete required fields');
                 }
     
             }
@@ -3380,6 +3486,8 @@ class WorkflowController extends Controller
                 $queryPayeeName = DB::select("SELECT Payee,FRM_NAME FROM general.`actual_sign` AS a WHERE a.`PROCESSID` = $id AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_CLASS` = 'requestforpayment'ORDER BY a.`Payee` LIMIT 1");
                 // $queryPayeeName = DB::select("SELECT Payee,FRM_NAME FROM general.`actual_sign` AS a WHERE a.`PROCESSID` = $id ORDER BY a.`Payee` DESC");
                 $payeeDetails = $queryPayeeName[0];
+                $qeSubTotal = DB::select("SELECT SUM(Amount) subTotalAmount FROM accounting.`rfp_liquidation` a WHERE a.`RFPID` = $id");
+
     
                 // Initiator Name
                 $queinitName = DB::select("SELECT a.`UID`,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.`UID`) AS 'NAME' FROM accounting.`request_for_payment` a WHERE a.`ID` = $id");
@@ -3390,7 +3498,7 @@ class WorkflowController extends Controller
                 $filesAttached = DB::select("SELECT * FROM general.`attachments` a WHERE a.`REQID` = $id");
     
     
-                return view('MyWorkflow.approved-byid.appd-post', compact('post','postDetails','payeeDetails','initName','qeLiquidationTable','filesAttached'));
+                return view('MyWorkflow.approved-byid.appd-post', compact('post','postDetails','payeeDetails','initName','qeLiquidationTable','filesAttached','qeSubTotal'));
             }
 
 
@@ -3408,8 +3516,10 @@ class WorkflowController extends Controller
 
                 // Attachments
                 $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Reimbursement Request' AND a.`REQID` =$id");
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`reimbursement_expense_details` a WHERE a.`REID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`reimbursement_request_details` a WHERE a.`REID` = $id;");
                 
-                return view('MyWorkflow.approved-byid.appd-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails'));
+                return view('MyWorkflow.approved-byid.appd-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
             if($class === 'PETTYCASHREQUEST'){
@@ -3424,8 +3534,13 @@ class WorkflowController extends Controller
 
                 // Attachments
                 $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Petty Cash Request' AND a.`REQID` =$id");
+
                 
-                return view('MyWorkflow.approved-byid.appd-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails'));
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`petty_cash_expense_details` a WHERE a.`PCID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`petty_cash_request_details` a WHERE a.`PCID` = $id;");
+
+                
+                return view('MyWorkflow.approved-byid.appd-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
        
@@ -3507,6 +3622,7 @@ class WorkflowController extends Controller
                 $queryPayeeName = DB::select("SELECT Payee,FRM_NAME FROM general.`actual_sign` AS a WHERE a.`PROCESSID` = $id AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_CLASS` = 'requestforpayment'ORDER BY a.`Payee` LIMIT 1");
                 // $queryPayeeName = DB::select("SELECT Payee,FRM_NAME FROM general.`actual_sign` AS a WHERE a.`PROCESSID` = $id ORDER BY a.`Payee` DESC");
                 $payeeDetails = $queryPayeeName[0];
+                $qeSubTotal = DB::select("SELECT SUM(Amount) subTotalAmount FROM accounting.`rfp_liquidation` a WHERE a.`RFPID` = $id");
     
                 // Initiator Name
                 $queinitName = DB::select("SELECT a.`UID`,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.`UID`) AS 'NAME' FROM accounting.`request_for_payment` a WHERE a.`ID` = $id");
@@ -3516,7 +3632,7 @@ class WorkflowController extends Controller
     
                 $filesAttached = DB::select("SELECT * FROM general.`attachments` a WHERE a.`REQID` = $id");
     
-                return view('MyWorkflow.withdrawn-byid.wit-post', compact('post','postDetails','payeeDetails','initName','filesAttached','qeLiquidationTable'));
+                return view('MyWorkflow.withdrawn-byid.wit-post', compact('post','postDetails','payeeDetails','initName','filesAttached','qeLiquidationTable','qeSubTotal'));
             }
 
             if($class === 'REIMBURSEMENT_REQUEST'){
@@ -3548,8 +3664,11 @@ class WorkflowController extends Controller
 
                 // Attachments
                 $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Petty Cash Request' AND a.`REQID` =$id");
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`petty_cash_expense_details` a WHERE a.`PCID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`petty_cash_request_details` a WHERE a.`PCID` = $id;");
+
                 
-                return view('MyWorkflow.withdrawn-byid.wit-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails'));
+                return view('MyWorkflow.withdrawn-byid.wit-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
 
@@ -3656,6 +3775,8 @@ class WorkflowController extends Controller
                 $queryPayeeName = DB::select("SELECT Payee,FRM_NAME FROM general.`actual_sign` AS a WHERE a.`PROCESSID` = $id AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_CLASS` = 'requestforpayment'ORDER BY a.`Payee` LIMIT 1");
                 // $queryPayeeName = DB::select("SELECT Payee,FRM_NAME FROM general.`actual_sign` AS a WHERE a.`PROCESSID` = $id ORDER BY a.`Payee` DESC");
                 $payeeDetails = $queryPayeeName[0];
+                $qeSubTotal = DB::select("SELECT SUM(Amount) subTotalAmount FROM accounting.`rfp_liquidation` a WHERE a.`RFPID` = $id");
+
     
                 // Initiator Name
                 $queinitName = DB::select("SELECT a.`UID`,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.`UID`) AS 'NAME' FROM accounting.`request_for_payment` a WHERE a.`ID` = $id");
@@ -3665,7 +3786,7 @@ class WorkflowController extends Controller
     
                 $filesAttached = DB::select("SELECT * FROM general.`attachments` a WHERE a.`REQID` = $id");
     
-                return view('MyWorkflow.rejected-byid.rej-post', compact('post','postDetails','payeeDetails','initName','qeLiquidationTable','filesAttached'));
+                return view('MyWorkflow.rejected-byid.rej-post', compact('post','postDetails','payeeDetails','initName','qeLiquidationTable','filesAttached','qeSubTotal'));
     
             }
             if($class === 'REIMBURSEMENT_REQUEST'){
@@ -3678,10 +3799,13 @@ class WorkflowController extends Controller
                 $queinitName = DB::select("SELECT a.`UID`,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.`UID`) AS 'NAME' FROM accounting.`reimbursement_request` a WHERE a.`ID` = $id");
                 $initName  = $queinitName[0]->NAME;     
 
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`reimbursement_expense_details` a WHERE a.`REID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`reimbursement_request_details` a WHERE a.`REID` = $id;");
+
                 // Attachments
                 $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Reimbursement Request' AND a.`REQID` =$id");
                 
-                return view('MyWorkflow.rejected-byid.rej-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails'));
+                return view('MyWorkflow.rejected-byid.rej-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
             if($class === 'PETTYCASHREQUEST'){

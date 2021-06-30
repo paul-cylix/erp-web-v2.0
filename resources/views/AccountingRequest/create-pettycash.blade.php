@@ -18,8 +18,6 @@
 @endif
 
 
-
-
 <form id="formfield " method="POST" action="{{ route('save.pc') }}"  class="form-horizontal"  enctype="multipart/form-data" > 
 
     <div class="row" style="margin-top: -20px;"> 
@@ -49,6 +47,7 @@
 
                     @csrf
                     <div class="card-body">
+                        <div class="p-3 mb-2 bg-danger text-white d-none" id="myError"></div>
 
                         <div class="row">
                             <div class="col-md-3">
@@ -218,7 +217,6 @@
                                                 <tr>
                                                     <th>Name</th>
                                                     <th>Type</th>
-                                                    {{-- <th>Size</th> --}}
                                                     <th>Temporary Path</th>
                                                     <th>Actions</th>
 
@@ -297,6 +295,53 @@ var main = [];
     $("#disp_tmp_path").html("Temporary Path(Copy it and try pasting it in browser address bar) --> <strong>["+tmppath+"]</strong>");
 });
 </script>
+
+<script>
+    $('#submit-all').on('click',function(){
+        
+        var amountF = $("#amount").val();
+        amountF = parseFloat(amountF);
+
+
+        if ($.trim($("#reportingManager").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectName").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#dateNeeded").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#payeeName").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if (amountF <= 0 || amountF > 1000) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Amount must be less than or equal to 1000.');
+        return false;
+        }
+
+        if ($.trim($("#purpose").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+    })
+</script>
+
 
 
 

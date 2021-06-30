@@ -45,45 +45,13 @@
             <div class="card card-gray">
                 <div class="card-header">
                     <h3 class="card-title">Request For Payment</h3>
-                    {{-- @foreach ($dataREQREF as $datareq)
-                        <h3 class="card-title">{{ $datareq->REQREF }}</h3> 
-                     @endforeach --}}
+              
                 </div>
 
-                {{-- @if(Session::get('form_submitted'))
-                    <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-sm" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Transaction Successful</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group"> 
-                                                    <p>{{ Session::get('form_submitted') }}.</p>
-                                                </div>                            
-                                            </div>
-                                        </div> 
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif --}}
-        
-   
-                {{-- <form id="formfield " method="POST" action="{{ route('save.rfp') }}" onSubmit="" >  --}}
-                  {{-- <form id="formfield" method="POST"" action="{{ route('save.rfp') }} class="dropzone" id="dropzonewidget" method="POST" enctype="multipart/form-data">  --}}
+
                     @csrf
                     <div class="card-body">
+                        <div class="p-3 mb-2 bg-danger text-white d-none" id="myError"></div>
 
                         <div class="row">
                             <div class="col-md-3">
@@ -134,12 +102,6 @@
                                     </select>
                                     <span class="text-danger">@error('projectName'){{ $message }}@enderror</span>
 
-                                {{-- <select class="form-control formselect required" placeholder="Select Category" id="sub_category_name">
-                                <option value="0" disabled selected>Select Main Category*</option>
-                                    @foreach($projects as $categories)
-                                        <option  value="{{ $categories->project_id }}">{{ ucfirst($categories->project_name) }}</option>
-                                    @endforeach
-                                </select> --}}
                                 </div>
                             </div>
                             
@@ -148,14 +110,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="clientName">Client Name</label>
-                                    {{-- <select class="form-control formselect required" placeholder="Select Sub Category" id="sub_category"></select> --}}
-
-                                    {{-- <select  class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;" onchange="showDetails(this.value)">
-                                        <option selected disabled hidden style='display: none' value=''></option>
-                                        @foreach ($clients as $prj)
-                                             <option>{{$prj->business_fullname}}</option>
-                                        @endforeach
-                                    </select> --}} 
+                              
                                     
                                     <input id="clientName" name="clientName" type="text" class="form-control" placeholder="" readonly >
                                 </div>
@@ -215,6 +170,7 @@
                                 <div class="form-group">
                                     <label for="amount">Amount</label>
                                     <input type="number" style="text-align: right" type="text" class="form-control currency" name="amount" id="amount" placeholder="" value="0.00">
+                                    <span class="text-danger">@error('amount'){{ $message }}@enderror</span>
                                 </div>
                             </div>
                         </div>
@@ -232,36 +188,16 @@
                             </div>
                         </div>
 
-                        {{-- Upload --}}
-                        {{-- <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label><strong>Upload Files</strong></label>
-                                    <div class="custom-file">
-                                    <input type="file" name="file[]" multiple class="custom-file-input form-control" id="customFile" style="cursor:pointer;">
-                                    <label class="custom-file-label" for="customFile">Choose file</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
-
-    
-
-
-                        {{-- <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="attachment"></label>
-                                    <input type="file" name="file[]" class="form-control-file" id="customFile" multiple>
-                                </div>
-                            </div>
-                        </div> --}}
+                        
+        
 
 
                         {{-- Attachments --}}
                         <label class="btn btn-primary" style="font-weight:normal;">
-                            Attach files <input type="file" name="file[]" class="form-control-file" id="customFile" multiple hidden>
+                            Attach Files <input type="file" name="file[]" class="form-control-file" id="customFile" multiple hidden>
                         </label>
+
+                        {{-- Sample<input type="file" name="file[]" id="" multiple> --}}
 
                  
                         
@@ -308,166 +244,15 @@
                             </div>
                         </div>
                         {{-- End Attachments --}}
+
+                        
                         
                     </div> 
 
   
                 </form>
 
-                {{-- <div class="col-md-12"> --}}
-                {{-- Button for Liquidation Add modal --}}
-
-                <!-- Button trigger modal -->
-                {{-- <button type="button" class="btn btn-success" style="margin-bottom: 20px; margin-left: 10px; width: 120px;" data-toggle="modal" data-target="#liquidationModal"><i class="fa fa-plus-circle" style="margin-right: 10px;" aria-hidden="true"></i>Add</button> --}}
-  
-                <!-- Modal -->
-                {{-- <div class="modal fade" id="liquidationModal" tabindex="-1" aria-labelledby="liquidationModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                            <h5 class="modal-title" id="liquidationModalLabel">Add Liquidation</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            </div>
-
-                    
-                            <div class="modal-body"> 
-                            <div class="container-fluid">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <form action="#">
-                                            <div class="row">
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label>Date</label>
-                                                    <input type="date" class="form-control" placeholder="" aria-describedby="helpId" id="liqdate" required>
-    
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label for="">Expense Type</label>
-                                                    <select id="liqtype" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;" required>
-
-                                                    @foreach ($expenseType as $xpType)
-                                                    <option value="{{$xpType->type}}">{{$xpType->type}}</option>
-                                                    @endforeach
-                                                    </select>
-     
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <label for="">Currency</label>
-                                                    <select id="liqcurr" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;" required>
-
-                                                    @foreach ($currencyType as $cuType)
-                                                    <option value="{{$cuType->CurrencyName}}">{{$cuType->CurrencyName}}</option>
-                                                    @endforeach
-                                                    </select>
-
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="">Amount</label>
-                                                    <input type="number" class="form-control" placeholder="0.00" aria-describedby="helpId" id="liqamnt" required>
-
-                                                </div>
-                                            </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="">Description</label>
-                                                        <textarea class="form-control" rows="5" id="liqdesc" placeholder="input text here" required></textarea>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
-
-                                <div class="modal-footer">
-
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-success" onclick="addRow()">Insert</button>
-                                </div>
-                        </div>
-                    </div>
-                </div> --}}
-
-                {{-- Table --}}
-            
-
-                {{-- <div class="card card-gray">
-                <div class="card-header">
-                    <h5>Liquidation Table</h5>
-                    </div> --}}
-                {{-- <div class="col-md-12">
-                    <label for="currency" style="margin-left: 15px;">Liquidation Table</label>
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                            <table id="myTable" class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Expense Type</th>
-                                    <th>Description</th>
-                                    <th>Currency</th>
-                                    <th>Amount</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
-                                <div class="container">
-                                    <div class="float-right">
-        
-                                        <h6 style="margin-right:140px;">Total Amount: <span id ="spTotalAmount"></span></h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
-                {{-- </div> --}}
-                {{-- new --}}
-
-
-                {{-- dropzone --}}                 
-                {{-- <div class="col-md-12">
-                    <label for="currency" style="margin-left: 15px;">Attachment</label>
-                    <div class="card">
-                        <div class="card-body">
-                            <form action="{{ route('rfp.uploadfiles') }}" method="POST" class="dropzone" enctype="multipart/form-data" id="dropzoneForm" >
-                                @csrf
-                                <input type="hidden" value="" name="validationUpload" id="validationUploadDz">
-                                <input type="hidden" name="reqRef" id="reqRef" value="{{ $ref1 }}">
-
-                            </form>
-                        </div>
-                    </div>
-                </div>       --}}
-                {{-- end dropzone --}}
-
-
-
-
-    
-
-            {{-- </div> --}}
+ 
 
 
 
@@ -477,60 +262,42 @@
     </div>
 
 
-{{-- <script>
-    $(document).ready(function() {
-      $('input[type="file"]').on("change", function() {
-        let filenames = [];
-        let files = this.files;
-        if (files.length > 1) {
-          filenames.push("Total Files (" + files.length + ")");
-          console.log(files);
-          
-        } else {
-          for (let i in files) {
-            if (files.hasOwnProperty(i)) {
-              filenames.push(files[i].name);
-            }
-          }
-        }
-        $(this)
-          .next(".custom-file-label")
-          .html(filenames.join(","));
-      });
-    });
-</script> --}}
+
 
 <script>
+    var main = [];
+    var semi = [];
 
-var main = [];
-
-    $(document).ready(function() {
-      $('input[type="file"]').on("change", function() {
-        let files = this.files;
-        console.log(files);
-        console.dir(this.files[0]);
-        $('#attachmentsTable tbody tr').remove();
+        $(document).ready(function() {
+        $('input[type="file"]').on("change", function() {
+            let files = this.files;
+            // console.log(files);
+            // console.dir(this.files[0]);
+            $('#attachmentsTable tbody tr').remove();
+                
             for(var i = 0; i<files.length; i++){
-            var tmppath = URL.createObjectURL(files[i]);
-                var semi = [];
-                semi.push(files[i]['name'],files[i]['type'],files[i]['size'],tmppath);
-                main.push(semi);
-                console.log(main);
-                            $('#attachmentsTable tbody').append('<tr>'+
-                                            '<td>'+files[i]['name']+'</td>'+
-                                            '<td>'+files[i]['type']+'</td>'+
-                                            // '<td>'+files[i]['size']+'</td>'+
-                                            '<td>'+tmppath+'</td>'+
-                                            "<td><a href='"+tmppath+"' target='_blank' class='btn btn-secondary'>View</a></td>"+
-                                            '</tr>'
-                            );
+                var tmppath = URL.createObjectURL(files[i]);
+               
+                semi.push(files[i]['name'], files[i]['type'], files[i]['size'], tmppath);
+                //main.push(semi);
+                //console.log(main);
+
+                $('#attachmentsTable tbody').append('<tr>'+
+                                '<td>'+files[i]['name']+'</td>'+
+                                '<td>'+files[i]['type']+'</td>'+
+                                // '<td>'+files[i]['size']+'</td>'+
+                                '<td>'+tmppath+'</td>'+
+                                "<td><a href='"+tmppath+"' target='_blank' class='btn btn-secondary'>View</a></td>"+
+                                // "<td><button  class='btn btn-danger'>Remove</></td>"+
+                                '</tr>'
+                );
                             //add code to copy to public folder in erp-web
             }
-      });
+        });
     });
-    $("#attachmentsTable").on('click', '.btnDelete', function () {
-    $(this).closest('tr').remove();
-});
+        // $("#attachmentsTable").on('click', '.btnDelete', function () {
+        //     $(this).closest('tr').remove();
+        // });
 </script>
 
 
@@ -596,6 +363,70 @@ var mlist = [];
     }
 </script>
     
+
+
+<script>
+    $('#submit-all').on('click',function(){
+        
+        var amountF = $("#amount").val();
+        amountF = parseFloat(amountF);
+
+
+        if ($.trim($("#reportingManager").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectName").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#dateNeeded").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#payeeName").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        // if ($.trim($("#amount").val()) === "") {
+        // $('#myError').removeClass('d-none');
+        // $('#myError').text('Please complete required fields.');
+        // return false;
+        // }
+
+        if (amountF <= 0) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#purpose").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+    })
+</script>
+
+
+
+
+
+
+
+
+
+
+
 @endsection
 {{-- Dropzone start --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/dropzone.js"></script>

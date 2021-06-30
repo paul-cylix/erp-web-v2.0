@@ -55,6 +55,8 @@
     <form action="{{ route('app.approved.pc.init') }}" method="POST" enctype="multipart/form-data">
         @csrf
                     <div class="card-body">
+                        <div class="p-3 mb-2 bg-danger text-white d-none" id="myError"></div>
+
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
@@ -127,13 +129,15 @@
                                 </div>         
                             </div>
 
-                
-
+                            @php
+                            $foo = $post->REQUESTED_AMT;
+                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                            @endphp
 
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="amount">Amount</label>
-                                    <input id="amount" name="amount" type="text" class="form-control" value="{{ $post->REQUESTED_AMT }}"  readonly >
+                                    <input id="amount" name="amount" type="text" class="form-control text-right" value="{{ $myAMount }}"  readonly >
                                 </div>
                             </div>
                         </div>
@@ -152,10 +156,11 @@
   
 
 
+                        
      {{-- Expense Details --}}
      <div class="row">
         <div class="col-md-12">
-            <div class="card card-default">
+            <div class="card card-gray">
                 <div class="card-header" style="padding: 5px 20px 5px 20px; ">
                     <div class="row">
                         <div class="col" style="font-size:18px; padding-top:5px;">Expense Details</div>                                          
@@ -187,6 +192,10 @@
                 {{-- <span >Total Amount:</span> --}}
                 </div>
                 </div>
+                <div class="container">
+                    <h6  class="text-right">Subtotal Amount: <span id ="xdTotalAmount"></span></h6>
+
+                    </div>
                 </div>
             </div>
         </div>                                    
@@ -196,7 +205,7 @@
     {{-- Transportation Details --}}
     <div class="row">
         <div class="col-md-12">
-            <div class="card card-default">
+            <div class="card card-gray">
                 <div class="card-header" style="padding: 5px 20px 5px 20px; ">
 
                     <div class="row">
@@ -230,6 +239,9 @@
                     {{-- <span >Total Amount:</span> --}}
                     </div>
                     </div>
+                    <div class="container">
+                        <h6  class="text-right">Subtotal Amount: <span id ="tdTotalAmount"></span></h6>
+                        </div>
                 </div>
             </div>
         </div>                                    
@@ -237,7 +249,7 @@
     {{-- Transportation details --}}
 
 
-        <!-- Modal Withdraw-->
+        <!-- Modal Approve-->
         <div class="modal fade"  id="approvedModalInit" tabindex="-1" role="dialog" aria-labelledby="approvedModalInit" aria-hidden="true">
             <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -272,14 +284,14 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                <input type="submit" class="btn btn-primary" value="Proceed">
+                <input type="submit" class="btn btn-primary" value="Proceed" id="submit-all">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
                 
             </div>
             </div>
         </div>
-        {{-- End Withdraw Modal --}}
+        {{-- End Approve Modal --}}
 
 
 
@@ -288,6 +300,8 @@
     <label class="btn btn-primary" style="font-weight:normal;">
         Attach files <input type="file" name="file[]" class="form-control-file" id="customFile" multiple hidden>
     </label>
+    <span class="text-danger">@error('file'){{ $message }}@enderror</span>
+
     </form>
 {{-- Form --}}
   
@@ -317,7 +331,18 @@
 
                             </tr>
                             </thead>
-                            <tbody >
+                            <tbody id="initTbody">
+                                @foreach ($attachmentsDetails as $file )
+                                <tr>
+                                    <td>{{ $file->filename }}</td>
+                                    <td>{{ $file->fileExtension }}</td>
+                                    <td>{{ $file->filepath }}</td>
+                                    <td>
+                                        <a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
+                                        <a class="btn btn-danger" onclick="removedAttach(this)"  >Delete<input type="hidden" value="{{ $file->id }}"><input type="hidden" value="{{ $file->filepath }}"><input type="hidden" value="{{ $file->filename }}"></a>
+                                    </td>
+                                </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -330,59 +355,6 @@
     {{-- End Attachments --}}
     {{-- Attachments --}}    
 
-
-    {{-- Attachments of no edit --}}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card card-gray">
-
-                <div class="card-header" style="height:50px;">
-                    <div class="row ">
-                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                    </div>
-                </div>
-
-                <div class="card-body" >
-                    <div class="row">       
-                        @foreach ($attachmentsDetails as $file)
-                        <div class="col-sm-2" >
-
-                            <div class="dropdown show" >
-                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                    <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                    <a class="dropdown-item" onclick="removedAttached(this)" style="cursor: pointer;" >Delete<input type="hidden" value="{{ $file->id }}"><input type="hidden" value="{{ $file->filepath }}"><input type="hidden" value="{{ $file->filename }}"></a>
-                                </div>
-                            </div>
-                            <div class="card">
-
-                                <?php
-                                    if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                        <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                <?php
-                                    }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                    <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                <?php
-                                    }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                        # code...
-                                    } 
-                                ?>
-            
-                                <div class="card-body" style="padding: 5px; ">
-                                <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                </div>
-                            </div>
-                        </div>  
-
-                        @endforeach
-                    </div>   
-                </div>
-                
-                </div>
-        </div>
-    </div>
-    {{-- End Attachments --}}
 
 <?php
 // End of initiator Part
@@ -613,10 +585,16 @@
                         </div>         
                     </div>
 
+
+                    @php
+                    $foo = $post->REQUESTED_AMT;
+                    $myAMount = number_format((float)$foo, 2, '.', ''); 
+                    @endphp
+
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="amount">Amount</label>
-                            <input id="amount" name="amount" type="text" class="form-control" value="{{ $post->REQUESTED_AMT }}"  readonly >
+                            <input id="amount" name="amount" type="text" class="form-control text-right" value="{{ $myAMount }}"  readonly >
                         </div>
                     </div>
                 </div>
@@ -631,164 +609,178 @@
                     </div>
                 </div>
 
-                                        {{-- Expense Details --}}
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="card card-default">
-                                                    <div class="card-header" style="padding: 5px 20px 5px 20px; ">
-                                                        <div class="row">
-                                                            <div class="col" style="font-size:18px; padding-top:5px;">Expense Details</div>                                          
-                                                            {{-- <div class="col"><a href="javascript:void(0);" class="btn btn-primary float-right" data-toggle="modal" data-target="#expenseDetail">Add Record</a></div> --}}
-                
-                                                        </div>                                       
-                                                    </div> 
-                
-                                                    <div class="card-body table-responsive p-0" style="max-height: 300px; overflow: auto; display:inline-block;">
-                                                        <table class="table table-hover text-nowrap" id="xdTable">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th style="position: sticky; top: 0; background: white; ">Date</th>
-                                                                    <th style="position: sticky; top: 0; background: white; ">Expense Type</th>
-                                                                    <th style="position: sticky; top: 0; background: white; ">Remarks</th>
-                                                                    <th style="position: sticky; top: 0; background: white; ">Amount</th>
-                                                                    <th style="position: sticky; top: 0; background: white; ">Action</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody id="xdTbody">
-                                                                @forelse ($expenseDetails as $xdData)
-                                                                    <tr>
-                                                                        <td>{{ $xdData->date_ }}</td>
-                                                                        <td>{{ $xdData->EXPENSE_TYPE }}</td>
-                                                                        <td>{{ $xdData->DESCRIPTION }}</td>
-                                                                        <td>{{ $xdData->AMOUNT }}</td>
-                                                                        <td><button type="button"  class="btn btn-danger " disabled>Delete</button></td>
-                                                                    </tr>
-                                                                @empty
-                                                                <tr><td colspan="5" style="padding-left: 25px;">no data</td></tr>                                                  
-                                                                @endforelse
-                                                                
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    {{-- footer /Pagination part --}}
-                                                    <div class="card-footer clearfix">
-                                                    <div class="container">
-                                                    <div class="row float-right" style="margin-right: 50px;">
-                                                    {{-- <span >Total Amount:</span> --}}
-                                                    </div>
-                                                    </div>
-                                                    </div>
-                                                </div>
-                                            </div>                                    
-                                        </div>
-                                        {{-- Expense Details --}}
-                                    
-                                        {{-- Transportation Details --}}
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="card card-default">
-                                                    <div class="card-header" style="padding: 5px 20px 5px 20px; ">
-                
-                                                        <div class="row">
-                                                            <div class="col" style="font-size:18px; padding-top:5px;">Transportation Details</div>                                          
-                                                            {{-- <div class="col"><a href="javascript:void(0);" class="btn btn-primary float-right" data-toggle="modal" data-target="#transpoDetails">Add Record</a></div> --}}
-                
-                                                        </div>
-                                                    </div>
-                
-                                                    <div class="card-body table-responsive p-0" style="max-height: 300px; overflow: auto; display:inline-block;">
-                                                        <table class="table table-hover text-nowrap" id="tdTable" >
-                                                            <thead>
-                                                                <tr>
-                                                                    <th style="position: sticky; top: 0; background: white;" >Date</th>
-                                                                    <th style="position: sticky; top: 0; background: white;" >Destination From</th>
-                                                                    <th style="position: sticky; top: 0; background: white;" >Destination To</th>
-                                                                    <th style="position: sticky; top: 0; background: white;" >Mode of Transportation</th>
-                                                                    <th style="position: sticky; top: 0; background: white;" >Remarks</th>
-                                                                    <th style="position: sticky; top: 0; background: white;" >Amount</th>
-                                                                    <th style="position: sticky; top: 0; background: white;" >Action</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody id="tdTbody">
-                                                                @forelse ($transpoDetails as $tdData)
-                                                                    <tr>
-                                                                        <td>{{ $tdData->date_ }}</td>
-                                                                        <td>{{ $tdData->DESTINATION_FRM }}</td>
-                                                                        <td>{{ $tdData->DESTINATION_TO }}</td>
-                                                                        <td>{{ $tdData->MOT }}</td>
-                                                                        <td>{{ $tdData->DESCRIPTION }}</td>
-                                                                        <td>{{ $tdData->AMT_SPENT }}</td>
-                                                                        <td><button type="button"  class="btn btn-danger " disabled>Delete</button></td>
-                                                                    </tr>
-                                                                @empty
-                                                                <tr><td colspan="7" style="padding-left: 25px;">no data</td></tr>                                                  
-                                                                @endforelse
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    {{-- footer /Pagination part --}}
-                                                    <div class="card-footer clearfix">
-                                                        <div class="container">
-                                                        <div class="row float-right" style="margin-right: 50px;">
-                                                        {{-- <span >Total Amount:</span> --}}
-                                                        </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>                                    
-                                        </div>
-                                        {{-- Transportation details --}}
 
-                    {{-- Attachments of no edit --}}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card card-gray">
-                                <div class="card-header" style="height:50px;">
-                                    <div class="row ">
-                                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                    </div>
-                                </div>
+               
 
-                                <div class="card-body" >
-                                    <div class="row">       
-                                        @forelse ($attachmentsDetails as $file)
-                                        <div class="col-sm-2" >
+{{-- Expense Details --}}
+@if (!empty($expenseDetails))
+<div class="row">
+<div class="col-md-12">
+    <div class="card card-gray">
+        <div class="card-header" style="padding: 5px 20px 5px 20px; ">
+            <div class="row">
+                <div class="col" style="font-size:18px; padding-top:5px;">Expense Details</div>                                          
+                {{-- <div class="col"><a href="javascript:void(0);" class="btn btn-primary float-right" data-toggle="modal" data-target="#expenseDetail">Add Record</a></div> --}}
 
-                                            <div class="dropdown show" >
-                                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                                    <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                                </div>
-                                            </div>
-                                            <div class="card">
+            </div>                                       
+        </div> 
 
-                                                <?php
-                                                    if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                        <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                                <?php
-                                                    }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                                    <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                                <?php
-                                                    }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                        # code...
-                                                    } 
-                                                ?>
-                            
-                                                <div class="card-body" style="padding: 5px; ">
-                                                <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                                </div>
-                                            </div>
-                                        </div>  
-                                        @empty
-                                        <span style="margin-left: 12px;">no attachments</span>
-                                        @endforelse
-                                    </div>   
-                                </div>
-                                </div>
-                        </div>
-                    </div>
-                    {{-- End Attachments --}}
+        <div class="card-body table-responsive p-0" style="max-height: 300px; overflow: auto; display:inline-block;">
+            <table class="table table-hover text-nowrap" id="xdTable">
+                <thead>
+                    <tr>
+                        <th style="position: sticky; top: 0; background: white; ">Date</th>
+                        <th style="position: sticky; top: 0; background: white; ">Expense Type</th>
+                        <th style="position: sticky; top: 0; background: white; ">Remarks</th>
+                        <th style="position: sticky; top: 0; background: white; ">Amount</th>
+                        <th style="position: sticky; top: 0; background: white; ">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="xdTbody">
+                    @forelse ($expenseDetails as $xdData)
+                        <tr>
+                            <td>{{ $xdData->date_ }}</td>
+                            <td>{{ $xdData->EXPENSE_TYPE }}</td>
+                            <td>{{ $xdData->DESCRIPTION }}</td>
+                            <td>{{ $xdData->AMOUNT }}</td>
+                            <td><button type="button"  class="btn btn-danger " disabled>Delete</button></td>
+                        </tr>
+                    @empty
+                    <tr><td colspan="5" style="padding-left: 25px;">no data</td></tr>                                                  
+                    @endforelse
+                    
+                </tbody>
+            </table>
+        </div>
+        {{-- footer /Pagination part --}}
+        <div class="card-footer clearfix">
+        <div class="container">
+        <div class="row float-right" style="margin-right: 50px;">
+        {{-- <span >Total Amount:</span> --}}
+        </div>
+        </div>
+        @php
+        $foo = $subtotalExpenseDetails[0]->total ;
+        $myAMount = number_format((float)$foo, 2, '.', ''); 
+        @endphp
+
+        <div class="container">
+        <h6  class="text-right">Subtotal Amount: <span id ="xdTotalAmount">{{ $myAMount }}</span></h6>
+        </div>
+        </div>
+    </div>
+</div>                                    
+</div>
+@endif
+{{-- Expense Details --}}
+
+                                                         
+{{-- Transportation Details --}}
+@if (!empty($transpoDetails))
+<div class="row">
+<div class="col-md-12">
+    <div class="card card-gray">
+        <div class="card-header" style="padding: 5px 20px 5px 20px; ">
+
+            <div class="row">
+                <div class="col" style="font-size:18px; padding-top:5px;">Transportation Details</div>                                          
+                {{-- <div class="col"><a href="javascript:void(0);" class="btn btn-primary float-right" data-toggle="modal" data-target="#transpoDetails">Add Record</a></div> --}}
+
+            </div>
+        </div>
+
+        <div class="card-body table-responsive p-0" style="max-height: 300px; overflow: auto; display:inline-block;">
+            <table class="table table-hover text-nowrap" id="tdTable" >
+                <thead>
+                    <tr>
+                        <th style="position: sticky; top: 0; background: white;" >Date</th>
+                        <th style="position: sticky; top: 0; background: white;" >Destination From</th>
+                        <th style="position: sticky; top: 0; background: white;" >Destination To</th>
+                        <th style="position: sticky; top: 0; background: white;" >Mode of Transportation</th>
+                        <th style="position: sticky; top: 0; background: white;" >Remarks</th>
+                        <th style="position: sticky; top: 0; background: white;" >Amount</th>
+                        <th style="position: sticky; top: 0; background: white;" >Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tdTbody">
+                    @forelse ($transpoDetails as $tdData)
+                        <tr>
+                            <td>{{ $tdData->date_ }}</td>
+                            <td>{{ $tdData->DESTINATION_FRM }}</td>
+                            <td>{{ $tdData->DESTINATION_TO }}</td>
+                            <td>{{ $tdData->MOT }}</td>
+                            <td>{{ $tdData->DESCRIPTION }}</td>
+                            <td>{{ $tdData->AMT_SPENT }}</td>
+                            <td><button type="button"  class="btn btn-danger " disabled>Delete</button></td>
+                        </tr>
+                    @empty
+                    <tr><td colspan="7" style="padding-left: 25px;">no data</td></tr>                                                  
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        {{-- footer /Pagination part --}}
+        <div class="card-footer clearfix">
+            <div class="container">
+            <div class="row float-right" style="margin-right: 50px;">
+            {{-- <span >Total Amount:</span> --}}
+            </div>
+            </div>
+            @php
+            $foo = $subtotalTranspoDetails[0]->total ;
+            $myAMount = number_format((float)$foo, 2, '.', ''); 
+            @endphp
+            <div class="container">
+            <h6  class="text-right">Subtotal Amount: <span id ="tdTotalAmount">{{ $myAMount }}</span></h6>
+            </div>
+        </div>
+    </div>
+</div>                                    
+</div>
+@endif
+{{-- Transportation details --}}
+
+
+
+{{-- Attachments of no edit --}}
+@if (!empty($attachmentsDetails))
+<div class="row">
+<div class="col-md-12">
+    <div class="card card-gray">
+        <div class="card-header" style="padding: 5px 20px 5px 20px; ">
+        <div class="row">
+            <div class="col" style="font-size:18px; padding-top:5px;">Attachments</div>                                          
+        </div>
+        </div>
+        <div class="card-body" >
+            <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                <table id= "attachmentsTable"class="table table-hover" >
+                    <thead >
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Temporary Path</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody >
+                        @foreach ($attachmentsDetails as $file )
+                        <tr>
+                            <td>{{ $file->filename }}</td>
+                            <td>{{ $file->fileExtension }}</td>
+                            <td>{{ $file->filepath }}</td>
+                            <td><a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+@endif
+{{-- End Attachments --}}
 
                     
 
@@ -823,6 +815,8 @@
                                 <div class="modal-body">
                                 {{-- START ADD MODAL--}}
                                 <div class="container-fluid">
+                                <div class="p-3 mb-2 bg-success text-white d-none" id="xpsuccessdiv">Added Successfully</div>                                             
+
                                     <div class="row">
                                         <div class="col-md-12">
                                     
@@ -831,6 +825,12 @@
                                                     <div class="form-group">
                                                         <label>Date</label>
                                                         <input type="date" class="form-control" aria-describedby="helpId" id="dateXD">
+                                                        <script>
+                                                            var today = new Date();
+                                                            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                                                            var data = date;
+                                                            document.getElementById("dateXD").valueAsDate = new Date(data);
+                                                        </script>
                                                         <span class="text-danger" id="dateErrXD"></span>                                                  
                                                     </div>
                                                 </div>
@@ -894,6 +894,8 @@
                                 <div class="modal-body">
                                 {{-- START ADD MODAL--}}
                                 <div class="container-fluid">
+                                <div class="p-3 mb-2 bg-success text-white d-none" id="tdsuccessdiv">Added Successfully</div>                                             
+
                                     <div class="row">
                                         <div class="col-md-12">                                   
                                             <div class="row">
@@ -901,6 +903,12 @@
                                                     <div class="form-group">
                                                         <label>Date</label>
                                                         <input type="date" class="form-control" aria-describedby="helpId" id="dateTD">
+                                                        <script>
+                                                            var today = new Date();
+                                                            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                                                            var data = date;
+                                                            document.getElementById("dateTD").valueAsDate = new Date(data);
+                                                        </script>
                                                         <span class="text-danger" id="dateErrTD"></span>                                                  
                                                     </div>
                                                 </div>
@@ -967,7 +975,7 @@
 
 
 
- {{-- Expense Details --}}
+ {{-- Expense Details
 <script>
 function getExpenseData(){
     var dateXD = $('#dateXD').val();
@@ -1061,12 +1069,320 @@ function xdUpdateData(){
         console.log(objectXD);
 }
 </script>
+ --}}
+
+
+{{-- <script>
+    $('#submit-all').on('click',function(){
+
+        if( ($('#attachmentsTable #initTbody tr').length) <= 0){
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false; 
+        }
+        
+    })
+</script> --}}
+
+
+
+
+
+{{-- Expense Details --}}
+<script>
+    function getExpenseData(){
+        var dateXD = $('#dateXD').val();
+        var typeXD = $('#typeXD').val(); 
+        var amountXD = $('#amountXD').val(); 
+        var remarksXD = $('#remarksXD').val(); 
+
+    
+    
+        var amountXDChecker = false;
+        var remarksXDChecker = false;
+    
+    
+        if(amountXD){
+            amountXDChecker = true;
+            $('#amountErrXD').text('');
+    
+        }else{
+            $('#amountErrXD').text('Amount is required!');
+            $('#xpsuccessdiv').addClass('d-none');
+    
+        }
+    
+        if(remarksXD){
+            remarksXDChecker = true;
+            $('#remarksErrXD').text('');
+        }else{
+            $('#remarksErrXD').text('Remarks is required!');
+            $('#xpsuccessdiv').addClass('d-none');
+        }
+    
+        if(amountXDChecker && remarksXDChecker){
+    
+            $('#xdTable tbody').append('<tr>'+
+                                                '<td>'+dateXD+'</td>'+
+                                                '<td>'+typeXD+'</td>'+
+                                                '<td>'+remarksXD+'</td>'+
+                                                '<td>'+amountXD+'</td>'+
+                                                '<td>'+
+                                                    '<a class="btn btn-danger removeXDRow" onClick ="deleteXDRow()" >Delete</a>'+
+                                                '</td>'+
+                                            '</tr>'
+            );
+            xdUpdateData()
+        
+            $('#xpsuccessdiv').removeClass('d-none')
+            $('#amountXD').val(''); 
+            $('#remarksXD').val(''); 
+           
+      
+        }
+    
+    }
+    
+    
+    function deleteXDRow(){
+        $('#xdTable').on('click','tr a.removeXDRow',function(e){
+        e.preventDefault();
+        $(this).closest('tr').remove();
+        xdUpdateData()
+        });
+    
+    }
+    
+    
+    function xdUpdateData(){
+    
+    var objectXD = [];
+    var myAmtXD = 0 ;
+    
+    $("#xdTable > #xdTbody > tr").each(function () {
+            var dateXD = $(this).find('td').eq(0).text();
+            var typeXD = $(this).find('td').eq(1).text();
+            var remarksXD = $(this).find('td').eq(2).text();
+            var amountXD = $(this).find('td').eq(3).text();
+      
+         
+            var listXD = [];
+            listXD.push(dateXD,typeXD,remarksXD,amountXD);
+            objectXD.push(listXD);
+
+            
+        });
+
+
+    
+        // if(objectXD.length){
+        //     var xdJsonData = JSON.stringify(objectXD);
+        //     $( "#xdData" ).val(xdJsonData);
+        //     alert('true')
+        //     } else {
+        //     $( "#xdData" ).val("");
+        //     alert('false')
+        // }
+
+        var xdJsonData = JSON.stringify(objectXD);
+        $( "#xdData" ).val(xdJsonData);
+
+
+    
+        for(var i = 0; i<objectXD.length; i++){
+                    var numAmt = objectXD[i]['3'];
+                    myAmtXD += parseFloat(numAmt);
+            
+        }
+    
+        $('#xdTotalAmount').text(myAmtXD);
+        console.log(objectXD);
+        console.log(objectXD.length);
+       
+
+        // getTotalAmount();
+        console.log($( "#xdData" ).val());
+        
+    }
+    
+    </script>
+
+{{-- ExpenseDetails --}}
+
+
+{{-- Transportation Details --}}
+<script>
+    function getTransportationData(){
+        var dateTD = $('#dateTD').val();
+        var typeTD = $('#typeTD').val(); 
+        var amountTD = $('#amountTD').val(); 
+        var fromTD = $('#fromTD').val(); 
+        var toTD = $('#toTD').val(); 
+        var remarksTD = $('#remarksTD').val();
+    
+    
+        var dateTDChecker = false;
+        // var typeTDChecker = false;
+        var amountTDChecker = false;
+        var fromTDChecker = false;
+        var toTDChecker = false;
+        var remarksTDChecker = false;
+    
+    
+        if(amountTD){
+            amountTDChecker = true;
+            $('#amountErrTD').text('');
+    
+        }else{
+            $('#amountErrTD').text('Amount is required!');
+            $('#tdsuccessdiv').addClass('d-none');
+    
+        }
+    
+    
+        if(fromTD){
+            fromTDChecker = true;
+            $('#fromErrTD').text('');
+        }else{
+            $('#fromErrTD').text('Destination from is required!');
+            $('#tdsuccessdiv').addClass('d-none');
+    
+        }
+    
+        if(toTD){
+            toTDChecker = true;
+            $('#toErrTD').text('');
+        }else{
+            $('#toErrTD').text('Destination to is required!');
+            $('#tdsuccessdiv').addClass('d-none');
+    
+        }
+    
+        if(remarksTD){
+            remarksTDChecker = true;
+            $('#remarksErrTD').text('');
+        }else{
+            $('#remarksErrTD').text('Remarks is required!');
+            $('#tdsuccessdiv').addClass('d-none');
+    
+        }
+    
+        if(amountTDChecker && fromTDChecker && toTDChecker && remarksTDChecker){
+    
+    
+            $('#tdTable tbody').append('<tr>'+
+                                                '<td>'+dateTD+'</td>'+
+                                                '<td>'+fromTD+'</td>'+
+                                                '<td>'+toTD+'</td>'+
+                                                '<td>'+typeTD+'</td>'+
+                                                '<td>'+remarksTD+'</td>'+
+                                                '<td>'+amountTD+'</td>'+
+                                                '<td>'+
+                                                    '<a class="btn btn-danger removeTDRow" onClick ="deleteTDRow()" >Delete</a>'+
+                                                '</td>'+
+                                            '</tr>'
+            );
+            tdUpdateData()
+        
+            $('#tdsuccessdiv').removeClass('d-none')
+            $('#amountTD').val(''); 
+            $('#fromTD').val(''); 
+            $('#toTD').val(''); 
+            $('#remarksTD').val('');
+        
+        }
+    
+    }
+    
+    
+    function deleteTDRow(){
+        $('#tdTable').on('click','tr a.removeTDRow',function(e){
+        e.preventDefault();
+        $(this).closest('tr').remove();
+        tdUpdateData()
+        });
+    
+    }
+    
+    
+    function tdUpdateData(){
+    
+    var objectTD = [];
+    var myAmtTD = 0 ;
+    
+    $("#tdTable > #tdTbody > tr").each(function () {
+            var dateTD = $(this).find('td').eq(0).text();
+            var fromTD = $(this).find('td').eq(1).text();
+            var toTD = $(this).find('td').eq(2).text();
+            var typeTD = $(this).find('td').eq(3).text();
+            var remarksTD = $(this).find('td').eq(4).text();
+            var amountTD = $(this).find('td').eq(5).text();
+            
+            var listTD = [];
+            listTD.push(dateTD,fromTD,toTD,typeTD,remarksTD,amountTD);
+            objectTD.push(listTD);
+    
+
+        });
+    
+        var tdJsonData = JSON.stringify(objectTD);
+        $( "#tdData" ).val(tdJsonData);
+
+        for(var i = 0; i<objectTD.length; i++){
+                    var numAmt = objectTD[i]['5'];
+                    myAmtTD += parseFloat(numAmt);
+            
+        }
+    
+        $('#tdTotalAmount').text(myAmtTD);
+        console.log(objectTD);
+        
+    
+    }
+    
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 {{-- Transportation Details --}}
-<script>
+{{-- <script>
 function getTransportationData(){
     var dateTD = $('#dateTD').val();
     var typeTD = $('#typeTD').val(); 
@@ -1179,7 +1495,38 @@ $("#tdTable > #tdTbody > tr").each(function () {
         $( "#tdData" ).val(tdJsonData);
     });
 }
-</script>   
+</script>    --}}
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 {{-- Attachments --}}
 <script>
@@ -1189,23 +1536,20 @@ $("#tdTable > #tdTbody > tr").each(function () {
             let files = this.files;
             console.log(files);
             console.dir(this.files[0]);
-            $('#attachmentsTable tbody tr').remove();  
+            $('#attachmentsTable tbody .keytodeleteattachedfile').remove();
                 for(var i = 0; i<files.length; i++){
-                var tmppath = URL.createObjectURL(files[i]);   
+                var tmppath = URL.createObjectURL(files[i]);
                     var semi = [];
                     semi.push(files[i]['name'],files[i]['type'],files[i]['size'],tmppath);
                     main.push(semi);
                     console.log(main);
-                                $('#attachmentsTable tbody').append('<tr>'+
+                                $("#attachmentsTable tbody:last-child").append('<tr class="keytodeleteattachedfile">'+
                                                 '<td>'+files[i]['name']+'</td>'+
                                                 '<td>'+files[i]['type']+'</td>'+
-                                                // '<td>'+files[i]['size']+'</td>'+
                                                 '<td>'+tmppath+'</td>'+
                                                 "<td><a href='"+tmppath+"' target='_blank' class='btn btn-secondary'>View</a></td>"+
                                                 '</tr>'
                                 );
-    
-                                //add code to copy to public folder in erp-web
                 }
           });
         });
@@ -1214,7 +1558,7 @@ $("#tdTable > #tdTbody > tr").each(function () {
     });
 </script>
 
-<script>
+{{-- <script>
     objectAttached = [];
         function removedAttached(elem){
             var attachedArray = [];
@@ -1234,6 +1578,30 @@ $("#tdTable > #tdTbody > tr").each(function () {
             var attachedJson = JSON.stringify(objectAttached);
             document.getElementById("deleteAttached").value = attachedJson;
 
+        }
+</script> --}}
+
+
+
+<script>
+    objectAttached = [];
+        function removedAttach(elem){
+            var attachedArray = [];
+            var x =  $(elem).parent("td").parent("tr").fadeOut(300);
+            var idAttached = $(elem).children("input").val();
+            var pathAttached = $(elem).children("input").next().val();
+            var fileNameAttached = $(elem).children("input").next().next().val();
+
+            attachedArray.push(idAttached,pathAttached,fileNameAttached);
+    
+            objectAttached.push(attachedArray);
+            console.log(attachedArray);
+            console.log(objectAttached);
+
+            var attachedJson = JSON.stringify(objectAttached);
+            document.getElementById("deleteAttached").value = attachedJson;
+            var sa = document.getElementById("deleteAttached");
+            console.log(sa);
         }
 </script>
     

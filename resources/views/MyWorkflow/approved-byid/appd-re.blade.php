@@ -100,10 +100,15 @@
                 
 
 
+                            @php
+                            $foo = $post->TOTAL_AMT_SPENT;
+                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                            @endphp
+                                                            
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="amount">Amount</label>
-                                    <input id="amount" name="amount" type="text" class="form-control" value="{{ $post->TOTAL_AMT_SPENT }}"  readonly >
+                                    <label for="amount">Total Amount</label>
+                                    <input id="amount" name="amount" type="text" class="form-control text-right" value="{{ $myAMount }}"  readonly >
                                 </div>
                             </div>
                         </div>
@@ -121,7 +126,7 @@
                         {{-- Expense Details --}}
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="card card-default">
+                                <div class="card card-gray">
                                     <div class="card-header" style="padding: 5px 20px 5px 20px; ">
                                         <div class="row">
                                             <div class="col" style="font-size:18px; padding-top:5px;">Expense Details</div>                                          
@@ -147,7 +152,13 @@
                                                         <td>{{ $xdData->date_ }}</td>
                                                         <td>{{ $xdData->EXPENSE_TYPE }}</td>
                                                         <td>{{ $xdData->DESCRIPTION }}</td>
-                                                        <td>{{ $xdData->AMOUNT }}</td>
+
+@php
+$foo = $xdData->AMOUNT;
+$myAMount = number_format((float)$foo, 2, '.', ''); 
+@endphp
+
+                                <td>{{ $myAMount }}</td>
                                                         <td><button type="button"  class="btn btn-danger " disabled>Delete</button></td>
                                                     </tr>
                                                 @empty
@@ -164,6 +175,14 @@
                                     {{-- <span >Total Amount:</span> --}}
                                     </div>
                                     </div>
+                                    @php
+$foo = $subtotalExpenseDetails[0]->total ;
+$myAMount = number_format((float)$foo, 2, '.', ''); 
+@endphp
+
+            <div class="container">
+                <h6  class="text-right">Subtotal Amount: <span id ="xdTotalAmount">{{ $myAMount }}</span></h6>
+            </div>
                                     </div>
                                 </div>
                             </div>                                    
@@ -173,7 +192,7 @@
                         {{-- Transportation Details --}}
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="card card-default">
+                                <div class="card card-gray">
                                     <div class="card-header" style="padding: 5px 20px 5px 20px; ">
 
                                         <div class="row">
@@ -204,7 +223,11 @@
                                                         <td>{{ $tdData->DESTINATION_TO }}</td>
                                                         <td>{{ $tdData->MOT }}</td>
                                                         <td>{{ $tdData->DESCRIPTION }}</td>
-                                                        <td>{{ $tdData->AMT_SPENT }}</td>
+@php
+$foo = $tdData->AMT_SPENT;
+$myAMount = number_format((float)$foo, 2, '.', ''); 
+@endphp
+                                                        <td>{{ $myAMount }}</td>
                                                         <td><button type="button"  class="btn btn-danger " disabled>Delete</button></td>
                                                     </tr>
                                                 @empty
@@ -220,62 +243,58 @@
                                         {{-- <span >Total Amount:</span> --}}
                                         </div>
                                         </div>
+                                        @php
+$foo = $subtotalTranspoDetails[0]->total ;
+$myAMount = number_format((float)$foo, 2, '.', ''); 
+@endphp
+                <div class="container">
+                    <h6  class="text-right">Subtotal Amount: <span id ="tdTotalAmount">{{ $myAMount }}</span></h6>
+                </div>
                                     </div>
                                 </div>
                             </div>                                    
                         </div>
                         {{-- Transportation details --}}
 
-                        {{-- Attachments of no edit --}}
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card card-gray">
-                                    <div class="card-header" style="height:50px;">
-                                        <div class="row ">
-                                            <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="card-body" >
-                                        <div class="row">       
-                                            @forelse ($attachmentsDetails as $file)
-                                            <div class="col-sm-2" >
-
-                                                <div class="dropdown show" >
-                                                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                                    </div>
-                                                </div>
-                                                <div class="card">
-
-                                                    <?php
-                                                        if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                            <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                                        <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                            # code...
-                                                        } 
-                                                    ?>
-                                
-                                                    <div class="card-body" style="padding: 5px; ">
-                                                    <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>  
-                                            @empty
-                                            <span style="margin-left: 12px;">no attachments</span>
-                                            @endforelse
-                                        </div>   
-                                    </div>
-                                    </div>
-                            </div>
-                        </div>
-                        {{-- End Attachments --}}
+{{-- Attachments --}}
+@if (!empty($attachmentsDetails))
+<div class="row">
+<div class="col-md-12">
+    <div class="card card-gray">
+        <div class="card-header" style="padding: 5px 20px 5px 20px; ">
+        <div class="row">
+            <div class="col" style="font-size:18px; padding-top:5px;">Attachments</div>                                          
+        </div>
+        </div>
+        <div class="card-body" >
+            <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                <table id= "attachmentsTable"class="table table-hover" >
+                    <thead >
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Temporary Path</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody >
+                        @foreach ($attachmentsDetails as $file )
+                        <tr>
+                            <td>{{ $file->filename }}</td>
+                            <td>{{ $file->fileExtension }}</td>
+                            <td>{{ $file->filepath }}</td>
+                            <td><a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+@endif
+{{-- End Attachments --}}
 
 
 

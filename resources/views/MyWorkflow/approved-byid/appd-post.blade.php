@@ -114,10 +114,15 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="amount">Amount</label>
-                                    <input id="amount" name="amount" type="text" class="form-control" value="{{ $post->AMOUNT }}"  readonly >
+                            @php
+                            $foo = $post->AMOUNT;
+                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                            @endphp
+                            
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="amount">Amount</label>
+                                                                <input id="amount" name="amount" type="text" class="form-control text-right" value="{{ $myAMount }}"  readonly >
                                 </div>
                             </div>
                         </div>
@@ -132,122 +137,105 @@
                             </div>
                         </div>
 
-                        {{--  Liq Table condition show--}}
-<?php if (count($qeLiquidationTable)){ ?>
-    <div class="row">
-        <div class="col-md-12">
-            {{-- <span id="output"></span> --}}
-            {{-- <label for="currency" >Liquidation Table</label> --}}
-    
-            <div class="card card-gray" style="padding: 0px;" >
-    
-                <div class="card-header col " style="height:50px;">
-                    <div class="row ">
-                        <div class="col" style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Liquidation Table</h3>  </div>
-                
-                    </div>
-                </div>
-            
-                <div class="card-body">
-                    <div class="table-responsive">
-                    <table id="myTable" class="table table-hover">
-                        <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Expense Type</th>
-                            <th>Description</th>
-                            <th>Currency</th>
-                            <th>Amount</th>
-                            <th>Action</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($qeLiquidationTable as $qeData)
-                            <tr>
-                                <td>{{ $qeData->trans_date }}</td>
-                                <td>{{ $qeData->expense_type }}</td>
-                                <td>{{ $qeData->description }}</td>
-                                <td>{{ $qeData->currency }}</td>
-                                <td>{{ $qeData->Amount }}</td>
-                                <td><button class="btn btn-danger" disabled>Delete</button></td>
-                            </tr>   
-                            @endforeach
-                        </tbody>
-                    </table>
-                        <div class="container">
-                            <div class="float-right">
-    
-    
-                                <h6 style="margin-right:140px;">Total Amount: <span id ="spTotalAmount"></span></h6>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <?php } else {
-        
-    } ?>
-    
-    
-    <?php 
-    if (!empty($filesAttached)) {
-    ?>
-            {{-- Attachments of no edit --}}
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card card-gray">
-                        <div class="card-header" style="height:50px;">
-                            <div class="row ">
-                                <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                            </div>
-                        </div>
-    
-                        <div class="card-body" >
-                            <div class="row">       
-                                @foreach ($filesAttached as $file)
-                                <div class="col-sm-2" >
-    
-                                    <div class="dropdown show" >
-                                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                            <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
+
+                        @if (!empty($qeLiquidationTable))
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card card-gray" style="padding: 0px;" >
+                                    <div class="card-header col " style="height:50px;">
+                                        <div class="row ">
+                                            <div class="col" style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Liquidation Table</h3>  </div>
                                         </div>
                                     </div>
-                                    <div class="card">
-    
-                                        <?php
-                                            if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                        <?php
-                                            }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                            <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                        <?php
-                                            }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                # code...
-                                            } 
-                                        ?>
-                    
-                                        <div class="card-body" style="padding: 5px; ">
-                                        <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                        <table id="myTable" class="table table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Expense Type</th>
+                                                <th>Description</th>
+                                                <th>Currency</th>
+                                                <th>Amount</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                        
+                                            <tbody>
+                                                @foreach ($qeLiquidationTable as $qeData)
+                                                <tr>
+                                                    <td>{{ $qeData->trans_date }}</td>
+                                                    <td>{{ $qeData->expense_type }}</td>
+                                                    <td>{{ $qeData->description }}</td>
+                                                    <td>{{ $qeData->currency }}</td>
+                        @php
+                        $foo = $qeData->Amount;
+                        $myAMount = number_format((float)$foo, 2, '.', ''); 
+                        @endphp
+                                                    <td>{{ $myAMount }}</td>
+                                                    <td><button class="btn btn-danger" disabled>Delete</button></td>
+                                                </tr>   
+                                                @endforeach
+                        
+                                            
+                        
+                                            </tbody>
+                                        </table>
+                                            <div class="container">
+                                                <div class="float-right">
+                        @php
+                        $foo = $qeSubTotal[0]->subTotalAmount ;
+                        $myAMount = number_format((float)$foo, 2, '.', ''); 
+                        @endphp
+                                                    <h6 style="margin-right:140px;">Total Amount: <span id ="spTotalAmount">{{ $myAMount }}</span></h6>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>  
-    
-                                @endforeach
-                            </div>   
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                            
+                        @if (!empty($filesAttached))
+                        <div class="row">
+                        <div class="col-md-12">
+                            <div class="card card-gray">
+                                <div class="card-header" style="height:50px;">
+                                    <div class="row ">
+                                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
+                                    </div>
+                                </div>
+                                <div class="card-body" >
+                                    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                                        <table id= "attachmentsTable"class="table table-hover" >
+                                            <thead >
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Temporary Path</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody >
+                                                @foreach ($filesAttached as $file )
+                                                <tr>
+                                                    <td>{{ $file->filename }}</td>
+                                                    <td>{{ $file->fileExtension }}</td>
+                                                    <td>{{ $file->filepath }}</td>
+                                                    <td><a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         </div>
-                </div>
-            </div>
-            {{-- End Attachments --}}
-    <?php
-    }
-    ?>
+                        @endif
+                        
+
 
 
 
