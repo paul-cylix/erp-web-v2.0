@@ -215,7 +215,7 @@
                             <div class="form-group">
                                 <label for="dateNeeded">Date Needed</label>
                                     <div class="input-group date" id="reservationdate" data-target-input="nearest" aria-readonly="true" data-date-format='YYYY-MM-DD'>
-                                        <input type="input" id="dateNeeded"  name="dateNeeded" class="form-control datetimepicker-input" data-target="#reservationdate" value="{{ $post->TRANS_DATE }}" />
+                                        <input type="input" id="dateNeeded"  name="dateNeeded" class="form-control datetimepicker-input" data-target="#reservationdate" value="{{ $post->DEADLINE }}" />
                                         <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker"  >
                                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                     </div>                         
@@ -519,7 +519,14 @@
                                 <div class="form-group">
                                     <label for="dateNeeded">Date Needed</label>
                                     <div class="input-group date" data-target-input="nearest">
-                                        <input type="text" id="dateNeeded" name="dateNeeded" class="form-control datetimepicker-input" value="{{ $post->TRANS_DATE }}" readonly/>
+
+                                    @php
+                                        $original_date = $post->DEADLINE;
+                                        $timestamp = strtotime($original_date);
+                                        $new_date = date("Y-m-d", $timestamp);
+                                    @endphp
+
+                                        <input type="text" id="dateNeeded" name="dateNeeded" class="form-control datetimepicker-input" value="{{ $new_date }}" readonly/>
                                         <div class="input-group-append" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
@@ -735,7 +742,14 @@
                                 <div class="form-group">
                                     <label for="dateNeeded">Date Needed</label>
                                     <div class="input-group date" data-target-input="nearest">
-                                        <input type="text" id="dateNeeded" name="dateNeeded" class="form-control datetimepicker-input" value="{{ $post->TRANS_DATE }}" readonly/>
+
+                                    @php
+                                        $original_date = $post->DEADLINE;
+                                        $timestamp = strtotime($original_date);
+                                        $new_date = date("Y-m-d", $timestamp);
+                                    @endphp
+
+                                        <input type="text" id="dateNeeded" name="dateNeeded" class="form-control datetimepicker-input" value="{{ $new_date}}" readonly/>
                                         <div class="input-group-append" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
@@ -1364,7 +1378,12 @@
                                 <div class="form-group">
                                     <label for="dateNeeded">Date Needed</label>
                                     <div class="input-group date" data-target-input="nearest">
-                                        <input type="text" id="dateNeeded" name="dateNeeded" class="form-control datetimepicker-input" value="{{ $post->TRANS_DATE }}" readonly/>
+                                    @php
+                                        $original_date = $post->DEADLINE;
+                                        $timestamp = strtotime($original_date);
+                                        $new_date = date("Y-m-d", $timestamp);
+                                    @endphp
+                                        <input type="text" id="dateNeeded" name="dateNeeded" class="form-control datetimepicker-input" value="{{ $new_date }}" readonly/>
                                         <div class="input-group-append" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>

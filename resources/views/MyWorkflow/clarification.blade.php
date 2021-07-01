@@ -2,7 +2,7 @@
 @section('title', 'Request With Clarification') 
 @section('content')
 
-<div class="row" style="margin-top: -20px;">
+{{-- <div class="row" style="margin-top: -20px;">
     <div class="col-md-3">
         <div class="input-group mb-3">
             <input type="text" class="form-control" placeholder="Search" aria-describedby="searchLive">
@@ -11,7 +11,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
     <div class="row">
         <div class="col-md-12">

@@ -3027,7 +3027,9 @@ class WorkflowController extends Controller
                 // shiba
 
 
+    
 
+           
                 // dd(
                 //     $request->reportingManager . " => RMID",
                 //     $request->projectName. " => PRHID" ,
@@ -3060,6 +3062,8 @@ class WorkflowController extends Controller
                 $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->pcID."' AND a.`FRM_NAME` = 'Petty Cash Request' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC ");
                 $notifCount = count($notif);
 
+                $projects = DB::select("SELECT project_name FROM general.`setup_project` WHERE project_type <> 'MAIN OFFICE' AND `status` = 'Active' AND title_id = 1 AND project_id = $request->projectName ORDER BY project_name LIMIT 1");
+                $project_name = $projects[0]->project_name;
 
                 
                 if($notif == True){
@@ -3100,9 +3104,15 @@ class WorkflowController extends Controller
                     // Clarity Edit
                     DB::update("UPDATE accounting.`petty_cash_request` a SET
                     a.`STATUS` = 'In Progress',
-                    a.`REPORTING_MANAGER` = '".$rMName."', 
-                    a.`DEADLINE` = '".$request->dateNeeded."', 
+                    a.`REPORTING_MANAGER` = '".$rMName."',
+                    a.`DESCRIPTION` = '".$request->purpose."',
+                    a.`PAYEE` = '".$request->payeeName."',
+                    a.`DEADLINE` = '".$request->dateNeeded."',
+                    a.`CLIENT_NAME` = '".$request->clientName."', 
+                    a.`CLIENT_ID` = '".$request->clientID."',  
                     a.`REQUESTED_AMT` = '".$request->amount."', 
+                    a.`PRJID` = '".$request->projectName."',
+                    a.`PROJECT` = '".$project_name."',
                     a.`TS` = NOW()   
                     WHERE a.`ID` = '".$request->pcID."' ");
 
@@ -3111,9 +3121,21 @@ class WorkflowController extends Controller
                     WHERE a.`PROCESSID` = '".$request->pcID."' AND a.`FRM_NAME` = 'Petty Cash Request' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
     
                     // Update form in actual sign
-                    DB::update("UPDATE general.`actual_sign` a SET a.`REMARKS` = '".$request->purpose."', a.`TS` = NOW(), a.`DUEDATE` = '".$request->dateNeeded."', a.`PODATE` = '".$request->dateNeeded."',
-                    a.`DATE` = '".$request->dateNeeded."', a.`RM_ID` = '".$request->reportingManager."', a.`REPORTING_MANAGER` = '".$rMName."', a.`PROJECTID` = '".$request->projectName."', a.`PROJECT` = '".$project_name."', a.`CLIENTID` = '".$request->clientID."', a.`CLIENTNAME` = '".$request->clientName."',
-                    a.`Payee` = '".$request->payeeName."', a.`Amount` = '".$request->amount."'
+                    DB::update("UPDATE general.`actual_sign` a 
+                    SET 
+                    a.`REMARKS` = '".$request->purpose."', 
+                    a.`TS` = NOW(), 
+                    a.`DUEDATE` = '".$request->dateNeeded."', 
+                    a.`PODATE` = '".$request->dateNeeded."',
+                    a.`DATE` = '".$request->dateNeeded."', 
+                    a.`RM_ID` = '".$request->reportingManager."', 
+                    a.`REPORTING_MANAGER` = '".$rMName."', 
+                    a.`PROJECTID` = '".$request->projectName."', 
+                    a.`PROJECT` = '".$project_name."', 
+                    a.`CLIENTID` = '".$request->clientID."', 
+                    a.`CLIENTNAME` = '".$request->clientName."',
+                    a.`Payee` = '".$request->payeeName."', 
+                    a.`Amount` = '".$request->amount."'
                     WHERE a.`PROCESSID` = '".$request->pcID."' AND a.`FRM_NAME` = 'Petty Cash Request' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ");
 
                     
@@ -3276,8 +3298,8 @@ class WorkflowController extends Controller
                        WHERE a.`ID` = '".$request->reID."' ");
            
 
-
-                     
+                
+        //   Reimbursement Reply in Clarification with Edit Main Form
                         DB::update("UPDATE general.`actual_sign` a 
                         SET 
                             a.`Amount` = '".$request->amount."',
