@@ -219,6 +219,7 @@
                                 <input type="hidden" name="xdSubTotalAmt" id="xdSubTotalAmt">
                                 <input type="hidden" name="tdSubTotalAmt" id="tdSubTotalAmt">
                                 <input type="hidden" value="" name="deleteAttached" id="deleteAttached">
+                                {{-- <input type="text" id="prjName" name="prjNamea"> --}}
                                 <input id="clientID" name="clientID" type="hidden" class="form-control" placeholder="" value="{{ $post->CLIENTID }}" >
                                 <input id="mainID" name="mainID" type="hidden" class="form-control" placeholder="" value="{{ $post->MAINID }}" >
                                 <div class="col-md-6">
@@ -2644,6 +2645,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 {{-- Get Client --}}
 <script>
     function showDetails(id) {
+
     if (window.XMLHttpRequest) {
         xmlhttp = new XMLHttpRequest();
     }
@@ -2653,16 +2655,24 @@ $myAMount = number_format((float)$foo, 2, '.', '');
     
     xmlhttp.onreadystatechange=function() {
         if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+
             var txt = xmlhttp.responseText.replace("[", "");
             txt = txt.replace("]", ""); 
             var res = JSON.parse(txt);
             document.getElementById("clientName").value = res.clientName;
             document.getElementById("clientID").value = res.clientID;
             document.getElementById("mainID").value = res.mainID;
+
+            
+            // var prj_txt = sel.options[sel.selectedIndex].text;
+            // document.getElementById("prjNamea").value = prj_txt;
         }
     }
     xmlhttp.open("GET","/get-client/"+id,true);
     xmlhttp.send();
+
+
+
 }
 </script>
 {{-- Reporting Manager Name --}}

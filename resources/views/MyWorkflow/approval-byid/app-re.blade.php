@@ -54,7 +54,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 </div>
-                <form action="{{ route('app.approved.re') }}" method="POST">
+<form action="{{ route('app.approved.re') }}" method="POST">
                     @csrf
                 <div class="modal-body">
                     <div class="container-fluid">
@@ -76,7 +76,7 @@
                 <input type="submit" class="btn btn-primary" value="Proceed">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
-                </form>
+</form>
             </div>
             </div>
         </div>
@@ -329,12 +329,12 @@ $myAMount = number_format((float)$foo, 2, '.', '');
             {{-- <span >Total Amount:</span> --}}
             </div>
             </div>
-            @php
+@php
 $foo = $subtotalExpenseDetails[0]->total ;
-$myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMounts = number_format((float)$foo, 2, '.', ''); 
 @endphp
                 <div class="container">
-                <h6  class="text-right">Subtotal Amount: <span id ="xdTotalAmount">{{ $myAMount }}</span></h6>
+                <h6  class="text-right">Subtotal Amount: <span id ="xdTotalAmount">{{ $myAMounts }}</span></h6>
                 </div>
             </div>
         </div>

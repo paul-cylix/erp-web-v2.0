@@ -1504,27 +1504,59 @@ class WorkflowController extends Controller
             public function approvedREApp(Request $request){
 
 
-                // dd('shit');
+           
                 // For Initiator Only // Approve and Completed Main RE
                 if (!empty(intval($request->apprCheckinit))){
                     DB::update("UPDATE general.`actual_sign` SET `DoneApproving` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                     DB::update("UPDATE accounting.`reimbursement_request` a SET a.`STATUS` = 'Completed'  WHERE a.`ID` = '".$request->reID."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");      
                     return back()->with('form_submitted', 'The request has been approved.');
 
-                  
+                    // dd('up');
                     
                 }else{
-                    
-                    DB::update("UPDATE general.`actual_sign` SET 
-                    `status` = 'Completed',
-                    `UID_SIGN` = '".session('LoggedUser')."',
-                    `SIGNDATETIME` = NOW(),
-                    `ApprovedRemarks` = '" .$request->approvedRemarks. "'
-                    WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' 
-                    AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND
-                     `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
+                    // dd($request);
+
+                    // DB::update("UPDATE general.`actual_sign` SET 
+                    // `status` = 'Completed',
+                    // `UID_SIGN` = '".session('LoggedUser')."',
+                    // `SIGNDATETIME` = NOW(),
+                    // `ApprovedRemarks` = '" .$request->approvedRemarks. "'
+                    // WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' 
+                    // AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND
+                    //  `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+
+
+
+                    // DB::update("UPDATE general.`actual_sign` a SET 
+                    // a.`STATUS` = 'Completed', 
+                    // a.`UID_SIGN` = '".session('LoggedUser')."', 
+                    // a.`SIGNDATETIME` = NOW(), 
+                    // a.`ApprovedRemarks` = '".$request->approvedRemarks."' 
+                    // WHERE 
+                    // a.`STATUS` = 'In Progress' AND 
+                    // a.`PROCESSID` = '".$request->reID."' AND 
+                    // a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND 
+                    // a.`COMPID` = '".session('LoggedUser_CompanyID')."' ");
+
+                    // DB::update("UPDATE general.`actual_sign` a SET 
+                    // a.`STATUS` = 'In Progress' 
+                    // WHERE a.`STATUS` = 'Not Started' 
+                    // AND a.`PROCESSID` = '".$request->reID."' 
+                    // AND a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' 
+                    // AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1");
+
+                    DB::update("UPDATE general.`actual_sign` a SET a.`status` = 'Completed', a.`UID_SIGN` = '".session('LoggedUser')."', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->approvedRemarks. "' WHERE a.`status` = 'In Progress' AND a.`PROCESSID` = '".$request->reID."' AND a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                    DB::update("UPDATE general.`actual_sign` a SET `status` = 'In Progress' WHERE a.`status` = 'Not Started' AND a.`PROCESSID` = '".$request->reID."' AND a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
                     return back()->with('form_submitted', 'The request has been approved.');
+
+
+
+                   
+
+                    // Bug AMount
+
+                    // DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
+                    // return back()->with('form_submitted', 'The request has been approved.');
                   
 
                 }
@@ -3012,7 +3044,7 @@ class WorkflowController extends Controller
                 //     $request->deleteAttached. " => deleteAttached"
                 // );
 
-                // claREReply
+                
 
                 $request->validate([
                     'reportingManager'=>'required',
@@ -3192,9 +3224,13 @@ class WorkflowController extends Controller
          
             public function claREReply(Request $request){
 
+                $projects = DB::select("SELECT project_name FROM general.`setup_project` WHERE project_type <> 'MAIN OFFICE' AND `status` = 'Active' AND title_id = 1 AND project_id = $request->projectName ORDER BY project_name LIMIT 1");
+                $project_name = $projects[0]->project_name;
+
+                // dd($project_name);
+                // dd($request->projectName,$request->clientID,$request->mainID,$request->clientName);
 
 
-                // dd($request->tdData,$request->xdData);
                 // dd($request->xdData);
 
                 $request->validate([
@@ -3218,6 +3254,8 @@ class WorkflowController extends Controller
                     $nReceiverId= $notif[0]->SENDERID;
                     $nActualId= $notif[0]->ACTUALID;
     
+                    $dateNeeded = date_create($request->dateNeeded);
+
                     DB::table('general.notifications')->insert([
                         'ParentID' =>$nParentId,
                         'levels'=>'0',
@@ -3237,15 +3275,33 @@ class WorkflowController extends Controller
                        DB::update("UPDATE accounting.`reimbursement_request` a SET a.`STATUS` = 'In Progress', a.`TS` = NOW()   
                        WHERE a.`ID` = '".$request->reID."' ");
            
+
+
+                     
+                        DB::update("UPDATE general.`actual_sign` a 
+                        SET 
+                            a.`Amount` = '".$request->amount."',
+                            a.`DUEDATE` = '".date_format($dateNeeded, 'Y-m-d')."',
+                            a.`REPORTING_MANAGER` = '".$request->RMName."',
+                            a.`RM_ID` = '".$request->reportingManager."',
+                            a.`PROJECTID` = '".$request->projectName."',
+                            a.`PROJECT` = '".$project_name."',
+                            a.`CLIENTID` = '".$request->clientID."',
+                            a.`CLIENTNAME` = '".$request->clientName."'
+                        WHERE a.`PROCESSID` = '".$request->reID."' AND a.`FRM_NAME` = 'Reimbursement Request' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ");
+
+
+
                        // For clarification to in progress
-                       DB::update("UPDATE general.`actual_sign` a SET a.`Amount` = '".$request->amount."', a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+                       DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
                        WHERE a.`PROCESSID` = '".$request->reID."' AND a.`FRM_NAME` = 'Reimbursement Request' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
 
+
+                    
                   
                     // Change Date Format
                     $project_name = DB::select("SELECT project_name FROM general.`setup_project` WHERE `project_id` = '" . $request->projectName . "'");
                     $project_name =  $project_name[0]->project_name;            
-                    $dateNeeded = date_create($request->dateNeeded);
 
 
                     // Insert in re main
