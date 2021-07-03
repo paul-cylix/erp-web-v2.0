@@ -396,12 +396,6 @@ var mlist = [];
         return false;
         }
 
-        // if ($.trim($("#amount").val()) === "") {
-        // $('#myError').removeClass('d-none');
-        // $('#myError').text('Please complete required fields.');
-        // return false;
-        // }
-
         if (amountF <= 0) {
         $('#myError').removeClass('d-none');
         $('#myError').text('Please complete required fields.');

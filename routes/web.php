@@ -393,6 +393,10 @@ Route::group(['middleware'=>['AuthCheck']], function(){
         // Reply
         Route::post('/reply-sof', [WorkflowController::class, 'replySOF'])->name('reply.sof');
 
+        // Approved by Sender in Clarification
+        Route::post('/approved-sof-by-sender', [WorkflowController::class, 'approvedSOFsender'])->name('approved.sof.sender');
+
+
 
 
 

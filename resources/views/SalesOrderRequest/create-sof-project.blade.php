@@ -47,6 +47,8 @@
                 </div>
 
                     <div class="card-body">
+                        <div class="p-3 mb-2 bg-danger text-white d-none" id="myError"></div>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row">
@@ -150,7 +152,7 @@
 
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="exampleInputEmail1">Customer Name</label>
                                                             <select class="form-control select2 select2-default" name="clientID" data-dropdown-css-class="select2-default" id="clientID" style="width: 100%;" onchange="customerNameSelect(this)">
@@ -170,38 +172,7 @@
                                                     <input type="hidden" name="contactPersonName" id="contactPersonName">
 
                                         
-                                                    <div class="col-md-1">
-                                                        <div class="form-group">
-                                                            <label for="add customer">Add Customer</label>
-                                                            <a href="javascriptvoid(0)" class="btn btn-success" style="width: 100%;"  data-toggle="modal" data-target="#transpoDetails" >Add  </a>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Modal Add customer Details -->
-                                                    <div class="modal fade" id="transpoDetails" tabindex="-1" aria-labelledby="transpoDetails" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
-                                                        <div class="modal-dialog modal-lg">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                            <h5 class="modal-title" id="transpoDetailsLabel">Add Customer</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                            {{-- START ADD MODAL--}}
-                                                            
-
-
-                                                            {{-- END ADD--}}
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                            <button type="button" class="btn btn-primary" >Insert</button>
-                                                            </div>
-                                                        </div>
-                                                        </div>
-                                                    </div>
-                                                    {{-- End Modal Add customer Details --}}
+                                             
                                                     
                                                     
                                                     <div class="col-md-3">
@@ -373,7 +344,7 @@
                                                     <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="amount">Project Cost</label>
-                                                            <input data-type="currency" min="0" style="text-align: right" type="text" class="form-control" name="projectCost" value="0.00"  placeholder="">
+                                                            <input data-type="currency" min="0" style="text-align: right" type="text" class="form-control" id="projectCost" name="projectCost" value="0.00"  placeholder="">
                                                             <span class="text-danger">@error('projectCost'){{ $message }}@enderror</span>
                                                         </div>
                                                     </div>
@@ -786,7 +757,182 @@
 {{-- End Modal --}}
 
 
+<script>
+    $('#submit-all').on('click',function(){
+        
 
+        REQUEST DETAILS
+        if ($.trim($("#poNumber").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#poDate").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#scopeOfWork").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#accountingRemarks").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+
+
+        // PROJECT DETAILS
+        var clientIDSTR =  $( "#clientID option:selected" ).val();
+        if (clientIDSTR == "0") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectCode").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectShortText").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectName").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+        
+        var contactPersonSTR =  $( "#contactPerson option:selected" ).val();
+        if (contactPersonSTR == "0" || contactPersonSTR == undefined) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        var contactNumberSTR =  $( "#contactNumber option:selected" ).val();
+        if (contactNumberSTR == "0" || contactNumberSTR == undefined) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        var deliveryAddressSTR =  $( "#deliveryAddress option:selected" ).val();
+        if (deliveryAddressSTR == "0" || deliveryAddressSTR == undefined) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        var billingAddressSTR =  $( "#billingAddress option:selected" ).val();
+        if (billingAddressSTR == "0" || billingAddressSTR == undefined) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+        
+
+
+        // PAYMENT & DELIVERY TERMS
+        if ($.trim($("#paymentTerms").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectStartTextForm").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectEndTextForm").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#warranty").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#warranty").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        var projectCostSTR = $("#projectCost").val();
+        projectCostFLOAT = parseFloat(projectCostSTR);
+        if (projectCostFLOAT <= 0) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+        
+
+
+        // SYSTEM & DOCUMENT DETAILS        
+        var systemnameBOOL = $('input[name="systemname[]"]:checked').length > 0;
+        if (systemnameBOOL == false) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        var documentnameBOOL = $('input[name="documentname[]"]:checked').length > 0;
+        if (documentnameBOOL == false) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+
+        // ACCOUNTING DETAILS
+        var downPaymentRequiredFormBOOL =  $( "#downPaymentRequiredForm option:selected" ).val();
+        var invoiceRequiredFormBOOL =  $( "#invoiceRequiredForm option:selected" ).val();
+
+        if (downPaymentRequiredFormBOOL == '1') {
+            if ($.trim($("#downPaymentPercentageForm").val()) === "") {
+            $('#myError').removeClass('d-none');
+            $('#myError').text('Please complete required fields.');
+            return false;
+            }
+        }
+
+        if (invoiceRequiredFormBOOL == '1') {
+            if ($.trim($("#invoiceDateNeededForm").val()) === "") {
+            $('#myError').removeClass('d-none');
+            $('#myError').text('Please complete required fields.');
+            return false;
+            }
+        }
+
+        ATTACHMENTS
+        var attachedFilesForm = $('#customFile')[0].files;
+        if (attachedFilesForm.length <= 0) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+// Luap
+
+    })
+</script> 
 
 
 

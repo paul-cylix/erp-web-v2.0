@@ -47,6 +47,8 @@
                 </div>
 
                     <div class="card-body">
+                        <div class="p-3 mb-2 bg-danger text-white d-none" id="myError"></div>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row">
@@ -95,7 +97,7 @@
                                                         <div class="form-group">
                                                             <label for="exampleInputEmail1">PO Date</label>
                                                             <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                                                <input type="text" name="poDate" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                                                                <input type="text" name="poDate" id="poDate" class="form-control datetimepicker-input" data-target="#reservationdate"/>
                                                                 <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
                                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                                 </div>
@@ -111,7 +113,7 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">                                            
                                                             <label for="purpose">Scope of Work</label> 
-                                                            <textarea style="resize:none" class="form-control"  name="scopeOfWork" rows="3" placeholder=""></textarea>
+                                                            <textarea style="resize:none" class="form-control" id="scopeOfWork" name="scopeOfWork" rows="3" placeholder=""></textarea>
                                                             <span class="text-danger">@error('scopeOfWork'){{ $message }}@enderror</span>
 
                                                         </div>
@@ -120,7 +122,7 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">                                            
                                                             <label for="purpose">Accounting Remarks</label> 
-                                                            <textarea style="resize:none" class="form-control"  name="accountingRemarks" rows="3" placeholder=""></textarea>
+                                                            <textarea style="resize:none" class="form-control" id="accountingRemarks" name="accountingRemarks" rows="3" placeholder=""></textarea>
                                                             <span class="text-danger">@error('accountingRemarks'){{ $message }}@enderror</span>
 
                                                         </div>
@@ -319,7 +321,7 @@
 
                                                             <label for="projectStart">Project Start</label>
                                                             <div class="input-group date" id="projectStart" data-target-input="nearest">
-                                                                <input type="text" name="projectStart" class="form-control datetimepicker-input" data-target="#projectStart"/>
+                                                                <input type="text" id="projectStartTextForm" name="projectStart" class="form-control datetimepicker-input" data-target="#projectStart"/>
                                                                 <div class="input-group-append" data-target="#projectStart" data-toggle="datetimepicker">
                                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                                 </div>
@@ -334,7 +336,7 @@
                                                             <label for="projectEnd">Project End</label>
 
                                                             <div class="input-group date" id="projectEnd" data-target-input="nearest">
-                                                                <input type="text" class="form-control datetimepicker-input" name="projectEnd" data-target="#projectEnd"/>
+                                                                <input type="text"  id="projectEndTextForm" class="form-control datetimepicker-input" name="projectEnd" data-target="#projectEnd"/>
                                                                 <div class="input-group-append" data-target="#projectEnd" data-toggle="datetimepicker">
                                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                                 </div>
@@ -351,7 +353,7 @@
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="exampleInputEmail1">Warranty</label>
-                                                            <input type="text" class="form-control" name="warranty" placeholder="">
+                                                            <input type="text" class="form-control" name="warranty" id="warranty" placeholder="">
                                                             <span class="text-danger">@error('warranty'){{ $message }}@enderror</span>
 
                                                         </div>                            
@@ -373,7 +375,7 @@
                                                     <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="amount">Project Cost</label>
-                                                            <input data-type="currency" min="0" style="text-align: right" type="text" class="form-control" name="projectCost" value="0.00"  placeholder="">
+                                                            <input data-type="currency" min="0" style="text-align: right" type="text" id="projectCost" class="form-control" name="projectCost" value="0.00"  placeholder="">
                                                             <span class="text-danger">@error('projectCost'){{ $message }}@enderror</span>
                                                         </div>
                                                     </div>
@@ -419,7 +421,7 @@
                                              
                                                                 @foreach ($systemName as $system )
                                                                     <tr>
-                                                                        <td><input type="checkbox" name="systemname[]" value="{{ $system->id }}" > </td>
+                                                                        <td><input type="checkbox" class="systemNameForm" name="systemname[]"  value="{{ $system->id }}" > </td>
                                                                         <td style="width: 93%;">{{ $system->type_name }}</td>
                                                                         <td></td>
                                                                     </tr>
@@ -454,7 +456,7 @@
                                                             <tbody>                                                                                                                        
                                                                 @foreach ($documentlist as $docs )
                                                                     <tr>
-                                                                        <td><input type="checkbox" name="documentname[]" value="{{ $docs->ID }}" > </td>
+                                                                        <td><input type="checkbox" name="documentname[]"  value="{{ $docs->ID }}" > </td>
                                                                         <td style="width: 93%;">{{ $docs->DocumentName }}</td>
                                                                         <td></td>
                                                                     </tr>
@@ -788,8 +790,182 @@
 
 
 
+ <script>
+    $('#submit-all').on('click',function(){
+        
+
+        // REQUEST DETAILS
+        if ($.trim($("#poNumber").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#poDate").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#scopeOfWork").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#accountingRemarks").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
 
 
+
+        // PROJECT DETAILS
+        var clientIDSTR =  $( "#clientID option:selected" ).val();
+        if (clientIDSTR == "0") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectCode").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectShortText").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectName").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+        
+        var contactPersonSTR =  $( "#contactPerson option:selected" ).val();
+        if (contactPersonSTR == "0" || contactPersonSTR == undefined) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        var contactNumberSTR =  $( "#contactNumber option:selected" ).val();
+        if (contactNumberSTR == "0" || contactNumberSTR == undefined) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        var deliveryAddressSTR =  $( "#deliveryAddress option:selected" ).val();
+        if (deliveryAddressSTR == "0" || deliveryAddressSTR == undefined) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        var billingAddressSTR =  $( "#billingAddress option:selected" ).val();
+        if (billingAddressSTR == "0" || billingAddressSTR == undefined) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+        
+
+
+        // PAYMENT & DELIVERY TERMS
+        if ($.trim($("#paymentTerms").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectStartTextForm").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#projectEndTextForm").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#warranty").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        if ($.trim($("#warranty").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        var projectCostSTR = $("#projectCost").val();
+        projectCostFLOAT = parseFloat(projectCostSTR);
+        if (projectCostFLOAT <= 0) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+        
+
+
+        // SYSTEM & DOCUMENT DETAILS        
+        var systemnameBOOL = $('input[name="systemname[]"]:checked').length > 0;
+        if (systemnameBOOL == false) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+        var documentnameBOOL = $('input[name="documentname[]"]:checked').length > 0;
+        if (documentnameBOOL == false) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+
+        // ACCOUNTING DETAILS
+        var downPaymentRequiredFormBOOL =  $( "#downPaymentRequiredForm option:selected" ).val();
+        var invoiceRequiredFormBOOL =  $( "#invoiceRequiredForm option:selected" ).val();
+
+        if (downPaymentRequiredFormBOOL == '1') {
+            if ($.trim($("#downPaymentPercentageForm").val()) === "") {
+            $('#myError').removeClass('d-none');
+            $('#myError').text('Please complete required fields.');
+            return false;
+            }
+        }
+
+        if (invoiceRequiredFormBOOL == '1') {
+            if ($.trim($("#invoiceDateNeededForm").val()) === "") {
+            $('#myError').removeClass('d-none');
+            $('#myError').text('Please complete required fields.');
+            return false;
+            }
+        }
+
+        // ATTACHMENTS
+        var attachedFilesForm = $('#customFile')[0].files;
+        if (attachedFilesForm.length <= 0) {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Please complete required fields.');
+        return false;
+        }
+
+// Luap
+
+    })
+</script> 
 
 
 

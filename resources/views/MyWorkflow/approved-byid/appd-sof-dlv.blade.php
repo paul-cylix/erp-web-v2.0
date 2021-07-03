@@ -160,12 +160,12 @@
                                                     <input type="hidden" name="contactPersonName" id="contactPersonName">
 
                                         
-                                                    <div class="col-md-1">
+                                                    {{-- <div class="col-md-1">
                                                         <div class="form-group">
                                                             <label for="add customer">Add Customer</label>
                                                             <button class="btn btn-success" style="width: 100%" disabled>Add</button>
                                                         </div>
-                                                    </div>
+                                                    </div> --}}
 
                                                                
                                                     <div class="col-md-3">

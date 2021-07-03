@@ -20,6 +20,17 @@
     <div class="row">
         <div class="col-md-12" style="margin: -20px 0 20px 0 " >
             <div class="form-group" style="margin: 0 -5px 0 -5px;">
+
+
+                @if ($senderCheck->SENDERID == session('LoggedUser'))
+                    <div class="col-md-1 float-left"><a href="/clarifications" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled >Reply</button></div>     
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled  >Withdraw</button></div>        
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
+                    <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" data-toggle="modal" data-target="#approvedModal" >Approve</button></div>
+                @else
                     <div class="col-md-1 float-left"><a href="/clarifications" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" data-toggle="modal" data-target="#replyModal" >Reply</button></div>     
@@ -27,8 +38,50 @@
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled  >Withdraw</button></div>        
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
                     <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" disabled >Approve</button></div>
+                @endif
+
+
             </div> 
         </div> 
+
+    <!-- Modal Approve-->
+    <div class="modal fade"  id="approvedModal" tabindex="-1" role="dialog" aria-labelledby="approvedModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-dark" >
+            <h5 class="modal-title" id="approvedModalLabel">Approve Request</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="{{ route('approved.sof.sender') }}" method="POST">
+                @csrf
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">                     
+                            <label for="rejectedRemarks">Remarks</label>
+                            <div class="card-body">
+                                <div class="form-floating">
+                                    <input type="hidden" value="@yield('title')" name="frmName" id="frmName">
+                                    <input type="hidden" value="{{ $salesOrder->id }}" name="soID" id="soID">
+                                    <textarea class="form-control" placeholder="Leave a comment here" name="approvedRemarks" id="approvedRemarks" style="height: 100px"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            <input type="submit" class="btn btn-primary" value="Proceed" >
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+    {{-- End Approve Modal --}}
+
 
 
 
@@ -47,6 +100,8 @@
         <form action="{{ route('reply.sof') }}" method="POST" enctype="multipart/form-data">
             @csrf
                 <div class="modal-body">
+                    <div class="p-3 mb-2 bg-danger text-white d-none" id="myError"></div>
+
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-12">                     
@@ -66,7 +121,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                <input type="submit" class="btn btn-primary" value="Proceed">
+                <input type="submit" class="btn btn-primary" value="Proceed" id="replyClaritySOF">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -189,7 +244,7 @@
 
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="exampleInputEmail1">Customer Name</label>
                                                             <select class="form-control select2 select2-default" name="clientID" data-dropdown-css-class="select2-default" id="clientID" style="width: 100%;" onchange="customerNameSelect(this)">
@@ -213,38 +268,7 @@
                                                     <input type="hidden" name="contactPersonName" id="contactPersonName" value="{{ $salesOrder->Contact }}">
 
                                         
-                                                    <div class="col-md-1">
-                                                        <div class="form-group">
-                                                            <label for="add customer">Add Customer</label>
-                                                            <a href="javascriptvoid(0)" class="btn btn-success" style="width: 100%;"  data-toggle="modal" data-target="#transpoDetails" >Add  </a>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Modal Add customer Details -->
-                                                    <div class="modal fade" id="transpoDetails" tabindex="-1" aria-labelledby="transpoDetails" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
-                                                        <div class="modal-dialog modal-lg">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                            <h5 class="modal-title" id="transpoDetailsLabel">Add Customer</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                            {{-- START ADD MODAL--}}
-                                                            
-
-
-                                                            {{-- END ADD--}}
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                            <button type="button" class="btn btn-primary" >Insert</button>
-                                                            </div>
-                                                        </div>
-                                                        </div>
-                                                    </div>
-                                                    {{-- End Modal Add customer Details --}}
+                                                
                                                     
                                                     <div class="col-md-3">
                                                         <div class="form-group">
@@ -459,24 +483,7 @@
                                                             </thead>
                                                             <tbody>    
 
-                                                                {{-- @foreach ( $salesOrderSystem as $systemNamed )                                                              
-                                                                    @foreach ($systemName as $system )
-                                                                        @if ($systemNamed->sysID == $system->id )
-                                                                        <tr>
-                                                                            <td><input type="checkbox" name="systemname[]" value="{{ $system->id }}" checked> </td>
-                                                                            <td style="width: 93%;">{{ $system->type_name }}</td>
-                                                                            <td></td>
-                                                                        </tr>
-                                                                        @else
-                                                                        <tr>
-                                                                            <td><input type="checkbox" name="systemname[]" value="{{ $system->id }}" > </td>
-                                                                            <td style="width: 93%;">{{ $system->type_name }}</td>
-                                                                            <td></td>
-                                                                        </tr>
-                                                                        @endif                                                         
-                                                                    @endforeach
-                                                                @endforeach --}}
-
+                                      
                                                                 @foreach ( $systemNameChecked as $system )
                                                                     <tr>
                                                                         <td><input type="checkbox" name="systemname[]" value="{{ $system->sysID }}" @if ( $system->ID == 'True' ) checked @endif> </td>
@@ -512,23 +519,7 @@
                                                             </thead>
                                                             <tbody> 
                                                                                                                               
-                                                                {{-- @foreach ($salesOrderDocs as $systemDocs )
-                                                                @foreach ($documentlist as $docs )
-                                                                @if ($systemDocs->DocID == $docs->ID)
-                                                                <tr>
-                                                                    <td><input type="checkbox" name="documentname[]" value="{{ $docs->ID }}" checked > </td>
-                                                                    <td style="width: 93%;">{{ $docs->DocumentName }}</td>
-                                                                    <td></td>
-                                                                </tr>
-                                                                @else
-                                                                <tr>
-                                                                    <td><input type="checkbox" name="documentname[]" value="{{ $docs->ID }}" > </td>
-                                                                    <td style="width: 93%;">{{ $docs->DocumentName }}</td>
-                                                                    <td></td>
-                                                                </tr>                                                                   
-                                                                @endif                                                            
-                                                                @endforeach   
-                                                                @endforeach       --}}
+                                             
                                                                 
                                                                 @foreach ( $documentNameChecked as $docs )
                                                                     <tr>
@@ -630,7 +621,7 @@
                                                             <select class="form-control select2 select2-default" name="downpaymentrequired" id="downPaymentRequiredForm" onchange="dprSet(this)" data-dropdown-css-class="select2-default" style="width: 100%;">
                                                                 
                                                                 @if ($salesOrder->dp_required == 1)
-                                                                <option selected disabled hidden value="1">Yes</option>
+                                                                <option selected  hidden value="1">Yes</option>
                                                                 @else
                                                                 <option value="0">No</option>
                                                                 @endif
@@ -689,7 +680,7 @@
                                                             <select class="form-control select2 select2-default" name="invoicerequired" id="invoiceRequiredForm" onchange="irSet(this)" data-dropdown-css-class="select2-default" style="width: 100%;">
                                                                                                                          
                                                                 @if ($salesOrder->IsInvoiceRequired == 1)
-                                                                <option selected disabled hidden value="1">Yes</option>
+                                                                <option selected hidden value="1">Yes</option>
                                                                 @else
                                                                 <option value="0">No</option>
                                                                 @endif
@@ -706,12 +697,7 @@
                                                         <div class="form-group">
                                                             <label for="exampleInputEmail1">Invoice Date Needed</label>
                                                             <div class="input-group date" id="invoiceDateNeeded" data-target-input="nearest">
-                                                                
-                                                                {{-- @if ($salesOrder->invDate != '0000-00-00')
-                                                                <input type="text" class="form-control datetimepicker-input" value="{{date("m-d-Y", strtotime( $salesOrder->invDate)) }}" id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                             
-                                                                @else
-                                                                <input type="text" class="form-control datetimepicker-input" disabled id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                             
-                                                                @endif --}}
+                                                  
 
                                                                 @if (!empty($salesOrder->invDate) && $salesOrder->invDate == '0000-00-00')
                                                                 <input type="text" class="form-control datetimepicker-input" disabled id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                               
@@ -766,109 +752,58 @@
                     </label>
 
                     <span class="text-danger">@error('file'){{ $message }}@enderror</span>
-                </form>
+    </form>
 
-                    {{-- Attachments of no edit --}}
+              
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="card card-gray">
-        
-                                <div class="card-header" style="height:50px;">
-                                    <div class="row ">
-                                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                    </div>
+                        <div class="card card-gray">
+                            <div class="card-header" style="height:50px;">
+                                <div class="row ">
+                                    <div class="col"  ><h3 class="card-title">Attachments</h3></div>
                                 </div>
-                                {{-- Card body --}}
-                                <div class="card-body" >
-
-
-                                    {{-- Table attachments --}}
-                                    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
-                                        <table id= "attachmentsTable"class="table table-hover" >
-                                            <thead >
+                            </div>
+                            <div class="card-body" >
+                                <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                                    <table id= "attachmentsTable"class="table table-hover" >
+                                        <thead >
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Temporary Path</th>
+                                            <th >Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody >
+                                            @foreach ($attachmentsDetails as $file )
                                             <tr>
-                                                <th>Name</th>
-                                                <th>Type</th>
-                                                {{-- <th>Size</th> --}}
-                                                <th>Temporary Path</th>
-                                                <th>Actions</th>
-
+                                                <td>{{ $file->filename }}</td>
+                                                <td>{{ $file->fileExtension }}</td>
+                                                <td>{{ $file->filepath }}</td>
+                                                <td>
+                                                    <a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
+                                                    <a class="btn btn-danger" onclick="removedAttached(this)"  >Delete<input type="hidden" value="{{ $file->id }}"><input type="hidden" value="{{ $file->filepath }}"><input type="hidden" value="{{ $file->filename }}"></a>
+                                                </td>
                                             </tr>
-                                            </thead>
-                                            <tbody >
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    {{-- Table attachments End--}}
-                                    
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
-                                {{-- Card body END --}}
-        
                             </div>
                         </div>
-                    </div>
-                    {{-- End Attachments --}}
-
-
-                    {{-- Attachments of no edit --}}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card card-gray">
-
-                                <div class="card-header" style="height:50px;">
-                                    <div class="row ">
-                                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                    </div>
-                                </div>
-
-                                <div class="card-body" >
-                                    <div class="row">       
-                                        @foreach ($attachmentsDetails as $file)
-                                        <div class="col-sm-2" >
-
-                                            <div class="dropdown show" >
-                                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                                    <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                                    <a class="dropdown-item" onclick="removedAttached(this)" style="cursor: pointer;" >Delete<input type="hidden" value="{{ $file->id }}"><input type="hidden" value="{{ $file->filepath }}"><input type="hidden" value="{{ $file->filename }}"></a>
-                                                </div>
-                                            </div>
-                                            <div class="card">
-
-                                                <?php
-                                                    if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                        <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                                <?php
-                                                    }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                                    <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                                <?php
-                                                    }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                        # code...
-                                                    } 
-                                                ?>
-                            
-                                                <div class="card-body" style="padding: 5px; ">
-                                                <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                                </div>
-                                            </div>
-                                        </div>  
-
-                                        @endforeach
-                                    </div>   
-                                </div>
-                                
-                                </div>
                         </div>
-                    </div>
-                    {{-- End Attachments --}}
+                        </div>
+
+
+   
                                               
 
                 </div>                            
             </div>
         </div>
     </div>
-        @else
+    
+@else
 
         <div class="col-md-12">
             <div class="card card-gray">
@@ -978,7 +913,7 @@
 
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="exampleInputEmail1">Customer Name</label>
                                                             <input type="text" value="{{ $salesOrder->client }}" disabled class="form-control" style="width: 100%;"  > 
@@ -994,12 +929,7 @@
                                                     <input type="hidden" name="contactPersonName" id="contactPersonName">
 
                                         
-                                                    <div class="col-md-1">
-                                                        <div class="form-group">
-                                                            <label for="add customer">Add Customer</label>
-                                                            <button class="btn btn-success" style="width: 100%" disabled>Add</button>
-                                                        </div>
-                                                    </div>
+                                                    
 
                                                                
                                                     <div class="col-md-3">
@@ -1376,10 +1306,10 @@
                                                                 <input type="text" class="form-control datetimepicker-input" disabled id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                             
                                                                 @endif --}}
 
-                                                                @if (!empty($salesOrder->invDate) && $salesOrder->invDate == '0000-00-00')
+                                                                @if (!empty($salesOrder->invDate) && $salesOrder->invDate == '0000-00-00' )
                                                                 <input type="text" class="form-control datetimepicker-input" disabled id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                               
                                                                 @elseif(!empty($salesOrder->invDate))
-                                                                <input type="text" class="form-control datetimepicker-input" value="{{date("m-d-Y", strtotime( $salesOrder->invDate)) }}" id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                             
+                                                                <input type="text" class="form-control datetimepicker-input" disabled value="{{date("m-d-Y", strtotime( $salesOrder->invDate)) }}" id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                             
                                                                 @else
                                                                 <input type="text" class="form-control datetimepicker-input" disabled id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                             
                                                                 @endif
@@ -1422,54 +1352,45 @@
 
 
                         {{-- Attachments of no edit --}}
+                      
+                        @if (!empty($attachmentsDetails))
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="card card-gray">
-                                    <div class="card-header" style="height:50px;">
-                                        <div class="row ">
-                                            <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                        </div>
+                        <div class="col-md-12">
+                            <div class="card card-gray">
+                                <div class="card-header" style="height:50px;">
+                                    <div class="row ">
+                                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
                                     </div>
-
-                                    <div class="card-body" >
-                                        <div class="row">       
-                                            @forelse ($attachmentsDetails as $file)
-                                            <div class="col-sm-2" >
-
-                                                <div class="dropdown show" >
-                                                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                                    </div>
-                                                </div>
-                                                <div class="card">
-
-                                                    <?php
-                                                        if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                            <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                                        <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                            # code...
-                                                        } 
-                                                    ?>
-                                
-                                                    <div class="card-body" style="padding: 5px; ">
-                                                    <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>  
-                                            @empty
-                                            <span style="margin-left: 12px;">no attachments</span>
-                                            @endforelse
-                                        </div>   
+                                </div>
+                                <div class="card-body" >
+                                    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                                        <table id= "attachmentsTable"class="table table-hover" >
+                                            <thead >
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Temporary Path</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody >
+                                                @foreach ($attachmentsDetails as $file )
+                                                <tr>
+                                                    <td>{{ $file->filename }}</td>
+                                                    <td>{{ $file->fileExtension }}</td>
+                                                    <td>{{ $file->filepath }}</td>
+                                                    <td><a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    </div>
+                                </div>
                             </div>
                         </div>
+                        </div>
+                        @endif
+                                  
                         {{-- End Attachments --}}
                                               
 
@@ -1479,6 +1400,18 @@
     </div>
             
         @endif
+
+
+
+<script>
+    $('#replyClaritySOF').on('click', function(){
+        if ($.trim($("#replyRemarks").val()) === "") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Reply remarks is required.');
+        return false;
+        }
+    })
+</script>
 
 
 <script>
@@ -1793,7 +1726,7 @@
 </script>
 
 
-<script>
+{{-- <script>
     objectAttached = [];
         function removedAttached(elem){
             var attachedArray = [];
@@ -1814,10 +1747,34 @@
             document.getElementById("deleteAttached").value = attachedJson;
 
         }
-</script>
+</script> --}}
 
 
 <script>
+    objectAttached = [];
+        function removedAttached(elem){
+            var attachedArray = [];
+
+            var x =  $(elem).parent("td").parent("tr").fadeOut(300);
+            var idAttached = $(elem).children("input").val();
+            var pathAttached = $(elem).children("input").next().val();
+            var fileNameAttached = $(elem).children("input").next().next().val();
+
+            attachedArray.push(idAttached,pathAttached,fileNameAttached);
+    
+            objectAttached.push(attachedArray);
+            console.log(attachedArray);
+            console.log(objectAttached);
+
+            var attachedJson = JSON.stringify(objectAttached);
+            document.getElementById("deleteAttached").value = attachedJson;
+            var sa = document.getElementById("deleteAttached");
+            console.log(sa);
+        }
+</script>
+
+
+{{-- <script>
     var main = [];
     
         $(document).ready(function() {
@@ -1847,7 +1804,37 @@
         $("#attachmentsTable").on('click', '.btnDelete', function () {
         $(this).closest('tr').remove();
     });
+</script> --}}
+
+<script>
+    var main = [];
+        $(document).ready(function() {
+          $('input[type="file"]').on("change", function() {
+            let files = this.files;
+            console.log(files);
+            console.dir(this.files[0]);
+            $('#attachmentsTable tbody .keytodeleteattachedfile').remove();
+                for(var i = 0; i<files.length; i++){
+                var tmppath = URL.createObjectURL(files[i]);
+                    var semi = [];
+                    semi.push(files[i]['name'],files[i]['type'],files[i]['size'],tmppath);
+                    main.push(semi);
+                    console.log(main);
+                                $("#attachmentsTable tbody:last-child").append('<tr class="keytodeleteattachedfile">'+
+                                                '<td>'+files[i]['name']+'</td>'+
+                                                '<td>'+files[i]['type']+'</td>'+
+                                                '<td>'+tmppath+'</td>'+
+                                                "<td><a href='"+tmppath+"' target='_blank' class='btn btn-secondary'>View</a></td>"+
+                                                '</tr>'
+                                );
+                }
+          });
+        });
+        $("#attachmentsTable").on('click', '.btnDelete', function () {
+        $(this).closest('tr').remove();
+    });
 </script>
+
 
 @endsection
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/dropzone.js"></script>

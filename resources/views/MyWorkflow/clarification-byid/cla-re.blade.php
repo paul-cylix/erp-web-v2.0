@@ -2623,7 +2623,6 @@ $myAMount = number_format((float)$foo, 2, '.', '');
         return false;
         }
     })
-
 </script>
 
 <script>

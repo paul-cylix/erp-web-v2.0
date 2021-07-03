@@ -101,7 +101,7 @@ class SalesOrderRequestController extends Controller
             'projectEnd'=>'required',
             'warranty'=>'required',   
             'currency'=>'required',
-            'projectCost'=>'required',
+            'projectCost'=>'required|not_in:0',
             
 
             'systemname'=>'required',
