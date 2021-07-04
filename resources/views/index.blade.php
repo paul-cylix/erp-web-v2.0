@@ -6,7 +6,7 @@
             <!-- small box -->
             <div class="small-box bg-info">
               <div class="inner">
-                <h3>15</h3>
+                <h3 id="indexForInput">0</h3>
 
                 <p>For Inputs</p>
               </div>
@@ -21,7 +21,7 @@
             <!-- small box -->
             <div class="small-box bg-success">
               <div class="inner">
-                <h3>53</h3>
+                <h3 id="indexForApprovals">0</h3>
 
                 <p>For Approvals</p>
               </div>
@@ -36,7 +36,7 @@
             <!-- small box -->
             <div class="small-box bg-warning">
               <div class="inner">
-                <h3>44</h3>
+                <h3 id="indexForClarification">0</h3>
 
                 <p>Clarifications</p>
               </div>
@@ -51,7 +51,7 @@
             <!-- small box -->
             <div class="small-box bg-danger">
               <div class="inner">
-                <h3>65</h3>
+                <h3 id="indexForRejected">0</h3>
 
                 <p>Rejected</p>
               </div>

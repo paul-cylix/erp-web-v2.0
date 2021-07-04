@@ -86,7 +86,7 @@ class SalesOrderRequestController extends Controller
             'poNumber'=>'required',
             'poDate'=>'required',
             'scopeOfWork'=>'required',
-            'accountingRemarks'=>'required',
+            // 'accountingRemarks'=>'required',
             'clientID' => 'required|not_in:0',
             'projectCode'=>'required',
             'projectShortText'=>'required',
@@ -99,7 +99,7 @@ class SalesOrderRequestController extends Controller
             'paymentTerms'=>'required',
             'projectStart'=>'required',
             'projectEnd'=>'required',
-            'warranty'=>'required',   
+            // 'warranty'=>'required',   
             'currency'=>'required',
             'projectCost'=>'required|not_in:0',
             
@@ -503,7 +503,7 @@ class SalesOrderRequestController extends Controller
             'poNumber'=>'required',
             'poDate'=>'required',
             'scopeOfWork'=>'required',
-            'accountingRemarks'=>'required',
+            // 'accountingRemarks'=>'required',
             'clientID' => 'required|not_in:0',
             'projectCode'=>'required',
             'projectShortText'=>'required',
@@ -516,7 +516,7 @@ class SalesOrderRequestController extends Controller
             'paymentTerms'=>'required',
             'projectStart'=>'required',
             'projectEnd'=>'required',
-            'warranty'=>'required',   
+            // 'warranty'=>'required',   
             'currency'=>'required',
             'projectCost'=>'required',
             
@@ -887,7 +887,7 @@ class SalesOrderRequestController extends Controller
             'poNumber'=>'required',
             'poDate'=>'required',
             'scopeOfWork'=>'required',
-            'accountingRemarks'=>'required',
+            // 'accountingRemarks'=>'required',
             'clientID' => 'required|not_in:0',
             'projectCode'=>'required',
             'projectShortText'=>'required',
@@ -1220,7 +1220,7 @@ class SalesOrderRequestController extends Controller
                     'fileExtension' => $extension,
                     'newFilename' => $newFileName,
                     'fileDestination'=>$destinationPath,
-                    'formName' => 'Sales Order - DMO',
+                    'formName' => 'Sales Order - Demo',
                     'created_at' => date('Y-m-d H:i:s')
            
                 ]);
@@ -1271,7 +1271,7 @@ class SalesOrderRequestController extends Controller
             'poNumber'=>'required',
             'poDate'=>'required',
             'scopeOfWork'=>'required',
-            'accountingRemarks'=>'required',
+            // 'accountingRemarks'=>'required',
             'clientID' => 'required|not_in:0',
             'projectCode'=>'required',
             'projectShortText'=>'required',

@@ -56,8 +56,10 @@ class WorkflowController extends Controller
                 $qeLiquidationTable = DB::select("SELECT * FROM accounting.`rfp_liquidation` a WHERE a.`RFPID` = $id");
     
                 $filesAttached = DB::select("SELECT * FROM general.`attachments` a WHERE a.`REQID` = $id");
+                $qeSubTotal = DB::select("SELECT SUM(Amount) subTotalAmount FROM accounting.`rfp_liquidation` a WHERE a.`RFPID` = $id");
+
     
-                return view('MyWorkflow.participants-byid.part-post', compact('post','postDetails','payeeDetails','initName','qeLiquidationTable','filesAttached'));
+                return view('MyWorkflow.participants-byid.part-post', compact('post','postDetails','payeeDetails','initName','qeLiquidationTable','filesAttached','qeSubTotal'));
             }
 
 
@@ -74,8 +76,10 @@ class WorkflowController extends Controller
 
                 // Attachments
                 $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Reimbursement Request' AND a.`REQID` =$id");
-                
-                return view('MyWorkflow.participants-byid.part-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails'));
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`reimbursement_expense_details` a WHERE a.`REID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`reimbursement_request_details` a WHERE a.`REID` = $id;");
+
+                return view('MyWorkflow.participants-byid.part-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
             if($class === 'PETTYCASHREQUEST'){
@@ -90,8 +94,11 @@ class WorkflowController extends Controller
 
                 // Attachments
                 $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Petty Cash Request' AND a.`REQID` =$id");
+
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`petty_cash_expense_details` a WHERE a.`PCID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`petty_cash_request_details` a WHERE a.`PCID` = $id;");
                 
-                return view('MyWorkflow.participants-byid.part-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails'));
+                return view('MyWorkflow.participants-byid.part-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
 
@@ -507,21 +514,21 @@ class WorkflowController extends Controller
     // View Message
     public function viewClaComments($class,$id){
 
-        if($class == 'REQUESTFORPAYMENT'){
-            $class = 'Request for Payment';
-        }
+        // if($class == 'REQUESTFORPAYMENT'){
+        //     $class = 'Request for Payment';
+        // }
 
-        if($class == 'REIMBURSEMENT_REQUEST'){
-            $class = 'Reimbursement Request';
-        }
+        // if($class == 'REIMBURSEMENT_REQUEST'){
+        //     $class = 'Reimbursement Request';
+        // }
         
-        if($class == 'PETTYCASHREQUEST'){
-            $class = 'Petty Cash Request';
-        }
+        // if($class == 'PETTYCASHREQUEST'){
+        //     $class = 'Petty Cash Request';
+        // }
 
-        if($class == 'SALES_ORDER_FRM'){
-            $class = 'Sales Order - Project';
-        }
+        // if($class == 'SALES_ORDER_FRM'){
+        //     $class = 'Sales Order - Project';
+        // }
 
         $comments = DB::select("SELECT *, (SELECT UserFull_name FROM general.`users` b WHERE b.id = a.`RECEIVERID`) AS 'SENDERNAME',(SELECT c.`USER_GRP_IND` FROM general.`actual_sign` c WHERE c.`ID` = a.`ACTUALID`) AS USERLEVEL FROM general.`notifications` a WHERE a.`PROCESSID` = $id AND a.`FRM_NAME` = '".$class."'");
         return response()->json($comments);
@@ -719,8 +726,9 @@ class WorkflowController extends Controller
     
                     $dmoInitCheck = DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`USER_GRP_IND` = 'Initiator' AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`STATUS` = 'In Progress' AND a.`ORDERS` = 4 AND a.`Max_approverCount` = 5), FALSE) AS checker");
 
+                    $initiatorCheck = DB::select("SELECT IFNULL((SELECT a.`INITID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`ORDERS` = 4 AND a.`STATUS` = 'In Progress' AND a.`INITID` = ".session('LoggedUser')." AND a.`COMPID` = ".session('LoggedUser_CompanyID')." AND a.`FRM_NAME` = 'Sales Order - Demo'), FALSE) AS checker");
 
-                    return view('MyWorkflow.approval-byid.app-sof-dmo', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','approvalOfPrjHeadChecker','projectCoordinator','siConfirmationChecker','getRecipientName','qeInProgressID','dmoInitCheck','dmoInitCheck'));
+                    return view('MyWorkflow.approval-byid.app-sof-dmo', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','approvalOfPrjHeadChecker','projectCoordinator','siConfirmationChecker','getRecipientName','qeInProgressID','dmoInitCheck','dmoInitCheck','initiatorCheck'));
                 
                 } 
 
@@ -745,8 +753,10 @@ class WorkflowController extends Controller
     
                     $dmoInitCheck = DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`USER_GRP_IND` = 'Initiator' AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`STATUS` = 'In Progress' AND a.`ORDERS` = 4 AND a.`Max_approverCount` = 5), FALSE) AS checker");
 
+                    $initiatorCheck = DB::select("SELECT IFNULL((SELECT a.`INITID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`ORDERS` = 4 AND a.`STATUS` = 'In Progress' AND a.`INITID` = ".session('LoggedUser')." AND a.`COMPID` = ".session('LoggedUser_CompanyID')." AND a.`FRM_NAME` = 'Sales Order - POC'), FALSE) AS checker");
 
-                    return view('MyWorkflow.approval-byid.app-sof-poc', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','approvalOfPrjHeadChecker','projectCoordinator','siConfirmationChecker','getRecipientName','qeInProgressID','dmoInitCheck','dmoInitCheck'));
+
+                    return view('MyWorkflow.approval-byid.app-sof-poc', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','approvalOfPrjHeadChecker','projectCoordinator','siConfirmationChecker','getRecipientName','qeInProgressID','dmoInitCheck','dmoInitCheck','initiatorCheck'));
                 
                 } 
 
@@ -817,7 +827,7 @@ class WorkflowController extends Controller
                             'poNumber'=>'required',
                             'poDate'=>'required',
                             'scopeOfWork'=>'required',
-                            'accountingRemarks'=>'required',
+                            // 'accountingRemarks'=>'required',
                             'clientID' => 'required|not_in:0',
                             'projectCode'=>'required',
                             'projectShortText'=>'required',
@@ -2325,7 +2335,7 @@ class WorkflowController extends Controller
                     $checkOrder = DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`STATUS` = 'For Clarification' AND a.`ORDERS` = 0 AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ), FALSE) AS checker");
                     $systemNameChecked = DB::select("SELECT IFNULL((SELECT 'True' FROM sales_order.`sales_order_system` b WHERE b.sysID = a.id AND b.soid = $id), 'False') AS 'ID', type_name, a.`id` AS 'sysID' FROM sales_order.`systems_type` a");
                     $documentNameChecked = DB::select("SELECT IFNULL((SELECT 'True' FROM sales_order.`sales_order_docs` b WHERE b.DocID = a.ID AND b.soid = $id), 'False') AS 'ID', DocumentName, a.`ID` AS 'DocID' FROM sales_order.`documentlist` a");
-                    $senderCheck = DB::table('general.notifications')->where('PROCESSID',$id)->orderBy('ID', 'desc')->first();
+                    $senderCheck = DB::table('general.notifications')->where('PROCESSID',$id)->where('FRM_NAME',$frmname)->orderBy('ID', 'desc')->first();
                     return view('MyWorkflow.clarification-byid.cla-sof-prj', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','businesslist','systemName','documentlist','checkInit','checkOrder','systemNameChecked','documentNameChecked','senderCheck'));
 
                 } 
@@ -2344,7 +2354,7 @@ class WorkflowController extends Controller
                     $checkOrder = DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`STATUS` = 'For Clarification' AND a.`ORDERS` = 0 AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ), FALSE) AS checker");
                     $systemNameChecked = DB::select("SELECT IFNULL((SELECT 'True' FROM sales_order.`sales_order_system` b WHERE b.sysID = a.id AND b.soid = $id), 'False') AS 'ID', type_name, a.`id` AS 'sysID' FROM sales_order.`systems_type` a");
                     $documentNameChecked = DB::select("SELECT IFNULL((SELECT 'True' FROM sales_order.`sales_order_docs` b WHERE b.DocID = a.ID AND b.soid = $id), 'False') AS 'ID', DocumentName, a.`ID` AS 'DocID' FROM sales_order.`documentlist` a");
-                    $senderCheck = DB::table('general.notifications')->where('PROCESSID',$id)->orderBy('ID', 'desc')->first();
+                    $senderCheck = DB::table('general.notifications')->where('PROCESSID',$id)->where('FRM_NAME',$frmname)->orderBy('ID', 'desc')->first();
                     return view('MyWorkflow.clarification-byid.cla-sof-dlv', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','businesslist','systemName','documentlist','checkInit','checkOrder','systemNameChecked','documentNameChecked','senderCheck'));
 
                 } 
@@ -2363,8 +2373,8 @@ class WorkflowController extends Controller
                     $checkOrder = DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`STATUS` = 'For Clarification' AND a.`ORDERS` = 0 AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ), FALSE) AS checker");
                     $systemNameChecked = DB::select("SELECT IFNULL((SELECT 'True' FROM sales_order.`sales_order_system` b WHERE b.sysID = a.id AND b.soid = $id), 'False') AS 'ID', type_name, a.`id` AS 'sysID' FROM sales_order.`systems_type` a");
                     $documentNameChecked = DB::select("SELECT IFNULL((SELECT 'True' FROM sales_order.`sales_order_docs` b WHERE b.DocID = a.ID AND b.soid = $id), 'False') AS 'ID', DocumentName, a.`ID` AS 'DocID' FROM sales_order.`documentlist` a");
- 
-                    return view('MyWorkflow.clarification-byid.cla-sof-dmo', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','businesslist','systemName','documentlist','checkInit','checkOrder','systemNameChecked','documentNameChecked'));
+                    $senderCheck = DB::table('general.notifications')->where('PROCESSID',$id)->where('FRM_NAME',$frmname)->orderBy('ID', 'desc')->first();
+                    return view('MyWorkflow.clarification-byid.cla-sof-dmo', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','businesslist','systemName','documentlist','checkInit','checkOrder','systemNameChecked','documentNameChecked','senderCheck'));
 
                 } 
 
@@ -2382,8 +2392,8 @@ class WorkflowController extends Controller
                     $checkOrder = DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`STATUS` = 'For Clarification' AND a.`ORDERS` = 0 AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ), FALSE) AS checker");
                     $systemNameChecked = DB::select("SELECT IFNULL((SELECT 'True' FROM sales_order.`sales_order_system` b WHERE b.sysID = a.id AND b.soid = $id), 'False') AS 'ID', type_name, a.`id` AS 'sysID' FROM sales_order.`systems_type` a");
                     $documentNameChecked = DB::select("SELECT IFNULL((SELECT 'True' FROM sales_order.`sales_order_docs` b WHERE b.DocID = a.ID AND b.soid = $id), 'False') AS 'ID', DocumentName, a.`ID` AS 'DocID' FROM sales_order.`documentlist` a");
-
-                    return view('MyWorkflow.clarification-byid.cla-sof-poc', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','businesslist','systemName','documentlist','checkInit','checkOrder','systemNameChecked','documentNameChecked'));
+                    $senderCheck = DB::table('general.notifications')->where('PROCESSID',$id)->where('FRM_NAME',$frmname)->orderBy('ID', 'desc')->first();
+                    return view('MyWorkflow.clarification-byid.cla-sof-poc', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','businesslist','systemName','documentlist','checkInit','checkOrder','systemNameChecked','documentNameChecked','senderCheck'));
 
                 } 
            
@@ -2844,7 +2854,7 @@ class WorkflowController extends Controller
                 $mainID = DB::select("SELECT IFNULL(( SELECT a.`Main_office_id` FROM general.`setup_project` a WHERE a.`project_id` = '".$request->projectID."' LIMIT 1 ), FALSE) AS mainID;");
                 
                 // if (!empty($request->xdData) == true || !empty($request->tdData) == true) {
-                    if (strlen($request->xdData) > 3 || strlen($request->tdData) > 3) {
+                    if (!empty($request->xdData)  || !empty($request->tdData)) {
 
                     $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->pcID."' AND a.`FRM_NAME` = 'Petty Cash Request' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC");
                
@@ -2876,7 +2886,7 @@ class WorkflowController extends Controller
 
               
                     // if(!empty($request->xdData) == true){
-                        if(strlen($request->xdData) > 3){
+                        if(!empty($request->xdData) ){
                       
                             DB::table('accounting.petty_cash_expense_details')->where('PCID', $request->pcID)->delete();
 
@@ -2910,12 +2920,15 @@ class WorkflowController extends Controller
                             }
             
                             DB::table('accounting.petty_cash_expense_details')->insert($setXDArray);
-
-
+                    } else {
+                        DB::table('accounting.petty_cash_expense_details')->where('PCID', $request->pcID)->delete();
                     }
 
+
+
+
                     // if(!empty($request->tdData) == true){
-                        if(strlen($request->tdData) > 3){
+                        if(!empty($request->tdData) ){
 
 
                             DB::table('accounting.petty_cash_request_details')->where('PCID', $request->pcID)->delete();
@@ -2955,6 +2968,8 @@ class WorkflowController extends Controller
                                 }
                                 DB::table('accounting.petty_cash_request_details')->insert($setTDArray);
                             }
+                    } else {
+                        DB::table('accounting.petty_cash_request_details')->where('PCID', $request->pcID)->delete();
                     }
 
                    
@@ -3300,6 +3315,8 @@ class WorkflowController extends Controller
          
             public function claREReply(Request $request){
 
+               
+
                 $projects = DB::select("SELECT project_name FROM general.`setup_project` WHERE project_type <> 'MAIN OFFICE' AND `status` = 'Active' AND title_id = 1 AND project_id = $request->projectName ORDER BY project_name LIMIT 1");
                 $project_name = $projects[0]->project_name;
 
@@ -3319,7 +3336,7 @@ class WorkflowController extends Controller
              
                 ]);
 
-                if (strlen($request->xdData) > 3 || strlen($request->tdData) > 3) {
+                if (!empty($request->xdData)   || !empty($request->tdData) ) {
 
                 // if (!empty($request->xdData) == true || !empty($request->tdData) == true) {
 
@@ -3398,7 +3415,7 @@ class WorkflowController extends Controller
                     WHERE a.`id` = '".$request->reID."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
                 
               
-                    if(strlen($request->xdData) > 3){
+                    if(!empty($request->xdData)){
 
                             DB::table('accounting.reimbursement_expense_details')->where('REID', $request->reID)->delete();
 
@@ -3434,10 +3451,11 @@ class WorkflowController extends Controller
             
                             DB::table('accounting.reimbursement_expense_details')->insert($setXDArray);
 
-
+                    } else {
+                        DB::table('accounting.reimbursement_expense_details')->where('REID', $request->reID)->delete();
                     }
 
-                    if(strlen($request->tdData) > 3){
+                    if(!empty($request->tdData)){
 
                             DB::table('accounting.reimbursement_request_details')->where('REID', $request->reID)->delete();
 
@@ -3475,6 +3493,8 @@ class WorkflowController extends Controller
                                 }
                                 DB::table('accounting.reimbursement_request_details')->insert($setTDArray);
                             }
+                    } else {
+                        DB::table('accounting.reimbursement_request_details')->where('REID', $request->reID)->delete();
                     }
 
 
@@ -4001,7 +4021,7 @@ class WorkflowController extends Controller
                     $setupProject = DB::table('general.setup_project')->where('SOID',$id)->first();
                     $salesOrderSystem = DB::table('sales_order.sales_order_system')->where('soid',$id)->get();
                     $salesOrderDocs = DB::table('sales_order.sales_order_docs')->where('SOID',$id)->get();
-                    $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Sales Order - Delivery' AND a.`REQID` =$id");
+                    $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Sales Order - Demo' AND a.`REQID` =$id");
 
                     return view('MyWorkflow.rejected-byid.rej-sof-dmo', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject'));
                 } 

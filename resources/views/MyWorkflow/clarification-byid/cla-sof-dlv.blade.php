@@ -794,7 +794,7 @@
                                         <th >Actions</th>
                                     </tr>
                                     </thead>
-                                    <tbody >
+                                    <tbody id="attachmentsTbodyCLA">
                                         @foreach ($attachmentsDetails as $file )
                                         <tr>
                                             <td>{{ $file->filename }}</td>
@@ -1461,6 +1461,20 @@
 
 <script>
     $('#replyClaritySOF').on('click', function(){
+
+
+        var attachmentsRowCount = $('#attachmentsTbodyCLA tr').length;
+
+        // alert(typeof(attachmentsRowCount))
+
+        if(attachmentsRowCount <= 0){
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Attachments is required.');
+        return false;
+        }
+
+
+
         if ($.trim($("#replyRemarks").val()) === "") {
         $('#myError').removeClass('d-none');
         $('#myError').text('Reply remarks is required.');
@@ -1814,7 +1828,7 @@
         function removedAttached(elem){
             var attachedArray = [];
 
-            var x =  $(elem).parent("td").parent("tr").fadeOut(300);
+            var x =  $(elem).parent("td").parent("tr").remove();
             var idAttached = $(elem).children("input").val();
             var pathAttached = $(elem).children("input").next().val();
             var fileNameAttached = $(elem).children("input").next().next().val();

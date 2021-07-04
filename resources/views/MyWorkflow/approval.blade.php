@@ -42,7 +42,7 @@
                                                         {{-- <a href="javascript:void(0)" class="btn btn-secondary" data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus({{ $post->ID }})">View Status</a> --}}
                                                         {{-- <a href="javascript:void(0)" class="btn btn-warning" data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments({{ $post->ID }})">Comments</a> --}}
 
-                                                        <a href="javascript:void(0)" class="btn btn-warning" data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments('{{$post->FRM_CLASS}}',{{ $post->ID }})">Comments</a>
+                                                        <a href="javascript:void(0)" class="btn btn-warning" data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments('{{$post->RequestType}}',{{ $post->ID }})">Comments</a>
 
                                                     </td>
                                                 </tr>                                              

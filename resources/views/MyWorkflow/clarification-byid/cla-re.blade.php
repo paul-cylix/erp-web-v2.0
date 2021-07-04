@@ -438,7 +438,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                                     <th>Actions</th>
                                                 </tr>
                                                 </thead>
-                                                <tbody >
+                                                <tbody  id="attachmentsTbodyCLA">
                                                     @foreach ($attachmentsDetails as $file )
                                                     <tr>
                                                         <td>{{ $file->filename }}</td>
@@ -1978,6 +1978,10 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 
 <script>
     function submitAllDataInTables(){
+
+
+        
+
         xdUpdateData();
         tdUpdateData();
     }
@@ -2182,7 +2186,22 @@ $myAMount = number_format((float)$foo, 2, '.', '');
            
         });
         var xdJsonData = JSON.stringify(objectXD);
-        $( "#xdData" ).val(xdJsonData);
+
+        // If binura lahat
+        if (xdJsonData.length === 2) {
+            // console.log('true triple equal')
+            $( "#xdData" ).val(0);
+        // else nag dag dag or nag bawas lang
+        } else {
+            // console.log('else')
+            $( "#xdData" ).val(xdJsonData);
+        }
+
+
+
+
+
+
     
         for(var i = 0; i<objectXD.length; i++){
                     var numAmt = objectXD[i]['3'];
@@ -2320,7 +2339,18 @@ $myAMount = number_format((float)$foo, 2, '.', '');
         });
 
         var tdJsonData = JSON.stringify(objectTD);
+
+
+        // If binura lahat
+        if (tdJsonData.length === 2) {
+        // console.log('true triple equal')
+        $( "#tdData" ).val(0);
+        // else nag dag dag or nag bawas lang
+        } else {
+        // console.log('else')
         $( "#tdData" ).val(tdJsonData);
+        }
+        // $( "#tdData" ).val(tdJsonData);
     
         for(var i = 0; i<objectTD.length; i++){
                     var numAmt = objectTD[i]['5'];
@@ -2597,7 +2627,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
     objectAttachment = [];
         function removedAttach(elem){
             var attachmentArray = [];
-            var x =  $(elem).parent("td").parent("tr").fadeOut(300);
+            var x =  $(elem).parent("td").parent("tr").remove();
             var idAttachment = $(elem).children("input").val();
             var pathAttachment = $(elem).children("input").next().val();
             var fileNameAttachment = $(elem).children("input").next().next().val();
@@ -2617,11 +2647,25 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 
 <script>
     $('#replyEditableForm').on('click', function(){
+
+        var attachmentsRowCount = $('#attachmentsTbodyCLA tr').length;
+     
+        // alert(typeof(attachmentsRowCount))
+
+        if(attachmentsRowCount <= 0){
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Attachments is required.');
+        return false;
+        }
+
+
         if ($.trim($("#replyRemarks").val()) === "") {
         $('#myError').removeClass('d-none');
         $('#myError').text('Reply remarks is required.');
         return false;
         }
+
+
     })
 </script>
 

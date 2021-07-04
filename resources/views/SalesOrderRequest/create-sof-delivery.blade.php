@@ -813,11 +813,11 @@
         return false;
         }
 
-        if ($.trim($("#accountingRemarks").val()) === "") {
-        $('#myError').removeClass('d-none');
-        $('#myError').text('Please complete required fields.');
-        return false;
-        }
+        // if ($.trim($("#accountingRemarks").val()) === "") {
+        // $('#myError').removeClass('d-none');
+        // $('#myError').text('Please complete required fields.');
+        // return false;
+        // }
 
 
 
@@ -896,17 +896,17 @@
         return false;
         }
 
-        if ($.trim($("#warranty").val()) === "") {
-        $('#myError').removeClass('d-none');
-        $('#myError').text('Please complete required fields.');
-        return false;
-        }
+        // if ($.trim($("#warranty").val()) === "") {
+        // $('#myError').removeClass('d-none');
+        // $('#myError').text('Please complete required fields.');
+        // return false;
+        // }
 
-        if ($.trim($("#warranty").val()) === "") {
-        $('#myError').removeClass('d-none');
-        $('#myError').text('Please complete required fields.');
-        return false;
-        }
+        // if ($.trim($("#warranty").val()) === "") {
+        // $('#myError').removeClass('d-none');
+        // $('#myError').text('Please complete required fields.');
+        // return false;
+        // }
 
         var projectCostSTR = $("#projectCost").val();
         projectCostFLOAT = parseFloat(projectCostSTR);

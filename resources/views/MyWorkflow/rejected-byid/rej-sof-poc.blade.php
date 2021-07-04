@@ -138,7 +138,7 @@
 
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="exampleInputEmail1">Customer Name</label>
                                                             <input type="text" value="{{ $salesOrder->client }}" disabled class="form-control" style="width: 100%;"  > 
@@ -154,12 +154,7 @@
                                                     <input type="hidden" name="contactPersonName" id="contactPersonName">
 
                                         
-                                                    <div class="col-md-1">
-                                                        <div class="form-group">
-                                                            <label for="add customer">Add Customer</label>
-                                                            <button class="btn btn-success" style="width: 100%" disabled>Add</button>
-                                                        </div>
-                                                    </div>
+                                                   
 
                                                                
                                                     <div class="col-md-3">
@@ -529,7 +524,14 @@
                                                         <div class="form-group">
                                                             <label for="exampleInputEmail1">Invoice Date Needed</label>
                                                             <div class="input-group date" id="dateCreated" data-target-input="nearest">
-                                                                <input type="text" class="form-control datetimepicker-input" value="{{ $salesOrder->invDate }}" disabled name="dateCreated" data-target="#dateCreated"/>
+                                                                {{-- <input type="text" class="form-control datetimepicker-input" value="{{ $salesOrder->invDate }}" disabled name="dateCreated" data-target="#dateCreated"/> --}}
+                                                                @if (!empty($salesOrder->invDate) && $salesOrder->invDate == '0000-00-00')
+                                                                <input type="text" class="form-control datetimepicker-input" disabled id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                               
+                                                                @elseif(!empty($salesOrder->invDate))
+                                                                <input type="text" class="form-control datetimepicker-input" value="{{date("m-d-Y", strtotime( $salesOrder->invDate)) }}" id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                             
+                                                                @else
+                                                                <input type="text" class="form-control datetimepicker-input" disabled id="invoiceDateNeededForm" name="invoiceDateNeeded" data-target="#invoiceDateNeeded"/>                                                             
+                                                                @endif
                                                                 <div class="input-group-append" data-target="#dateCreated" data-toggle="datetimepicker">
                                                                     <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                                                 </div>
@@ -568,54 +570,43 @@
 
 
                         {{-- Attachments of no edit --}}
+                        @if (!empty($attachmentsDetails))
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="card card-gray">
-                                    <div class="card-header" style="height:50px;">
-                                        <div class="row ">
-                                            <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
-                                        </div>
+                        <div class="col-md-12">
+                            <div class="card card-gray">
+                                <div class="card-header" style="height:50px;">
+                                    <div class="row ">
+                                        <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
                                     </div>
-
-                                    <div class="card-body" >
-                                        <div class="row">       
-                                            @forelse ($attachmentsDetails as $file)
-                                            <div class="col-sm-2" >
-
-                                                <div class="dropdown show" >
-                                                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="position: absolute; right: 0px; top: 0px; z-index: 999; "></a>
-                                                    <div class="dropdown-menu dropdown-menu-right">
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a>
-                                                        <a class="dropdown-item" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" download="{{ $file->filename }}" >Download</a>
-                                                    </div>
-                                                </div>
-                                                <div class="card">
-
-                                                    <?php
-                                                        if ($file->fileExtension == 'jpg' or $file->fileExtension == 'JPG' or $file->fileExtension == 'png' or $file->fileExtension == 'PNG') { ?>
-                                                            <a href="#" style="padding: 10px;"><img src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" class="card-img-top"  style="width:100%; height:200px; object-fit: cover" alt="..."></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'pdf' or $file->fileExtension == 'PDF' or $file->fileExtension == 'log' or $file->fileExtension == 'LOG' or $file->fileExtension == 'txt' or $file->fileExtension == 'TXT') { ?>
-                                                        <a href="#" style="padding: 10px;"><iframe class="embed-responsive-item" src="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" frameborder="0" scroll="no" style="height:200px; width:100%;"></iframe></a>
-                                                    <?php
-                                                        }if ($file->fileExtension == 'PDF' or $file->fileExtension == 'pdf') {
-                                                            # code...
-                                                        } 
-                                                    ?>
-                                
-                                                    <div class="card-body" style="padding: 5px; ">
-                                                    <p class="card-text text-muted" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $file->filename }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>  
-                                            @empty
-                                            <span style="margin-left: 12px;">no attachments</span>
-                                            @endforelse
-                                        </div>   
+                                </div>
+                                <div class="card-body" >
+                                    <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                                        <table id= "attachmentsTable"class="table table-hover" >
+                                            <thead >
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Temporary Path</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody >
+                                                @foreach ($attachmentsDetails as $file )
+                                                <tr>
+                                                    <td>{{ $file->filename }}</td>
+                                                    <td>{{ $file->fileExtension }}</td>
+                                                    <td>{{ $file->filepath }}</td>
+                                                    <td><a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    </div>
+                                </div>
                             </div>
                         </div>
+                        </div>
+                        @endif
                         {{-- End Attachments --}}
                                               
 

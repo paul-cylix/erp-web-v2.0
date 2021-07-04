@@ -250,15 +250,15 @@
                     </div>
 
                     {{-- Attachments --}}
-                    <label class="btn btn-primary" style="font-weight:normal;">
+                    {{-- <label class="btn btn-primary" style="font-weight:normal;">
                         Attach files <input type="file" name="file[]" class="form-control-file" id="customFile" multiple hidden>
                     </label>
-                    <span class="text-danger">@error('file'){{ $message }}@enderror</span>
+                    <span class="text-danger">@error('file'){{ $message }}@enderror</span> --}}
 
     </form>           
 
 
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-md-12">
             <div class="card card-gray">
 
@@ -267,17 +267,17 @@
                         <div  style="padding: 0 3px; 10px 3px; font-size:18px;"><h3 class="card-title">Attachments</h3></div>
                     </div>
                 </div>
-                {{-- Card body --}}
+        
                 <div class="card-body" >
 
-                    {{-- Table attachments --}}
+       
                     <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
                         <table id= "attachmentsTable"class="table table-hover" >
                             <thead >
                             <tr>
                                 <th>Name</th>
                                 <th>Type</th>
-                                {{-- <th>Size</th> --}}
+                            
                                 <th>Temporary Path</th>
                                 <th>Actions</th>
 
@@ -298,14 +298,53 @@
                             </tbody>
                         </table>
                     </div>
-                    {{-- Table attachments End--}}                                                                                       
+                                                                                                     
                 </div>
-                {{-- Card body END --}}                            
+                                    
+            </div>
+        </div>
+    </div> --}}
+
+
+
+
+    @if (!empty($attachmentsDetails))
+    <div class="row">
+    <div class="col-md-12">
+        <div class="card card-gray">
+            <div class="card-header" style="padding: 5px 20px 5px 20px; ">
+            <div class="row">
+                <div class="col" style="font-size:18px; padding-top:5px;">Attachments</div>                                          
+            </div>
+            </div>
+            <div class="card-body" >
+                <div class="table-responsive" style="max-height: 300px; overflow: auto; display:inline-block;"  >
+                    <table id= "attachmentsTable"class="table table-hover" >
+                        <thead >
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Temporary Path</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody >
+                            @foreach ($attachmentsDetails as $file )
+                            <tr>
+                                <td>{{ $file->filename }}</td>
+                                <td>{{ $file->fileExtension }}</td>
+                                <td>{{ $file->filepath }}</td>
+                                <td><a class="btn btn-secondary" href="{{ asset('/'.$file->filepath.'/'.$file->filename) }}" target="_blank" >View</a></td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-
-
+    </div>
+    @endif
 
 
 
@@ -435,20 +474,11 @@
 
 
 
-
-
-
-
-
-
-
-
+              
 
 
 
         
-      
- 
         <div class="col-md-12">
             <div class="card card-gray">
                 <div class="card-header">
@@ -952,7 +982,7 @@
             </label>
             <span class="text-danger">@error('file'){{ $message }}@enderror</span>
 
-            </form>
+</form>
 
 {{-- Attachments of no edit --}}
 <div class="row">
@@ -1856,8 +1886,18 @@ $myAMount = number_format((float)$foo, 2, '.', '');
         // }
 
         var xdJsonData = JSON.stringify(objectXD);
-        $( "#xdData" ).val(xdJsonData);
+        // $( "#xdData" ).val(xdJsonData);
 
+        // If binura lahat
+        if (xdJsonData.length === 2) {
+            // console.log('true triple equal')
+            $( "#xdData" ).val(0);
+        // else nag dag dag or nag bawas lang
+        } else {
+            // console.log('else')
+            $( "#xdData" ).val(xdJsonData);
+        }
+        // console.log('hi');
 
     
         for(var i = 0; i<objectXD.length; i++){
@@ -1997,7 +2037,16 @@ $myAMount = number_format((float)$foo, 2, '.', '');
         });
     
         var tdJsonData = JSON.stringify(objectTD);
+        // $( "#tdData" ).val(tdJsonData);
+                // If binura lahat
+        if (tdJsonData.length === 2) {
+        // console.log('true triple equal')
+        $( "#tdData" ).val(0);
+        // else nag dag dag or nag bawas lang
+        } else {
+        // console.log('else')
         $( "#tdData" ).val(tdJsonData);
+        }
 
         for(var i = 0; i<objectTD.length; i++){
                     var numAmt = objectTD[i]['5'];
