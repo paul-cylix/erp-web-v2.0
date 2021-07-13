@@ -200,52 +200,154 @@ class HumanResourceRequestController extends Controller
     }
 
 
-       // approved HR
+
+
+// Clarify HR
+
+        public function clarifyHR(Request $request){
+
+            $actualID = DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In Progress'), FALSE) AS inpid;");
+
+            
+            $notificationIdClarity = DB::table('general.notifications')->insertGetId([
+                'ParentID' =>'0',
+                'levels'=>'0',
+                'FRM_NAME' =>$request->frmName,
+                'PROCESSID' =>$request->main_id,
+                'SENDERID' =>session('LoggedUser'),
+                'RECEIVERID' =>$request->clarityRecipient,
+                'MESSAGE' =>$request->clarificationRemarks,
+                'TS' =>NOW(),
+                'SETTLED' =>'NO',
+                'ACTUALID' => $actualID[0]->inpid,
+                'SENDTOACTUALID' =>'0',
+                'UserFullName' =>session('LoggedUser_FullName')
+            ]);
+
+            DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
+            a.`NOTIFICATIONID` = '".$notificationIdClarity."', a.`UID_SIGN` = '".session('LoggedUser')."',a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->clarificationRemarks."' WHERE
+            a.`PROCESSID` = '".$request->main_id."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`STATUS` = 'In Progress'
+            ");
+            
+            DB::update("UPDATE humanresource.`overtime_request` a SET a.`status` =  'For Clarification' WHERE a.`main_id` = '".$request->main_id."' AND a.`titleid` = '".session('LoggedUser_CompanyID')."' ");
+
+    
+
+            
+            
+            
+
+
+            $success = true;
+            DB::beginTransaction();
+            try{    
+                DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+                DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
+                
+                DB::commit();
+            }catch(\Exception $e){
+                DB::rollback();
+                $success = false;
+            }
+            if($success){
+                return back()->with('form_submitted', 'The request has been Approved.');
+            }
+            else{
+                return back()->with('form_error', 'Error in Transaction');
+            }
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+// approved HR
        public function approvedHR(Request $request){
 
-       
+        // Check if approver is the final approver for it to be completed
+        $isCompleted =DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`ORDERS` = 3 AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In Progress' AND a.`FRM_NAME` = '".$request->frmName."'), FALSE) AS tableCheck;");
+        
+        
+        if (!empty($isCompleted[0]->tableCheck)) {
+            $success = true;
+            DB::beginTransaction();
+            try{   
 
+                DB::update("UPDATE general.`actual_sign` SET `DoneApproving` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                DB::update("UPDATE humanresource.`overtime_request` set `status` = 'Completed' WHERE `main_id` = '".$request->main_id."';  ");
+
+                DB::commit();
+            }catch(\Exception $e){
+                DB::rollback();
+                $success = false;
+            }
+            if($success){
+                return back()->with('form_submitted', 'The request has been Approved.');
+            }
+            else{
+                return back()->with('form_error', 'Error in Transaction');
+            }
+
+        } else {
+
+            $success = true;
+            DB::beginTransaction();
+            try{    
+                DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+                DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
+                
+                DB::commit();
+            }catch(\Exception $e){
+                DB::rollback();
+                $success = false;
+            }
+            if($success){
+                return back()->with('form_submitted', 'The request has been Approved.');
+            }
+            else{
+                return back()->with('form_error', 'Error in Transaction');
+            }
+        }
+        
+
+}
+
+
+
+
+
+    public function approvedInit(Request $request){
         $otData = $request->jsonOTdata;
         $otData =json_decode($otData,true);
-
-
 
         if(!empty($otData)){
             // insert to hr.ot main table
             for($i = 0; $i <count($otData); $i++) {
-
     
                 $ot_in_actual = date_create($otData[$i][6]);
                 $ot_out_actual = date_create($otData[$i][7]);   
-
 
                 DB::update("UPDATE humanresource.`overtime_request` SET `ot_in_actual` = '".date_format($ot_in_actual, 'Y-m-d H:i:s')."', ot_out_actual = '".date_format($ot_out_actual, 'Y-m-d H:i:s')."', ot_totalhrs_actual = '".$otData[$i][8]."' WHERE `id` = '".$otData[$i][10]."' ;");
                 DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
                 DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
 
-
             }
         };
-        // $success = true;
-        // DB::beginTransaction();
-        // try{    
-        //     DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
-        //     DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
-            
-        //     DB::commit();
-        // }catch(\Exception $e){
-        //     DB::rollback();
-        //     $success = false;
-        // }
-        // if($success){
-        //     return back()->with('form_submitted', 'The request has been Approved.');
-        // }
-        // else{
-        //     return back()->with('form_error', 'Error in Transaction');
-        // }
 
-            return back()->with('form_submitted', 'The request has been Approved.');
-
+        return back()->with('form_submitted', 'The request has been Approved.');
 
     }
 

@@ -8,7 +8,7 @@
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled>Reply</button></div>     
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
-                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled data-toggle="modal" data-target="#withdrawModal" >Withdraw</button></div>        
+                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right "  data-toggle="modal" data-target="#withdrawModal" >Withdraw</button></div>        
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" disabled>Approve</button></div>   
         </div> 

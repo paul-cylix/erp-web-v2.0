@@ -358,8 +358,6 @@ class WorkflowController extends Controller
 
 
 
-
-
         }
 
             public function approvedRENpu(Request $request){
@@ -780,7 +778,16 @@ class WorkflowController extends Controller
 
             if($class === 'frmOvertimeRequest'){
                 $post = DB::select("SELECT *,(SELECT project_name FROM general.`setup_project` WHERE project_id = PRJID) AS 'Project_Name' FROM humanresource.`overtime_request` WHERE main_id = $id;");
-                return view('MyWorkflow.approval-byid.app-hr-ot', compact('post'));
+                $getRecipientName = DB::select("SELECT a.uid,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.uid) AS 'Name'
+                FROM (SELECT initid AS 'uid' FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = '".$frmname."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND initid <> '".session('LoggedUser')."'
+                UNION ALL SELECT UID_SIGN AS 'uid'  FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = '".$frmname."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND `status` = 'Completed' AND uid_sign <> '".session('LoggedUser')."') a GROUP BY uid;");
+
+
+
+
+
+
+                return view('MyWorkflow.approval-byid.app-hr-ot', compact('post','getRecipientName'));
             }
        
 }

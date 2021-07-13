@@ -332,6 +332,8 @@ Route::group(['middleware'=>['AuthCheck']], function(){
     Route::post('/withdraw-hr', [HumanResourceRequestController::class, 'withdrawHR'])->name('withdraw.hr');
     Route::post('/rejected-hr', [HumanResourceRequestController::class, 'rejectedHR'])->name('rejected.hr');
     Route::post('/approved-hr', [HumanResourceRequestController::class, 'approvedHR'])->name('approved.hr');
+    Route::post('/approved-init', [HumanResourceRequestController::class, 'approvedInit'])->name('approved.init');
+    Route::post('/clarify-hr', [HumanResourceRequestController::class, 'clarifyHR'])->name('clarify.hr');
 
 
     

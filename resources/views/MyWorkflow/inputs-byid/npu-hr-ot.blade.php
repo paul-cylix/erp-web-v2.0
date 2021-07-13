@@ -34,7 +34,7 @@
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled>Reply</button></div>     
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
-                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled>Withdraw</button></div>        
+                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " data-toggle="modal" data-target="#withdrawModal"  >Withdraw</button></div>        
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" data-toggle="modal" data-target="#approveModal" >Approve</button></div>   
         </div> 
@@ -181,6 +181,45 @@ $date = date_format($date,"n/d/Y  h:i A");
 {{-- Row END --}}
 
 
+
+{{-- Withdraw Modal Start--}}
+    <div class="modal fade"  id="withdrawModal" tabindex="-1" role="dialog" aria-labelledby="withdrawModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-dark" >
+            <h5 class="modal-title" id="withdrawModalLabel">Withdraw Request</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="{{ route('withdraw.hr') }}" method="POST">
+                @csrf
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">                     
+                            <label for="withdrawRemarks">Remarks</label>
+                            <div class="card-body">
+                                <div class="form-floating">
+                                    <input type="hidden" name="main_id" id="" value="{{ $post[0]->main_id }}">
+                                    <input type="hidden" value="@yield('title')" name="frmName">
+                                    <textarea class="form-control" placeholder="Leave a comment here" name="withdrawRemarks" id="withdrawRemarks" style="height: 100px"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            <input type="submit" class="btn btn-primary" value="Proceed">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+{{-- Withdraw Modal End--}}
+
 {{-- Modal Approve --}}
     <div class="modal fade"  id="approveModal" tabindex="-1" role="dialog" aria-labelledby="approveModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -191,7 +230,7 @@ $date = date_format($date,"n/d/Y  h:i A");
                 <span aria-hidden="true">&times;</span>
             </button>
             </div>
-            <form action="{{ route('approved.hr') }}" method="POST">
+            <form action="{{ route('approved.init') }}" method="POST">
                 @csrf
             <div class="modal-body">
                 <div class="container-fluid">
@@ -219,6 +258,7 @@ $date = date_format($date,"n/d/Y  h:i A");
         </div>
     </div>
 {{-- End Approved Modal --}}
+
 
 
 {{-- Submit-all --}}
@@ -567,16 +607,6 @@ $date = date_format($date,"n/d/Y  h:i A");
     })
 </script>
    
-
-
-
-
-
-
-
-
-
-
 
 @endsection
 {{-- Dropzone start --}}

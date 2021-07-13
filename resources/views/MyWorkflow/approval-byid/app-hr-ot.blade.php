@@ -28,14 +28,14 @@
 </Script>
 @endif
 
-
+{{-- Row Start --}}
 <div class="row">
     <div class="col-md-12" style="margin: -20px 0 20px 0 " >
         <div class="form-group" style="margin: 0 -5px 0 -5px;">
                 <div class="col-md-1 float-left"><a href="/in-progress" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled>Reply</button></div>     
-                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
+                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" data-toggle="modal" data-target="#clarityModal" >Clarify</button></div>                    
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled >Withdraw</button></div>        
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" data-toggle="modal" data-target="#rejectedModal" >Reject</button></div>      
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" data-toggle="modal" data-target="#approveModal" >Approve</button></div>   
@@ -131,14 +131,30 @@
                                         <td class="col-2">{{ $p->employee_name }}</td>
                                         <td class="col-2">{{ $p->Project_Name }}</td>
                                         <td class="col-1">{{ $p->overtime_date }}</td>
-                                        <td class="col-1">{{ $p->ot_in }}</td>
-                                        <td class="col-1">{{ $p->ot_out }}</td>
-                                        <td class="col-1">{{ $p->ot_totalhrs }}</td>
+                                                @php
+                                                $date = date_create($p->ot_in);
+                                                $date = date_format($date,"n/d/Y  h:i A");
+                                                @endphp
+                                                <td class="col-1">{{ $date }}</td>
+                                                @php
+                                                $date = date_create($p->ot_out);
+                                                $date = date_format($date,"n/d/Y  h:i A");
+                                                @endphp
+                                                <td class="col-1">{{ $date}}</td>
+                                                <td class="col-1">{{ $p->ot_totalhrs }}</td>
 
                                             @if (!empty($p->ot_in_actual) && !empty($p->ot_out_actual) && !empty($p->ot_totalhrs_actual))
-                                                <td class="col-1">{{ $p->ot_totalhrs }}</td>
-                                                <td class="col-1">{{ $p->ot_totalhrs }}</td>
-                                                <td class="col-1">{{ $p->ot_totalhrs }}</td>
+                                                @php
+                                                $date = date_create($p->ot_in_actual);
+                                                $date = date_format($date,"n/d/Y  h:i A");
+                                                @endphp  
+                                                <td class="col-1">{{ $date }}</td>
+                                                @php
+                                                $date = date_create($p->ot_out_actual);
+                                                $date = date_format($date,"n/d/Y  h:i A");
+                                                @endphp  
+                                                <td class="col-1">{{ $date}}</td>
+                                                <td class="col-1">{{ $p->ot_totalhrs_actual }}</td>
                                             @else
                                                 <script>
                                                     $('.tdid').addClass('d-none');
@@ -174,6 +190,64 @@
 {{-- Col-md-12 end --}}
 </div>
 {{-- Row END --}}
+
+
+
+
+
+{{-- Modal Clarity with message--}}
+    <div class="modal fade" id="clarityModal" tabindex="-1" role="dialog" aria-labelledby="clarityModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-dark">
+            <h5 class="modal-title" id="clarityModalLabel">Clarity Request</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+
+
+            <form action="{{ route('clarify.hr') }}" method="POST">
+                @csrf
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="clarityRecipient">Choose Recipient</label>
+                            <select id="clarityRecipient" name="clarityRecipient" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                            
+                                @foreach($getRecipientName as $recipientName)
+                                    <option value="{{ $recipientName->uid }}">{{ $recipientName->Name }} </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    
+                   
+
+                    <div class="row" style="margin-top: 7px;">
+                        <div class="col-md-12">                     
+                            <label for="clarificationRemarks">Message</label>
+                            {{-- <div class="card-body"> --}}
+                                <div class="form-floating">
+                                    <input type="hidden" value=" " name="idName">
+                                    <textarea class="form-control" placeholder="Leave a comment here" name="clarificationRemarks" id="clarificationRemarks" style="height: 100px"></textarea>
+                                </div>
+                            {{-- </div> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            <input type="submit" class="btn btn-primary" value="Proceed"></input>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+        </div>
+        </div>
+    </div>
+{{-- End Modal --}}
 
 
 
