@@ -3,8 +3,6 @@
 @section('content')
 
 @if(Session::get('form_submitted'))
-{{-- <div class="container" ><div class="alert alert-danger" role="alert">{{ Session::get('error_submit') }}</div></div> --}}
-
 <Script>
     swal({
         text: "{!! Session::get('form_submitted') !!}",

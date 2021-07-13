@@ -660,7 +660,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                             <div class="row">
                                 <div class="col-md-12">
                                     <form action="#">
-                                        <div class="row">
+                                    <div class="row">
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Date</label>
@@ -673,6 +673,28 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                                 </script>
                                             </div>
                                         </div>
+
+
+                                        <div class="col-md-9">
+                                            <div class="form-group">
+                                                <label for="">Client Name</label>
+                                                <select id="liqclientid" name="liqclientid" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" onchange="getLiqClientName(this)"  >
+                                                    <option selected="selected" hidden disabled value="0">Select Client Name</option>
+                                                    {{-- @foreach ($projects as $prj)
+                                                         <option value="{{$prj->project_id}}">{{$prj->project_name}}</option>
+                                                    @endforeach --}}
+
+                                                    @foreach ($businesslist as $business )
+                                                    <option value="{{ $business->Business_Number }}">{{ $business->business_fullname }}</option>
+                                                    @endforeach
+                                                </select>
+                                            <span class="text-danger" id="liqclientErr"></span>                                                  
+    
+                                            </div>
+                                        </div>   
+
+                                    </div>
+                                    <div class="row"> 
 
                                         <div class="col-md-4">
                                             <div class="form-group">
@@ -687,7 +709,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                             </div>
                                         </div>
 
-                                        <div class="col-md-2">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="">Currency</label>
                                                 <select  class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;"  id="addCurr">
@@ -700,7 +722,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                             </div>
                                         </div>
 
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="">Amount</label>
                                                 <input type="number" class="form-control" placeholder="0.00" aria-describedby="helpId"  id="addAmnt" >
@@ -768,6 +790,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                                 <input id="clientID" name="clientID" type="hidden" class="form-control" placeholder="" readonly>
                                                 {{-- <input type="hidden" value="" name="deleteAttached" id="deleteAttached"> --}}
                                                 <input type="hidden" value="" name="deleteAttached" id="toDelete">
+                                                <input type="hidden" value="" name="liqclientname" id="liqclientname">
 
 
                                                 <textarea class="form-control" placeholder="Leave a comment here" name="replyRemarks" id="replyRemarks" style="height: 100px"></textarea>
@@ -807,6 +830,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                     <thead>
                                     <tr>
                                         <th>Date</th>
+                                        <th>Client Name</th>
                                         <th>Expense Type</th>
                                         <th>Description</th>
                                         <th>Currency</th>
@@ -818,6 +842,8 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                         @foreach ($queLiquidatedT as $mLiqData)
                                         <tr>
                                             <td >{{ $mLiqData->trans_date }}</td>
+                                            <td class="d-none">{{ $mLiqData->client_id }}</td>
+                                            <td>{{ $mLiqData->client_name }}</td>
                                             <td >{{ $mLiqData->expense_type }}</td>
                                             <td >{{ $mLiqData->description }}</td>
                                             <td >{{ $mLiqData->currency }}</td>
@@ -826,7 +852,7 @@ $foo = $mLiqData->Amount;
 $myAMount = number_format((float)$foo, 2, '.', ''); 
 @endphp
                                             <td >{{ $myAMount }}</td>
-                                            
+                                                        
                                             <td>
                                                 <a class="btn btn-danger removeRow" onclick="sampDel()">Delete</a>
                                             </td>
@@ -840,7 +866,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                         <div class="float-right">
 
 @php
-$foo = $qeSubTotal;
+$foo = $qeSubTotal[0]->subTotalAmount ;
 $myAMount = number_format((float)$foo, 2, '.', ''); 
 @endphp
                             <h6 style="margin-right:140px;">Total Amount: <span id ="spTotalAmount">{{ $myAMount }}</span></h6>
@@ -929,6 +955,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                     <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Client Name</th>
                         <th>Expense Type</th>
                         <th>Description</th>
                         <th>Currency</th>
@@ -941,6 +968,8 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                         @foreach ($queLiquidatedT as $mLiqData)
                         <tr>
                             <td>{{ $mLiqData->trans_date }}</td>
+                            <td>{{ $mLiqData->client_name }}</td>
+                            
                             <td>{{ $mLiqData->expense_type }}</td>
                             <td>{{ $mLiqData->description }}</td>
                             <td>{{ $mLiqData->currency }}</td>
@@ -1242,12 +1271,20 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 </script>
 
 <script>
-          $('#modalReplyClarityInit').on('click', function(){
+        $('#modalReplyClarityInit').on('click', function(){
         if ($.trim($("#replyRemarks").val()) === "") {
         $('#myError').removeClass('d-none');
         $('#myError').text('Reply remarks is required.');
         return false;
-        } else {
+        }
+        
+        if ($.trim($("#jsonData").val()) == "0") {
+        $('#myError').removeClass('d-none');
+        $('#myError').text('Liquidation table is required.');
+        return false;
+        }
+        
+         else {
             getDataInit();
         }
     })
@@ -1280,6 +1317,16 @@ $myAMount = number_format((float)$foo, 2, '.', '');
         $("#attachmentsTable").on('click', '.btnDelete', function () {
         $(this).closest('tr').remove();
     });
+</script>
+
+<script>
+    function getLiqClientName(){
+        let liqclientname = $( "#liqclientid option:selected" ).text();
+        // alert(liqclientname);
+        $('#liqclientname').val(liqclientname);
+
+        console.log(liqclientname);
+    }
 </script>
 
 @endsection
@@ -1344,6 +1391,10 @@ $myAMount = number_format((float)$foo, 2, '.', '');
     }
  </script>
 
+ 
+
+
+
 {{-- LiqTable --}}
 <script>
     function totalSum(){
@@ -1359,24 +1410,29 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 
         var addAmntChecker = false;
         var addDescChecker = false;
+        var liqclientidChecker = false;
 
-        
 
         var addDate = $('#addDate').val();
         var addExpType = $('#addExpType').val(); 
         var addCurr = $('#addCurr').val(); 
         var addAmnt = $('#addAmnt').val(); 
         var addDesc = $('#addDesc').val(); 
+        var liqclientid = $('#liqclientid').val();
+        var liqclientnamedata = $('#liqclientname').val();
 
         console.log(addDesc);
-
-        // var rowCount = $('#dataTableLiq tr').length;
-        // console.log(rowCount);
-
-        // var rowCounts = $('#dataTableLiq tr');
-        // console.log(rowCounts);
+        console.log(liqclientid)
+        console.log(liqclientnamedata)
 
 
+        if(liqclientid){
+            liqclientidChecker = true;
+            $('#liqclientErr').text('');
+        }else{
+            $('#liqclientErr').text('Client Name is required!');
+            $('#liqsuccessdiv').addClass('d-none')
+        }
 
         if(addAmnt){
             addAmntChecker = true;
@@ -1395,9 +1451,11 @@ $myAMount = number_format((float)$foo, 2, '.', '');
             $('#liqsuccessdiv').addClass('d-none')
         }
 
-        if (addAmntChecker && addDescChecker){
+        if (addAmntChecker && addDescChecker && liqclientidChecker){
             $('#tableLiqCLa tbody').append('<tr>'+
                                             '<td>'+addDate+'</td>'+
+                                            '<td class="d-none">'+liqclientid+'</td>'+
+                                            '<td>'+liqclientnamedata+'</td>'+
                                             '<td>'+addExpType+'</td>'+
                                             '<td>'+addDesc+'</td>'+
                                             '<td>'+addCurr+'</td>'+
@@ -1409,7 +1467,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
         );
 
         $('#liqsuccessdiv').removeClass('d-none')
-        compute();
+        // compute();
         getDataInit();
         $('#addAmnt').val('');
         $('#addDesc').val('');
@@ -1417,26 +1475,19 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 
 
    
-    
-       
-      
-   
-
-        
-
 
         
     }
 
-    function compute(){
-        var sum = 0;
-        $('#tableLiqCLa tbody tr td').eq(4).each(function()
-        {
-            sum += parseFloat($(this).text());
-        });
-        $('#spTotalAmount').text(sum);
-        // liqUpdateData();
-    }
+    // function compute(){
+    //     var sum = 0;
+    //     $('#tableLiqCLa tbody tr td').eq(6).each(function()
+    //     {
+    //         sum += parseFloat($(this).text());
+    //     });
+    //     $('#spTotalAmount').text(sum);
+    //     // liqUpdateData();
+    // }
 
 
 
@@ -1448,20 +1499,29 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 
         $("#tableLiqCLa > #dataTableLiq > tr").each(function () {
             var dateInit = $(this).find('td').eq(0).text();
-            var xpType = $(this).find('td').eq(1).text();
-            var descInit = $(this).find('td').eq(2).text();
-            var currInit = $(this).find('td').eq(3).text();
-            var amtInit = $(this).find('td').eq(4).text();
-
+            var clientIDInit = $(this).find('td').eq(1).text();
+            var clientNameInit = $(this).find('td').eq(2).text();
+            var xpType = $(this).find('td').eq(3).text();
+            var descInit = $(this).find('td').eq(4).text();
+            var currInit = $(this).find('td').eq(5).text();
+            var amtInit = $(this).find('td').eq(6).text();
 
             var listArry = [];
-            listArry.push(dateInit,xpType,descInit,currInit,amtInit);
+            listArry.push(dateInit,clientIDInit,clientNameInit,xpType,descInit,currInit,amtInit);
             tblArry.push(listArry);
                      
         });
 
+        
+        var jsonLiqTbl = JSON.stringify(tblArry);
+        console.log(jsonLiqTbl);
+
+
+   
+
+
         for(var i = 0; i<tblArry.length; i++){
-                var numAmt = tblArry[i]['4'];
+                var numAmt = tblArry[i]['6'];
                 myAmt += parseFloat(numAmt);
         
             }
@@ -1470,10 +1530,18 @@ $myAMount = number_format((float)$foo, 2, '.', '');
         console.log(myAmt);
         document.getElementById('spTotalAmount').innerHTML = myAmt;
 
+       
 
-
-        var jsonLiqTbl = JSON.stringify(tblArry);
+        if (jsonLiqTbl.length === 2) {
+            jsonLiqTbl = 0;
         document.getElementById("jsonData").value = jsonLiqTbl;
+
+        } else {
+            // alert('else');
+        document.getElementById("jsonData").value = jsonLiqTbl;
+
+        }
+
 
         return false;
 

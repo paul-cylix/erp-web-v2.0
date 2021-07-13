@@ -161,6 +161,7 @@
                                             <thead>
                                                 <tr>
                                                     <th style="position: sticky; top: 0; background: white; ">Date</th>
+                                                    <th style="position: sticky; top: 0; background: white; ">Client Name</th>
                                                     <th style="position: sticky; top: 0; background: white; ">Expense Type</th>
                                                     <th style="position: sticky; top: 0; background: white; ">Remarks</th>
                                                     <th style="position: sticky; top: 0; background: white; ">Amount</th>
@@ -171,6 +172,9 @@
                                                 @forelse ($expenseDetails as $xdData)
                                                     <tr>
                                                         <td>{{ $xdData->date_ }}</td>
+                                                        <td>{{ $xdData->CLIENT_NAME }}</td>
+
+
                                                         <td>{{ $xdData->EXPENSE_TYPE }}</td>
                                                         <td>{{ $xdData->DESCRIPTION }}</td>
 @php
@@ -230,6 +234,8 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                             <thead>
                                                 <tr>
                                                     <th style="position: sticky; top: 0; background: white;" >Date</th>
+                                                    <th style="position: sticky; top: 0; background: white; ">Client Name</th>
+
                                                     <th style="position: sticky; top: 0; background: white;" >Destination From</th>
                                                     <th style="position: sticky; top: 0; background: white;" >Destination To</th>
                                                     <th style="position: sticky; top: 0; background: white;" >Mode of Transportation</th>
@@ -242,6 +248,8 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                                 @forelse ($transpoDetails as $tdData)
                                                     <tr>
                                                         <td>{{ $tdData->date_ }}</td>
+                            <td>{{ $tdData->CLIENT_NAME }}</td>
+
                                                         <td>{{ $tdData->DESTINATION_FRM }}</td>
                                                         <td>{{ $tdData->DESTINATION_TO }}</td>
                                                         <td>{{ $tdData->MOT }}</td>

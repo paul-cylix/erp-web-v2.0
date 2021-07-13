@@ -184,7 +184,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 
 
 
-    <!-- Modal Paul--> 
+    <!-- Modal Liquidation--> 
     <div class="modal fade" id="liquidationModal" tabindex="-1" aria-labelledby="liquidationModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -203,12 +203,11 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                         <div class="row">
                             <div class="col-md-12">
                                 <form action="#">
-                                    <div class="row">
+                            <div class="row">
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label>Date</label>
-                                            
-
+                            
                                             <input type="date" class="form-control"   aria-describedby="helpId" id="liqdate">
                                             <script>
                                                 var today = new Date();
@@ -220,37 +219,58 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-9">
                                         <div class="form-group">
-                                            <label for="">Expense Type</label>
-                                            <select id="liqtype" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                            @foreach ($expenseType as $xpType)
-                                            <option value="{{$xpType->type}}">{{$xpType->type}}</option>
-                                            @endforeach
+                                            <label for="">Client Name</label>
+                                            <select id="liqclientid" name="liqclientid" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" onchange="getLiqClientName(this)"  >
+                                                <option selected="selected" hidden disabled value="0">Select Client Name</option>
+                                                {{-- @foreach ($projects as $prj)
+                                                     <option value="{{$prj->project_id}}">{{$prj->project_name}}</option>
+                                                @endforeach --}}
+
+                                                @foreach ($businesslist as $business )
+                                                <option value="{{ $business->Business_Number }}">{{ $business->business_fullname }}</option>
+                                                @endforeach
                                             </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label for="">Currency</label>
-                                            <select id="liqcurr" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
-                                            @foreach ($currencyType as $cuType)
-                                            <option value="{{$cuType->CurrencyName}}">{{$cuType->CurrencyName}}</option>
-                                            @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="">Amount</label>
-                                            <input type="number" name="amount"class="form-control" placeholder="0.00" aria-describedby="helpId" id="liqamnt">
-                                            <span class="text-danger" id="liqamntErr"></span>                                                  
+                                        <span class="text-danger" id="liqclientErr"></span>                                                  
 
                                         </div>
+                                    </div>     
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Expense Type</label>
+                                        <select id="liqtype" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                                        @foreach ($expenseType as $xpType)
+                                        <option value="{{$xpType->type}}">{{$xpType->type}}</option>
+                                        @endforeach
+                                        </select>
                                     </div>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Currency</label>
+                                        <select id="liqcurr" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                                        @foreach ($currencyType as $cuType)
+                                        <option value="{{$cuType->CurrencyName}}">{{$cuType->CurrencyName}}</option>
+                                        @endforeach
+                                        </select>
                                     </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">Amount</label>
+                                        <input type="number" name="amount"class="form-control" placeholder="0.00" aria-describedby="helpId" id="liqamnt">
+                                        <span class="text-danger" id="liqamntErr"></span>                                                  
+
+                                    </div>
+                                </div>
+                            </div>
 
                                     <div class="row">
                                         <div class="col-md-12">
@@ -286,11 +306,14 @@ $myAMount = number_format((float)$foo, 2, '.', '');
         Attach files <input type="file" name="file[]" class="form-control-file" id="customFile" multiple hidden>
     </label>
     <input type="hidden" value="" name="toDelete" id="toDelete">
+    <input type="hidden" value="" name="liqclientname" id="liqclientname">
+    {{-- <input type="hidden" value="" name="liqclientid" id="liqclientid"> --}}
+
     <span class="text-danger">@error('file')<br>{{ $message }}@enderror</span>
 
 
 
-    @if (!empty($filesAttached))
+
     <div class="row">
     <div class="col-md-12">
     <div class="card card-gray">
@@ -329,7 +352,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
     </div>
     </div>
     </div>
-    @endif
+  
 
 
 
@@ -352,6 +375,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                     <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Client Name</th>
                         <th>Expense Type</th>
                         <th>Description</th>
                         <th>Currency</th>
@@ -363,10 +387,16 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                         @foreach ($qeLiquidationTable as $qeData)
                         <tr>
                             <td>{{ $qeData->trans_date }}</td>
+                            <td>{{ $qeData->client_name }}</td>
                             <td>{{ $qeData->expense_type }}</td>
                             <td>{{ $qeData->description }}</td>
                             <td>{{ $qeData->currency }}</td>
-                            <td>{{ $qeData->Amount }}</td>
+
+@php
+$foo = $qeData->Amount;
+$myAMount = number_format((float)$foo, 2, '.', ''); 
+@endphp
+                            <td>{{ $myAMount }}</td>
                             <td><button class="btn btn-danger" disabled>Delete</button></td>
                         </tr>   
                         @endforeach
@@ -584,7 +614,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
     </div>
     @endif --}}
 
-    @if (!empty($qeLiquidationTable))
+@if (!empty($qeLiquidationTable))
 <div class="row">
     <div class="col-md-12">
         <div class="card card-gray" style="padding: 0px;" >
@@ -599,6 +629,8 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                     <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Client Name</th>
+
                         <th>Expense Type</th>
                         <th>Description</th>
                         <th>Currency</th>
@@ -611,6 +643,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                         @foreach ($qeLiquidationTable as $qeData)
                         <tr>
                             <td>{{ $qeData->trans_date }}</td>
+                            <td>{{ $qeData->client_name }}</td>
                             <td>{{ $qeData->expense_type }}</td>
                             <td>{{ $qeData->description }}</td>
                             <td>{{ $qeData->currency }}</td>
@@ -685,32 +718,6 @@ $myAMount = number_format((float)$foo, 2, '.', '');
     @endif
     
 @endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     
     @if(Session::get('form_submitted'))
     <Script>
@@ -886,12 +893,29 @@ $myAMount = number_format((float)$foo, 2, '.', '');
     </div>
 
 
+
+    <script>
+        function getLiqClientName(){
+            let liqclientname = $( "#liqclientid option:selected" ).text();
+            // alert(liqclientname);
+            $('#liqclientname').val(liqclientname);
+        }
+    </script>
+
+
+
+
+
+
+    
 <script>
 // Paul
     function addRow(){
 
         var liqamntChecker = false;
         var liqdescChecker = false;
+        var liqclientidChecker = false;
+
 
         
         var liqamnt = $('#liqamnt').val();
@@ -899,8 +923,20 @@ $myAMount = number_format((float)$foo, 2, '.', '');
         var liqdate = $('#liqdate').val();
         var liqtype = $('#liqtype').val();
         var liqcurr = $('#liqcurr').val();
+        var liqclientid = $('#liqclientid').val();
+        var liqclientnamedata = $('#liqclientname').val();
+
+        console.log(liqclientid)
+        console.log(typeof(liqclientid))
 
 
+        if(liqclientid){
+            liqclientidChecker = true;
+            $('#liqclientErr').text('');
+        }else{
+            $('#liqclientErr').text('Client Name is required!');
+            $('#liqsuccessdiv').addClass('d-none')
+        }
 
         if(liqamnt){
             liqamntChecker = true;
@@ -908,7 +944,6 @@ $myAMount = number_format((float)$foo, 2, '.', '');
         }else{
             $('#liqamntErr').text('Amount is required!');
             $('#liqsuccessdiv').addClass('d-none')
-
         }
 
         if(liqdesc){
@@ -919,10 +954,12 @@ $myAMount = number_format((float)$foo, 2, '.', '');
             $('#liqsuccessdiv').addClass('d-none')
         }
 
-        if (liqamntChecker && liqdescChecker){
+        if (liqamntChecker && liqdescChecker && liqclientidChecker){
 
             $('#myTable tbody').append('<tr>'+
                                         '<td>'+liqdate+'</td>'+
+                                        '<td class="d-none">'+liqclientid+'</td>'+
+                                        '<td>'+liqclientnamedata+'</td>'+
                                         '<td>'+liqtype+'</td>'+
                                         '<td>'+liqdesc+'</td>'+
                                         '<td >'+liqcurr+'</td>'+
@@ -971,14 +1008,18 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 
     $("#myTable > tbody > tr").each(function () {
             var liqDateUpdate = $(this).find('td').eq(0).text();
-            var liqTypeUpdate = $(this).find('td').eq(1).text();
-            var liqDescUpdate = $(this).find('td').eq(2).text();
-            var liqCurrUpdate = $(this).find('td').eq(3).text();
-            var liqAmntUpdate = $(this).find('td').eq(4).text();
+            var liqClientIDUpdate = $(this).find('td').eq(1).text();
+            var liqClientNameUpdate = $(this).find('td').eq(2).text();
+            var liqTypeUpdate = $(this).find('td').eq(3).text();
+            var liqDescUpdate = $(this).find('td').eq(4).text();
+            var liqCurrUpdate = $(this).find('td').eq(5).text();
+            var liqAmntUpdate = $(this).find('td').eq(6).text();
+
+            
 
         
             var listLiqData = [];
-            listLiqData.push(liqDateUpdate,liqTypeUpdate,liqDescUpdate,liqCurrUpdate,liqAmntUpdate);
+            listLiqData.push(liqDateUpdate,liqClientIDUpdate,liqClientNameUpdate,liqTypeUpdate,liqDescUpdate,liqCurrUpdate,liqAmntUpdate);
             objectListData.push(listLiqData);
 
       

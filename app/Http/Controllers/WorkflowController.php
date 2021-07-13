@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
-
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Input;
@@ -25,16 +25,18 @@ class WorkflowController extends Controller
 {
 
     public function getParticipants(Request $request) { 
-        $posts = DB::select("call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '1', '2020-01-01', '2020-12-31', 'True')");
-        Paginator::useBootstrap();
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $itemCollection = collect($posts);
-        $perPage = 10;
-        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
-        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
-        $paginatedItems->setPath($request->url());
+        $posts = DB::select("call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '".session('LoggedUser_CompanyID')."', '2020-01-01', '2020-12-31', 'True')");
+        // Paginator::useBootstrap();
+        // $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        // $itemCollection = collect($posts);
+        // $perPage = 10;
+        // $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        // $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        // $paginatedItems->setPath($request->url());
 
-        return view('MyWorkflow.participant', ['posts' => $paginatedItems]);
+        // return view('MyWorkflow.participant', ['posts' => $paginatedItems]);
+        return view('MyWorkflow.participant', compact('posts'));
+
     }
 
         public function getParticipantsByID($class,$id,$frmname){
@@ -157,20 +159,22 @@ class WorkflowController extends Controller
 
 
     public function getInputs(Request $request) { 
-        $posts = DB::select("call general.Display_Input_Company_web('%', '" . session('LoggedUser') . "', '1', '2020-01-01', '2020-12-31', 'True')");
-        Paginator::useBootstrap();
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $itemCollection = collect($posts);
-        $perPage = 10;
-        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
-        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
-        $paginatedItems->setPath($request->url());
+        $posts = DB::select("call general.Display_Input_Company_web('%', '" . session('LoggedUser') . "', '".session('LoggedUser_CompanyID')."', '2020-01-01', '2020-12-31', 'True')");
+        // Paginator::useBootstrap();
+        // $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        // $itemCollection = collect($posts);
+        // $perPage = 10;
+        // $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        // $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        // $paginatedItems->setPath($request->url());
 
         
 
         
         // return view('MyWorkflow.input', compact('posts'));
-        return view('MyWorkflow.input', ['posts' => $paginatedItems]);
+        // return view('MyWorkflow.input', ['posts' => $paginatedItems]);
+        return view('MyWorkflow.input', compact('posts'));
+
 
 
         // error pagination
@@ -328,22 +332,29 @@ class WorkflowController extends Controller
             }
 
             
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            if($class === 'frmOvertimeRequest'){
+                $post = DB::select("SELECT
+                a.`employee_name`,
+                a.`ot_in`,
+                a.`ot_out`,
+                a.`ot_totalhrs`,
+                IFNULL(a.`ot_in_actual`, a.`ot_in`) AS 'ot_in_actual',
+                IFNULL(a.`ot_out_actual`, a.`ot_out`) AS 'ot_out_actual',
+                IFNULL(a.`ot_totalhrs_actual`, a.`ot_totalhrs`) AS 'ot_totalhrs_actual',
+                a.`purpose`,
+                a.`reference`,
+                a.`request_date`,
+                a.`main_id`,
+                a.`reporting_manager`,
+                a.`PRJID`,
+                (SELECT project_name FROM general.`setup_project` WHERE project_id = a.`PRJID`) AS 'Project_Name',
+                a.`overtime_date`,
+                a.`id`
+              FROM
+                humanresource.`overtime_request` a
+              WHERE a.`main_id` = $id");
+                return view('MyWorkflow.inputs-byid.npu-hr-ot', compact('post'));
+            }
 
 
 
@@ -352,7 +363,7 @@ class WorkflowController extends Controller
         }
 
             public function approvedRENpu(Request $request){
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                 DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
 
                 DB::update("UPDATE accounting.`reimbursement_request` a SET a.`ISRELEASED` = '1', a.`RELEASEDCASH` = '1'  WHERE a.`ID` = '".$request->reID."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
@@ -363,7 +374,7 @@ class WorkflowController extends Controller
             }
 
             public function rejectedRENpu(Request $request){
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->rejectedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->rejectedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                 DB::update("UPDATE accounting.`reimbursement_request` a SET a.`STATUS` = 'Rejected'  WHERE a.`ID` = '".$request->reID."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
                 return back()->with('form_submitted', 'The request has been rejected.');
             }
@@ -380,7 +391,7 @@ class WorkflowController extends Controller
 
             // For inputs Approved - Approver and Initiator
             public function approvedByIDRemarksInputs(Request $request){
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+                DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
                 DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
                 return back()->with('form_submitted', 'The request has been approved.');
             }
@@ -388,10 +399,10 @@ class WorkflowController extends Controller
             // Clarity Button in Inputs - Approver
             public function clarifyBtnInputs(Request $request){
 
-                DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'Not Started' WHERE a.`PROCESSID` = '".$request->idName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."'
+                DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'Not Started' WHERE a.`PROCESSID` = '".$request->idName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."'
                 AND a.`FRM_CLASS` = 'requestforpayment' AND a.`STATUS` = 'In Progress'  AND a.`ORDERS` = '2' ");
 
-                DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress' WHERE a.`PROCESSID` = '".$request->idName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."'
+                DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'In Progress' WHERE a.`PROCESSID` = '".$request->idName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."'
                 AND a.`FRM_CLASS` = 'requestforpayment' AND a.`ORDERS` = '1'");
 
 
@@ -426,7 +437,7 @@ class WorkflowController extends Controller
 
             // Reject Button in Inputs - Approver
             public function rejectBtnInputs(Request $request){
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->rejectedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                DB::update("UPDATE general.`actual_sign` SET `webapp` = '1',`status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->rejectedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                 DB::update("UPDATE accounting.`request_for_payment` a SET a.`STATUS` = 'Rejected'  WHERE a.`ID` = '".$request->idName."' ");
                 return back()->with('form_submitted', 'The request has been Rejected.');
             }
@@ -448,7 +459,7 @@ class WorkflowController extends Controller
 
     //Approval List
     public function getApprovals(Request $request) { 
-        $posts = DB::select("call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '1', '2020-01-01', '2020-12-31', 'True')");
+        $posts = DB::select("call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '".session('LoggedUser_CompanyID')."', '2020-01-01', '2020-12-31', 'True')");
 
         // DRAFTS
             // $posts = "call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '1', '2020-01-01', '2020-12-31', 'True')";
@@ -469,38 +480,37 @@ class WorkflowController extends Controller
         // DRAFTS
 
         // Change the pagination links to bootstrap Default UI
-        Paginator::useBootstrap();
+        // Paginator::useBootstrap();
 
-        // Get current page form url e.x. &page=1
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        // // Get current page form url e.x. &page=1
+        // $currentPage = LengthAwarePaginator::resolveCurrentPage();
  
-        // Create a new Laravel collection from the array data
-        $itemCollection = collect($posts);
+        // // Create a new Laravel collection from the array data
+        // $itemCollection = collect($posts);
  
-        // Define how many items we want to be visible in each page
-        $perPage = 10;
+        // // Define how many items we want to be visible in each page
+        // $perPage = 10;
  
-        // Slice the collection to get the items to display in current page
-        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        // // Slice the collection to get the items to display in current page
+        // $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
  
-        // Create our paginator and pass it to the view
-        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        // // Create our paginator and pass it to the view
+        // $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
  
-        // set url path for generted links
-        $paginatedItems->setPath($request->url());
+        // // set url path for generted links
+        // $paginatedItems->setPath($request->url());
 
  
 
         
-        // $appStatus = DB::select("SELECT * FROM general.`actual_sign` a WHERE a.`PROCESSID` = '1945' AND a.`FRM_CLASS` = 'requestforpayment'");
-        // return Response::json($appStatus);
-        // return response()->json($appStatus[0]);
 
 
-        return view('MyWorkflow.approval', ['posts' => $paginatedItems]);
+
+        // return view('MyWorkflow.approval', ['posts' => $paginatedItems]);
+        return view('MyWorkflow.approval', compact('posts'));
 
 
-        // return view('MyWorkflow.approval', compact('posts'));
+
 
 
     }
@@ -598,10 +608,11 @@ class WorkflowController extends Controller
                 $mgrsId = $subqMgrsID[0]->subRmid;
 
                 $filesAttached = DB::select("SELECT * FROM general.`attachments` a WHERE a.`REQID` = $id");
+                $businesslist = DB::select("SELECT * FROM general.`business_list` a WHERE a.`status` LIKE 'Active%' AND a.`title_id` = '".session('LoggedUser_CompanyID')."' AND a.`Type` = 'CLIENT' ORDER BY a.`business_fullname` ASC");
                 
                 // dd($qeInProgressID);
                 return view('MyWorkflow.approval-byid.app-post',compact('post','postDetails','payeeDetails','expenseType','currencyType',
-                'qeLiquidationTable','qeSubTotal','getRecipientName','id','qeInProgressID','initCheckAppr','initName','projects','mgrs','mgrsId','initiatorCheck','acknowledgeCheck','filesAttached'),['liqTableCondition' => $liqTableCondition]);
+                'qeLiquidationTable','qeSubTotal','getRecipientName','id','qeInProgressID','initCheckAppr','initName','projects','mgrs','mgrsId','initiatorCheck','acknowledgeCheck','filesAttached','businesslist'),['liqTableCondition' => $liqTableCondition]);
             
             }
 
@@ -657,7 +668,11 @@ class WorkflowController extends Controller
 
                 $getInProgressID = DB::select("SELECT IFNULL((SELECT ID AS inpId FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`FRM_CLASS` = 'PETTYCASHREQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In progress'), FALSE) AS inpId;");
                 
-                return view('MyWorkflow.approval-byid.app-pc', compact('post','initName','attachmentsDetails','initCheck','acctngCheck','expenseType','transpoSetup','acknowledgementCheck','expenseDetails','transpoDetails','getRecipientName','getInProgressID','subtotalExpenseDetails','subtotalTranspoDetails'));
+                $projects = DB::select("SELECT project_id, project_name FROM general.`setup_project` WHERE project_type <> 'MAIN OFFICE' AND `status` = 'Active' AND title_id = 1 ORDER BY project_name");
+                $businesslist = DB::select("SELECT * FROM general.`business_list` a WHERE a.`status` LIKE 'Active%' AND a.`title_id` = '".session('LoggedUser_CompanyID')."' AND a.`Type` = 'CLIENT' ORDER BY a.`business_fullname` ASC");
+
+
+                return view('MyWorkflow.approval-byid.app-pc', compact('post','initName','attachmentsDetails','initCheck','acctngCheck','expenseType','transpoSetup','acknowledgementCheck','expenseDetails','transpoDetails','getRecipientName','getInProgressID','subtotalExpenseDetails','subtotalTranspoDetails','projects','businesslist'));
             }
 
             if($class === 'SALES_ORDER_FRM'){
@@ -761,6 +776,12 @@ class WorkflowController extends Controller
                 } 
 
             }
+
+
+            if($class === 'frmOvertimeRequest'){
+                $post = DB::select("SELECT *,(SELECT project_name FROM general.`setup_project` WHERE project_id = PRJID) AS 'Project_Name' FROM humanresource.`overtime_request` WHERE main_id = $id;");
+                return view('MyWorkflow.approval-byid.app-hr-ot', compact('post'));
+            }
        
 }
 
@@ -770,8 +791,6 @@ class WorkflowController extends Controller
         
             public function approvedSOFsender(Request $request){
                 
-
-// dd($request->soID,$request->approvedRemarks,$request->frmName);
 
                 $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->soID."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC");
                
@@ -798,7 +817,7 @@ class WorkflowController extends Controller
                    WHERE a.`ID` = '".$request->soID."' ");
        
                    // For clarification to in progress
-                   DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+                   DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
                    WHERE a.`PROCESSID` = '".$request->soID."' AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
 
                 return back()->with('form_submitted', 'Your request is now In Progress.');               
@@ -1057,7 +1076,8 @@ class WorkflowController extends Controller
     
                         // Actual Sign 
                         // 1 line
-                        DB::update("UPDATE general.`actual_sign` a SET 
+                        DB::update("UPDATE general.`actual_sign` a SET
+                        a.`webapp` = '1',  
                         a.`STATUS` = 'In Progress', 
                         a.`ApprovedRemarks` = '".$request->replyRemarks."', 
                         a.`CurrentSender` = '', 
@@ -1218,7 +1238,7 @@ class WorkflowController extends Controller
                     'UserFullName' =>session('LoggedUser_FullName')
                 ]);
 
-                DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
+                DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
                 a.`NOTIFICATIONID` = '".$notificationIdClarity."', a.`UID_SIGN` = '".session('LoggedUser')."',a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->clarificationRemarks."' WHERE
                 a.`PROCESSID` = '".$request->soID."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`STATUS` = 'In Progress'
                 ");
@@ -1233,7 +1253,7 @@ class WorkflowController extends Controller
             public function rejectedSOF(Request $request){
 
                 DB::update("UPDATE sales_order.`sales_orders` a SET a.`Status` =  'Rejected' WHERE a.`id` = '".$request->soID."' AND a.`titleid` = '".session('LoggedUser_CompanyID')."' ");
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->rejectedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+                DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->rejectedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
                 return back()->with('form_submitted', 'The request has been Rejected.');
 
             }
@@ -1256,7 +1276,7 @@ class WorkflowController extends Controller
                     ]);
               
                     DB::update("UPDATE general.`setup_project` a SET a.`Coordinator` = '".$request->coordinatorID."' WHERE a.`SOID` = '".$request->soID."' AND a.`title_id` = '".session('LoggedUser_CompanyID')."' ");
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+                    DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
                     DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
                     return back()->with('form_submitted', 'The request has been approved.');
 
@@ -1289,7 +1309,7 @@ class WorkflowController extends Controller
                     -- a.`IsInvoiceReleased` = '".$request->salesInvoiceReleased."', 
                     a.`IsInvoiceReleased` = '1' 
                     WHERE a.`titleid` = '".session('LoggedUser_CompanyID')."' AND a.`id` = '".$request->soID."'");
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "', `DoneApproving` = '1' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+                    DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "', `DoneApproving` = '1' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
                     return back()->with('form_submitted', 'The request has been approved.');
 
 
@@ -1301,13 +1321,13 @@ class WorkflowController extends Controller
                     a.`Status` = 'Completed',
                     a.`IsInvoiceReleased` = '1' 
                     WHERE a.`titleid` = '".session('LoggedUser_CompanyID')."' AND a.`id` = '".$request->soID."'");
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "', `DoneApproving` = '1' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+                    DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "', `DoneApproving` = '1' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
                     return back()->with('form_submitted', 'The request has been approved.');
          
                 } else {
 
 
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+                    DB::update("UPDATE general.`actual_sign` SET  `webapp` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
                     DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->soID."' AND `FRM_CLASS` = 'SALES_ORDER_FRM' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
                     return back()->with('form_submitted', 'The request has been approved.');
                 }
@@ -1346,7 +1366,7 @@ class WorkflowController extends Controller
 
             // Rejected
             public function rejectedPCApp(Request $request){
-                DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'Rejected', a.`UID_SIGN` = '".session('LoggedUser')."', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->rejectedRemarks. "' WHERE a.`STATUS` = 'In Progress' AND a.`PROCESSID` = '".$request->pcID."' AND  a.`FRM_CLASS` = 'PETTYCASHREQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'Rejected', a.`UID_SIGN` = '".session('LoggedUser')."', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->rejectedRemarks. "' WHERE a.`STATUS` = 'In Progress' AND a.`PROCESSID` = '".$request->pcID."' AND  a.`FRM_CLASS` = 'PETTYCASHREQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                 DB::update("UPDATE accounting.`petty_cash_request` a SET a.`STATUS` = 'Rejected'  WHERE a.`ID` = '".$request->pcID."'  ");
                 return back()->with('form_submitted', 'The request has been rejected.');
 
@@ -1370,7 +1390,7 @@ class WorkflowController extends Controller
                     'UserFullName' =>session('LoggedUser_FullName')
                 ]);
 
-                DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
+                DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
                 a.`NOTIFICATIONID` = '".$notificationIdClarity."', a.`UID_SIGN` = '".session('LoggedUser')."',a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->clarificationRemarks."' WHERE
                 a.`PROCESSID` = '".$request->pcID."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_CLASS` = 'PETTYCASHREQUEST' AND a.`STATUS` = 'In Progress'
                 ");
@@ -1387,6 +1407,8 @@ class WorkflowController extends Controller
 
 
 
+                // dd($request->xdData,$request->tdData);
+
                 // $request->validate([
                 //     'file'=>'required'
                 // ]);
@@ -1399,9 +1421,9 @@ class WorkflowController extends Controller
 
                 // if (!empty($request->xdData) == true || !empty($request->tdData) == true) {
 
-                    if (strlen($request->xdData) > 3 || strlen($request->tdData) > 3) {
+                    if (!empty($request->xdData)  || !empty($request->tdData) ) {
 
-                    if(strlen($request->xdData) > 3){
+                    if(!empty($request->xdData)){
                       
                         $expenseDetails = $request->xdData;
                         $expenseDetails =json_decode($expenseDetails,true);
@@ -1413,18 +1435,18 @@ class WorkflowController extends Controller
                                 'PCID' => $request->pcID,
                                 'payee_id'=>'0',
                                 'PAYEE' => $request->payeeName,
-                                'CLIENT_NAME' => $request->clientName, 
+                                'CLIENT_NAME' => $xdArray[$i][2],
                                 'TITLEID'=>session('LoggedUser_CompanyID'),
                                 'PRJID' =>'0',
                                 'PROJECT' =>'',
-                                'DESCRIPTION' => $xdArray[$i][2],
-                                'AMOUNT' => $xdArray[$i][3],
+                                'DESCRIPTION' => $xdArray[$i][4],
+                                'AMOUNT' => $xdArray[$i][5],
                                 'GUID'=>$request->guid,  
                                 'TS' => now(),
                                 'MAINID' => $mainID[0]->mainID,
                                 'STATUS' =>'ACTIVE',
-                                'CLIENT_ID' =>$request->clientID, 
-                                'EXPENSE_TYPE'=> $xdArray[$i][1],
+                                'CLIENT_ID' =>$xdArray[$i][1],
+                                'EXPENSE_TYPE'=> $xdArray[$i][3],
                                 'DEPT'=> '',
                                 'RELEASEDCASH'=> '0',
                                 'date_'=> $xdArray[$i][0],
@@ -1437,7 +1459,7 @@ class WorkflowController extends Controller
 
                 }
                 
-                if(strlen($request->tdData) > 3){
+                if(!empty($request->tdData)){
                 // if(!empty($request->tdData) == true){
                     
                         DB::table('accounting.reimbursement_request_details')->where('REID', $request->reID)->delete();
@@ -1456,19 +1478,19 @@ class WorkflowController extends Controller
                                     'PRJID'=> '0',
                                     'payee_id' => '0',
                                     'PAYEE' => $request->payeeName, 
-                                    'CLIENT_NAME'=> $request->clientName,
-                                    'DESTINATION_FRM' => $tdArray[$i][1],
-                                    'DESTINATION_TO' => $tdArray[$i][2],
-                                    'DESCRIPTION' => $tdArray[$i][4],
-                                    'AMT_SPENT' => $tdArray[$i][5],
+                                    'CLIENT_NAME'=> $tdArray[$i][2],  //hold
+                                    'DESTINATION_FRM' => $tdArray[$i][3],
+                                    'DESTINATION_TO' => $tdArray[$i][4],
+                                    'DESCRIPTION' => $tdArray[$i][6],
+                                    'AMT_SPENT' => $tdArray[$i][7],
                                     'TITLEID'=> '1',
-                                    'MOT' => $tdArray[$i][3],
+                                    'MOT' => $tdArray[$i][5],
                                     'PROJECT' => '',
                                     'GUID' =>$request->guid, 
                                     'TS' =>now(),
                                     'MAINID'=> $mainID[0]->mainID,
                                     'STATUS'=> 'ACTIVE',
-                                    'CLIENT_ID'=> $request->clientID,
+                                    'CLIENT_ID'=> $tdArray[$i][1],
                                     'DEPT'=> session('LoggedUser_DepartmentName'),
                                     'RELEASEDCASH'=> '0',
                                     'date_'=> $tdArray[$i][0],
@@ -1542,7 +1564,7 @@ class WorkflowController extends Controller
                         ]);
                     }
                 } 
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedModalInit. "' 
+                    DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedModalInit. "' 
                     WHERE `status` = 'In Progress' AND PROCESSID = '".$request->pcID."' AND `FRM_CLASS` = 'PETTYCASHREQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                     DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->pcID."' AND `FRM_CLASS` = 'PETTYCASHREQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
 
@@ -1570,7 +1592,7 @@ class WorkflowController extends Controller
            
                 // For Initiator Only // Approve and Completed Main RE
                 if (!empty(intval($request->apprCheckinit))){
-                    DB::update("UPDATE general.`actual_sign` SET `DoneApproving` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                    DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `DoneApproving` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                     DB::update("UPDATE accounting.`reimbursement_request` a SET a.`STATUS` = 'Completed'  WHERE a.`ID` = '".$request->reID."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");      
                     return back()->with('form_submitted', 'The request has been approved.');
 
@@ -1608,7 +1630,7 @@ class WorkflowController extends Controller
                     // AND a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' 
                     // AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1");
 
-                    DB::update("UPDATE general.`actual_sign` a SET a.`status` = 'Completed', a.`UID_SIGN` = '".session('LoggedUser')."', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->approvedRemarks. "' WHERE a.`status` = 'In Progress' AND a.`PROCESSID` = '".$request->reID."' AND a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                    DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`status` = 'Completed', a.`UID_SIGN` = '".session('LoggedUser')."', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->approvedRemarks. "' WHERE a.`status` = 'In Progress' AND a.`PROCESSID` = '".$request->reID."' AND a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                     DB::update("UPDATE general.`actual_sign` a SET `status` = 'In Progress' WHERE a.`status` = 'Not Started' AND a.`PROCESSID` = '".$request->reID."' AND a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
                     return back()->with('form_submitted', 'The request has been approved.');
 
@@ -1627,7 +1649,7 @@ class WorkflowController extends Controller
 
             //Reject Reimbursement in Approvals by approver
             public function rejectedREApp(Request $request){
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->reID."' AND `FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                 DB::update("UPDATE accounting.`reimbursement_request` a SET a.`STATUS` = 'Rejected'  WHERE a.`ID` = '".$request->reID."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
                 return back()->with('form_submitted', 'The request has been rejected.');
             }
@@ -1650,7 +1672,7 @@ class WorkflowController extends Controller
                     'UserFullName' =>session('LoggedUser_FullName')
                 ]);
 
-                DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
+                DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
                 a.`NOTIFICATIONID` = '".$notificationIdClarity."', a.`UID_SIGN` = '".session('LoggedUser')."',a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->clarificationRemarks."' WHERE
                 a.`PROCESSID` = '".$request->reID."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND a.`STATUS` = 'In Progress'
                 ");
@@ -1670,12 +1692,12 @@ class WorkflowController extends Controller
 
                 // Acknowledgement of Accounting - Approval
                 if($testerCount == True){
-                    $acknowledgementAcc = DB::update("UPDATE general.`actual_sign` a SET a.`DoneApproving` ='1',a.`STATUS` = 'Completed', a.`UID_SIGN` = '".session('LoggedUser')."', a.`TS` = NOW(), a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->approvedRemarks."' WHERE a.`REFERENCE` = '".$request->refNumberApp."' AND a.`STATUS` = 'In Progress' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND  a.`ORDERS` = '4' AND a.`PROCESSID` = '".$request->idName."';");
+                    $acknowledgementAcc = DB::update("UPDATE general.`actual_sign` a SET a.`webapp` ='1', a.`DoneApproving` ='1',a.`STATUS` = 'Completed', a.`UID_SIGN` = '".session('LoggedUser')."', a.`TS` = NOW(), a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->approvedRemarks."' WHERE a.`REFERENCE` = '".$request->refNumberApp."' AND a.`STATUS` = 'In Progress' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND  a.`ORDERS` = '4' AND a.`PROCESSID` = '".$request->idName."';");
                     $isReleasedRfp = DB::update("UPDATE accounting.`request_for_payment` a SET a.`ISRELEASED` = '1' AND a.`STATUS` = 'Completed'  WHERE a.`ID` = '".$request->idName."' AND a.`REQREF` = '".$request->refNumberApp."';");
                     return back()->with('form_submitted', 'The request has been approved.');
                 
                 }else{
-                    DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                    DB::update("UPDATE general.`actual_sign` SET `webapp` ='1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                     DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
                     return back()->with('form_submitted', 'The request has been approved.');
                 }
@@ -1716,25 +1738,25 @@ class WorkflowController extends Controller
 
                                 'RFPID' => $request->idName,
                                 'trans_date'=>$liquidationDataTable[$i][0],
-                                'client_id' => $queryClientID,
-                                'client_name' =>$request->refClientName, 
-                                'description'=>$liquidationDataTable[$i][2],
+                                'client_id' => $liquidationDataTable[$i][1],
+                                'client_name' =>$liquidationDataTable[$i][2],
+                                'description'=>$liquidationDataTable[$i][4],
                                 'amt_due_to_comp' =>'0',
                                 'amt_due_to_emp' =>'0',
                                 'date_' =>$liquidationDataTable[$i][0],
-                                'Amount' =>$liquidationDataTable[$i][4],
+                                'Amount' =>$liquidationDataTable[$i][6],
                                 'STATUS'=>'ACTIVE',
                                 'ts' => now(),
                                 'ISLIQUIDATED' => '0',
                                 'currency_id' =>'0',
-                                'currency' =>$liquidationDataTable[$i][3],
-                                'expense_type'=> $liquidationDataTable[$i][1],
+                                'currency' =>$liquidationDataTable[$i][5],
+                                'expense_type'=> $liquidationDataTable[$i][3],
                             ];
                         }
            
                         DB::table('accounting.rfp_liquidation')->insert($liqdata);
 
-                        DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                        DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approvedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                         DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
                    
                         if($request->hasFile('file')){
@@ -1818,7 +1840,7 @@ class WorkflowController extends Controller
 
             // Rejected button with remarks
             public function rejectedByIDRemarks(Request $request){
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->rejectedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->rejectedRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                 $statusRejectedRfp = DB::update("UPDATE accounting.`request_for_payment` a SET a.`STATUS` = 'Rejected'  WHERE a.`ID` = '".$request->idName."' AND a.`REQREF` = '".$request->refNumberApp."';");
                 return back()->with('form_submitted', 'The request has been Rejected.');
             }
@@ -1843,7 +1865,7 @@ class WorkflowController extends Controller
 
                 ]);
 
-                DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
+                DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
                 a.`NOTIFICATIONID` = '".$notificationIdClarity."', a.`UID_SIGN` = '".session('LoggedUser')."',a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->clarificationRemarks."' WHERE
                 a.`PROCESSID` = '".$request->proccessID."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_CLASS` = 'requestforpayment' AND a.`STATUS` = 'In Progress'
                 ");
@@ -1923,18 +1945,31 @@ class WorkflowController extends Controller
     // In Progress List
     public function getInProgress(Request $request) { 
         
-        $posts = DB::select("call general.Display_Inprogress_Company_web('%', '" . session('LoggedUser') . "','', '1', '2020-01-01', '2020-12-31', 'True')");
+        $posts = DB::select("call general.Display_Inprogress_Company_web('%', '" . session('LoggedUser') . "','', '".session('LoggedUser_CompanyID')."', '2020-01-01', '2020-12-31', 'True')");
 
-        Paginator::useBootstrap();
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $itemCollection = collect($posts);
-        $perPage = 10;
-        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
-        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
-        $paginatedItems->setPath($request->url());
+        // Paginator::useBootstrap();
+        // $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        // $itemCollection = collect($posts);
+        // $perPage = 10;
+        // $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        // $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        // $paginatedItems->setPath($request->url());
 
 
-        return view('MyWorkflow.in-progress', ['posts' => $paginatedItems]);
+        // return view('MyWorkflow.in-progress', ['posts' => $paginatedItems]);
+
+        //  $posts= DB::getSchemaBuilder()->getColumnListing($posts);
+
+        // dd($posts);
+
+     
+
+     
+
+
+
+        return view('MyWorkflow.in-progress', compact('posts'));
+
 
     }
 
@@ -2003,8 +2038,6 @@ class WorkflowController extends Controller
                 return view('MyWorkflow.in-progress-byid.inp-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
-
-
             if($class === 'SALES_ORDER_FRM'){
                 
                 if ($frmname === 'Sales Order - Project') {
@@ -2052,8 +2085,11 @@ class WorkflowController extends Controller
             }
 
             
-
-
+            if($class === 'frmOvertimeRequest'){
+                $post = DB::select("SELECT *,(SELECT project_name FROM general.`setup_project` WHERE project_id = PRJID) AS 'Project_Name' FROM humanresource.`overtime_request` WHERE main_id = $id;");
+                return view('MyWorkflow.in-progress-byid.inp-hr-ot', compact('post'));
+            }
+        
 
      
 
@@ -2062,7 +2098,7 @@ class WorkflowController extends Controller
             // Sales Order 
             // Withdraw
             public function withdrawSOF(Request $request){
-                DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Withdrawn', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->withdrawRemarks. "' 
+                DB::update("UPDATE general.`actual_sign` AS a SET a.`webapp` = '1', a.`STATUS` = 'Withdrawn', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->withdrawRemarks. "' 
                 WHERE a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`PROCESSID` = '".$request->soID."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In Progress'");
                 DB::update("UPDATE sales_order.`sales_orders` a SET a.`Status` = 'Withdrawn'  WHERE a.`id` = '".$request->soID."' AND a.`titleid` = '".session('LoggedUser_CompanyID')."' ");
                 return back()->with('form_submitted', 'Your request is now Withdrawn.');
@@ -2082,7 +2118,7 @@ class WorkflowController extends Controller
 
             // RFP withdraw Button in In-progress Workflow
             public function withdrawnByIDRemarks(Request $request){
-                DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Withdrawn', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->withdrawRemarks. "' 
+                DB::update("UPDATE general.`actual_sign` AS a SET  a.`webapp` = '1', a.`STATUS` = 'Withdrawn', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->withdrawRemarks. "' 
                 WHERE a.`PROCESSID` = '".$request->idName."' AND a.`FRM_CLASS` = 'REQUESTFORPAYMENT' AND a.`STATUS` = 'In Progress' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                 DB::update("UPDATE accounting.`request_for_payment` a SET a.`STATUS` = 'Withdrawn'  WHERE a.`ID` = '".$request->idName."' AND a.`REQREF` = '".$request->refNumberApp."';");
 
@@ -2092,7 +2128,7 @@ class WorkflowController extends Controller
 
             // RE withdraw Button in In-progress Workflow
             public function inpREWithdraw(Request $request){
-                DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Withdrawn', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->withdrawRemarks. "' 
+                DB::update("UPDATE general.`actual_sign` AS a SET a.`webapp` = '1', a.`STATUS` = 'Withdrawn', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->withdrawRemarks. "' 
                 WHERE a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND a.`PROCESSID` = '".$request->reID."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In Progress'");
                 DB::update("UPDATE accounting.`reimbursement_request` a SET a.`STATUS` = 'Withdrawn'  WHERE a.`ID` = '".$request->reID."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
 
@@ -2102,7 +2138,7 @@ class WorkflowController extends Controller
 
             // PC
             public function inpPCWithdraw(Request $request){
-                DB::update(" UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Withdrawn',
+                DB::update(" UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Withdrawn', a.`webapp` = '1',
                 a.`SIGNDATETIME` = NOW(),
                 a.`ApprovedRemarks` = '" .$request->withdrawRemarks. 
                 "' 
@@ -2134,17 +2170,17 @@ class WorkflowController extends Controller
 
     // Clarification List
     public function getClarification(Request $request) { 
-        $posts = DB::select("call general.Display_Clarification_Company_web('%', '" . session('LoggedUser') . "','', '1', '2020-01-01', '2020-12-31', 'True')");
+        $posts = DB::select("call general.Display_Clarification_Company_web('%', '" . session('LoggedUser') . "','', '".session('LoggedUser_CompanyID')."', '2020-01-01', '2020-12-31', 'True')");
         // $postsCount = count($posts);
         // dd($postsCount);
         
-        Paginator::useBootstrap();
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $itemCollection = collect($posts);
-        $perPage = 10;
-        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
-        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
-        $paginatedItems->setPath($request->url());
+        // Paginator::useBootstrap();
+        // $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        // $itemCollection = collect($posts);
+        // $perPage = 10;
+        // $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        // $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        // $paginatedItems->setPath($request->url());
 
 
 
@@ -2188,9 +2224,9 @@ class WorkflowController extends Controller
   
  
 
-        return view('MyWorkflow.clarification', ['posts' => $paginatedItems]);
+        // return view('MyWorkflow.clarification', ['posts' => $paginatedItems]);
 
-        // return view('MyWorkflow.clarification', compact('posts'));
+        return view('MyWorkflow.clarification', compact('posts'));
     }
 
 
@@ -2236,9 +2272,11 @@ class WorkflowController extends Controller
             // Query Liquidation Table if edit
             $queLiquidatedT = DB::select("SELECT * FROM accounting.`rfp_liquidation` a WHERE a.`RFPID` = $id");
    
+            $businesslist = DB::select("SELECT * FROM general.`business_list` a WHERE a.`status` LIKE 'Active%' AND a.`title_id` = '".session('LoggedUser_CompanyID')."' AND a.`Type` = 'CLIENT' ORDER BY a.`business_fullname` ASC");
+            
 
             $filesAttached = DB::select("SELECT * FROM general.`attachments` a WHERE a.`REQID` = $id");
-            return view('MyWorkflow.clarification-byid.cla-post', compact('post','qeSubTotal','postDetails','payeeDetails','initCheck','initName','editableChecker','mgrs','mgrsId','projects','currencyType','recipient','queLiquidatedT','expenseType','filesAttached'));
+            return view('MyWorkflow.clarification-byid.cla-post', compact('post','businesslist','qeSubTotal','postDetails','payeeDetails','initCheck','initName','editableChecker','mgrs','mgrsId','projects','currencyType','recipient','queLiquidatedT','expenseType','filesAttached'));
          
             }
 
@@ -2271,8 +2309,9 @@ class WorkflowController extends Controller
 
                 $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`reimbursement_expense_details` a WHERE a.`REID` = $id;");
                 $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`reimbursement_request_details` a WHERE a.`REID` = $id;");
+                $businesslist = DB::select("SELECT * FROM general.`business_list` a WHERE a.`status` LIKE 'Active%' AND a.`title_id` = '".session('LoggedUser_CompanyID')."' AND a.`Type` = 'CLIENT' ORDER BY a.`business_fullname` ASC");
 
-                return view('MyWorkflow.clarification-byid.cla-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','mgrs','mgrsId','projects','expenseType','transpoSetup','replyEditChecker','initChecker','recipientCheck','subtotalExpenseDetails','subtotalTranspoDetails'));
+                return view('MyWorkflow.clarification-byid.cla-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','mgrs','mgrsId','projects','expenseType','transpoSetup','replyEditChecker','initChecker','recipientCheck','subtotalExpenseDetails','subtotalTranspoDetails','businesslist'));
             }
 
         
@@ -2313,8 +2352,9 @@ class WorkflowController extends Controller
 
                 $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`petty_cash_expense_details` a WHERE a.`PCID` = $id;");
                 $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`petty_cash_request_details` a WHERE a.`PCID` = $id;");
+                $businesslist = DB::select("SELECT * FROM general.`business_list` a WHERE a.`status` LIKE 'Active%' AND a.`title_id` = '".session('LoggedUser_CompanyID')."' AND a.`Type` = 'CLIENT' ORDER BY a.`business_fullname` ASC");
 
-                return view('MyWorkflow.clarification-byid.cla-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails','tableCheck','mgrsId','mgrs','projects','initRecipientCheck','recipientCheck','senderCheck','expenseType','transpoSetup','subtotalExpenseDetails','subtotalTranspoDetails'));
+                return view('MyWorkflow.clarification-byid.cla-pc', compact('post','initName','attachmentsDetails','expenseDetails','transpoDetails','tableCheck','mgrsId','mgrs','projects','initRecipientCheck','recipientCheck','senderCheck','expenseType','transpoSetup','subtotalExpenseDetails','subtotalTranspoDetails','businesslist'));
             }
 
 
@@ -2420,7 +2460,7 @@ class WorkflowController extends Controller
 
             // Withdraw button in clarification - Initiator
             public function clarifyWithdrawBtnRemarks(Request $request){
-                DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Withdrawn', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->withdrawRemarks. "' 
+                DB::update("UPDATE general.`actual_sign` AS a SET a.`webapp` = '1', a.`STATUS` = 'Withdrawn', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->withdrawRemarks. "' 
                 WHERE a.`PROCESSID` = '".$request->idName."' AND a.`FRM_CLASS` = 'REQUESTFORPAYMENT' AND a.`STATUS` = 'For Clarification' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                 DB::update("UPDATE accounting.`request_for_payment` a SET a.`STATUS` = 'Withdrawn'  WHERE a.`ID` = '".$request->idName."' AND a.`REQREF` = '".$request->refNumberApp."';");
                 return back()->with('form_submitted', 'Your request is now Withdrawn.');
@@ -2428,6 +2468,8 @@ class WorkflowController extends Controller
 
             // Reply Button in Clarification - Initiator - Not Editable
             public function clarifyReplyBtnNoEdit(Request $request){
+
+                // dd($request->jsonData);
 
                 $request->validate([
 
@@ -2467,20 +2509,21 @@ class WorkflowController extends Controller
                    WHERE a.`ID` = '".$request->idName."' AND a.`REQREF` = '".$request->refNumberReply."';");
        
                    // For clarification to in progress
-                   DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+                   DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
                    WHERE a.`PROCESSID` = '".$request->idName."' AND a.`FRM_NAME` = 'request for payment' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
 
 
-            // Liquidation Table
-            $liquidationDataTable = $request->jsonData;
-            $liquidationDataTable =json_decode($liquidationDataTable,true);
+            // // Liquidation Table
+            // $liquidationDataTable = $request->jsonData;
+            // $liquidationDataTable =json_decode($liquidationDataTable,true);
 
 
-            if(count($liquidationDataTable) == True){
-                $queID = DB::select("SELECT IFNULL((SELECT (SELECT Business_Number FROM general.`business_list` b WHERE b.`business_fullname` = a.`client_name` LIMIT 1) AS 'clientID'
-                FROM accounting.`rfp_liquidation` a WHERE a.`RFPID` = '".$request->idName."' LIMIT 1), FALSE) AS clientID;");
-                $clientID = $queID[0]->clientID;
-                
+            if(!empty($request->jsonData)){
+                // $queID = DB::select("SELECT IFNULL((SELECT (SELECT Business_Number FROM general.`business_list` b WHERE b.`business_fullname` = a.`client_name` LIMIT 1) AS 'clientID'
+                // FROM accounting.`rfp_liquidation` a WHERE a.`RFPID` = '".$request->idName."' LIMIT 1), FALSE) AS clientID;");
+                // $clientID = $queID[0]->clientID;
+                $liquidationDataTable = $request->jsonData;
+                $liquidationDataTable =json_decode($liquidationDataTable,true);
 
                 
                 DB::table('accounting.rfp_liquidation')->where('RFPID', $request->idName)->delete();
@@ -2490,22 +2533,23 @@ class WorkflowController extends Controller
                     $liqdata[] = [
                         'RFPID' => $request->idName,
                         'trans_date'=>$liquidationDataTable[$i][0],
-                        'client_id' => $clientID,
-                        'client_name' =>$request->clientName,
-                        'description'=>$liquidationDataTable[$i][2],
+                        'client_id' => $liquidationDataTable[$i][1],  // to get in array
+                        'client_name' =>$liquidationDataTable[$i][2],
+                        'description'=>$liquidationDataTable[$i][4],
                         'amt_due_to_comp' =>'0',
                         'amt_due_to_emp' =>'0',
                         'date_' =>$liquidationDataTable[$i][0],
-                        'Amount' =>$liquidationDataTable[$i][4],
+                        'Amount' =>$liquidationDataTable[$i][6],
                         'STATUS'=>'ACTIVE',
                         'ts' => now(),
                         'ISLIQUIDATED' => '0',
                         'currency_id' =>'0',
-                        'currency' =>$liquidationDataTable[$i][3],
-                        'expense_type'=> $liquidationDataTable[$i][1],
+                        'currency' =>$liquidationDataTable[$i][5],
+                        'expense_type'=> $liquidationDataTable[$i][3],
                     ];
                 }
                 DB::table('accounting.rfp_liquidation')->insert($liqdata);
+
             }
 
 
@@ -2662,7 +2706,7 @@ class WorkflowController extends Controller
                 WHERE a.`RFPID` = '".$request->idName."'");
 
                 // For clarification to in progress
-                DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+                DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
                 WHERE a.`PROCESSID` = '".$request->idName."' AND a.`FRM_NAME` = 'request for payment' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
  
                 // Update form in actual sign
@@ -2801,7 +2845,7 @@ class WorkflowController extends Controller
 
                     if($checkOrder == True){
 
-                    DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'In Progress', a.`UID_SIGN` = '".session('LoggedUser')."',
+                    DB::update("UPDATE general.`actual_sign` AS a SET a.`webapp` = '1', a.`STATUS` = 'In Progress', a.`UID_SIGN` = '".session('LoggedUser')."',
                         a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->approveRemarks. "', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0' 
                        WHERE a.`PROCESSID` = '".$request->idName."' AND a.`FRM_CLASS` = 'REQUESTFORPAYMENT' AND a.`STATUS` = 'For Clarification' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                     
@@ -2812,8 +2856,8 @@ class WorkflowController extends Controller
 
                     } else {
                     
-                    // Actual Sign of for Clarification to Completed
-                    DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'In Progress', a.`UID_SIGN` = '".session('LoggedUser')."',
+                    // Actual Sign of for Clarification to In progress
+                    DB::update("UPDATE general.`actual_sign` AS a SET a.`webapp` = '1', a.`STATUS` = 'In Progress', a.`UID_SIGN` = '".session('LoggedUser')."',
                         a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->approveRemarks. "', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0' 
                        WHERE a.`PROCESSID` = '".$request->idName."' AND a.`FRM_CLASS` = 'REQUESTFORPAYMENT' AND a.`STATUS` = 'For Clarification' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ;");
 
@@ -2838,7 +2882,7 @@ class WorkflowController extends Controller
 
             // Reject button in clarification - Approver
             public function clarifyRejectBtnRemarks(Request $request){
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->rejectedRemarks. "' 
+                DB::update("UPDATE general.`actual_sign` SET `webapp` = '1', `status` = 'Rejected', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->rejectedRemarks. "' 
                 WHERE `status` = 'For Clarification' AND PROCESSID = '".$request->idName."' AND `FRM_CLASS` = 'REQUESTFORPAYMENT' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
                 DB::update("UPDATE accounting.`request_for_payment` a SET a.`STATUS` = 'Rejected'  WHERE a.`ID` = '".$request->idName."' ");
                 return back()->with('form_submitted', 'The request has been Rejected.');
@@ -2881,7 +2925,7 @@ class WorkflowController extends Controller
                        DB::update("UPDATE accounting.`petty_cash_request` a SET a.`STATUS` = 'In Progress', a.`TS` = NOW() WHERE a.`ID` = '".$request->pcID."' ");
            
                        // For clarification to in progress
-                       DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+                       DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
                        WHERE a.`PROCESSID` = '".$request->pcID."' AND a.`FRM_NAME` = 'Petty Cash Request' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
 
               
@@ -2900,18 +2944,18 @@ class WorkflowController extends Controller
                                     'PCID' => $request->pcID,
                                     'payee_id'=>'0',
                                     'PAYEE' => $request->payeeName,
-                                    'CLIENT_NAME' => $request->clientName, 
+                                    'CLIENT_NAME' =>   $xdArray[$i][2],
                                     'TITLEID'=>session('LoggedUser_CompanyID'),
                                     'PRJID' =>'0',
                                     // 'PROJECT' =>,
-                                    'DESCRIPTION' => $xdArray[$i][2],
-                                    'AMOUNT' => $xdArray[$i][3],
+                                    'DESCRIPTION' => $xdArray[$i][4],
+                                    'AMOUNT' => $xdArray[$i][5],
                                     'GUID'=>$request->guid,
                                     'TS' => now(),
                                     'MAINID' => $mainID[0]->mainID,
                                     'STATUS' =>'ACTIVE',
-                                    'CLIENT_ID' =>$request->clientID, 
-                                    'EXPENSE_TYPE'=> $xdArray[$i][1],
+                                    'CLIENT_ID' =>$xdArray[$i][1],
+                                    'EXPENSE_TYPE'=> $xdArray[$i][3],
                                     'DEPT'=> session('LoggedUser_DepartmentName'),
                                     'RELEASEDCASH'=> '0',
                                     'date_'=> $xdArray[$i][0],
@@ -2947,19 +2991,19 @@ class WorkflowController extends Controller
                                         'PRJID'=> '0',
                                         'payee_id' => '0',
                                         'PAYEE' => $request->payeeName, 
-                                        'CLIENT_NAME'=> $request->clientName,
-                                        'DESTINATION_FRM' => $tdArray[$i][1],
-                                        'DESTINATION_TO' => $tdArray[$i][2],
-                                        'DESCRIPTION' => $tdArray[$i][4],
-                                        'AMT_SPENT' => $tdArray[$i][5],
+                                        'CLIENT_NAME'=> $tdArray[$i][2],
+                                        'DESTINATION_FRM' => $tdArray[$i][3],
+                                        'DESTINATION_TO' => $tdArray[$i][4],
+                                        'DESCRIPTION' => $tdArray[$i][6],
+                                        'AMT_SPENT' => $tdArray[$i][7],
                                         'TITLEID'=> session('LoggedUser_CompanyID'),
-                                        'MOT' => $tdArray[$i][3],
+                                        'MOT' => $tdArray[$i][5],
                                         'PROJECT' => '',
                                         'GUID' =>$request->guid,
                                         'TS' =>now(),
                                         'MAINID'=> $mainID[0]->mainID,
                                         'STATUS'=> 'ACTIVE',
-                                        'CLIENT_ID'=> $request->clientID,
+                                        'CLIENT_ID'=> $tdArray[$i][1],
                                         'DEPT'=> session('LoggedUser_DepartmentName'),
                                         'RELEASEDCASH'=> '0',
                                         'date_'=> $tdArray[$i][0],
@@ -3078,7 +3122,7 @@ class WorkflowController extends Controller
                     DB::update("UPDATE accounting.`petty_cash_request` a SET a.`STATUS` = 'In Progress', a.`TS` = NOW() WHERE a.`ID` = '".$request->pcID."' ");
 
                     // For clarification to in progress
-                    DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+                    DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
                     WHERE a.`PROCESSID` = '".$request->pcID."' AND a.`FRM_NAME` = 'Petty Cash Request' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
     
 
@@ -3301,7 +3345,7 @@ class WorkflowController extends Controller
 
             // Withdraw PC
             public function claPCWithdraw(Request $request){
-            DB::update(" UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Withdrawn',
+            DB::update(" UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Withdrawn', a.`webapp` = '1',
             a.`SIGNDATETIME` = NOW(),
             a.`ApprovedRemarks` = '" .$request->withdrawRemarks. 
             "' 
@@ -3386,7 +3430,7 @@ class WorkflowController extends Controller
 
 
                        // For clarification to in progress
-                       DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+                       DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
                        WHERE a.`PROCESSID` = '".$request->reID."' AND a.`FRM_NAME` = 'Reimbursement Request' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
 
 
@@ -3430,18 +3474,18 @@ class WorkflowController extends Controller
                                     'REID' => $request->reID,
                                     'payee_id'=>'0',
                                     'PAYEE' => $request->payeeName,
-                                    'CLIENT_NAME' => $request->clientName, 
+                                    'CLIENT_NAME' => $xdArray[$i][2],
                                     'TITLEID'=>session('LoggedUser_CompanyID'),
                                     'PRJID' =>$request->projectName,
                                     'PROJECT' =>$project_name,
-                                    'DESCRIPTION' => $xdArray[$i][2],
-                                    'AMOUNT' => $xdArray[$i][3],
+                                    'DESCRIPTION' => $xdArray[$i][4],
+                                    'AMOUNT' => $xdArray[$i][5],
                                     'GUID'=>$request->guid,
                                     'TS' => now(),
                                     'MAINID' => $request->mainID,
                                     'STATUS' =>'ACTIVE',
-                                    'CLIENT_ID' =>$request->clientID, 
-                                    'EXPENSE_TYPE'=> $xdArray[$i][1],
+                                    'CLIENT_ID' =>$xdArray[$i][1],
+                                    'EXPENSE_TYPE'=> $xdArray[$i][3],
                                     'DEPT'=> session('LoggedUser_DepartmentName'),
                                     'RELEASEDCASH'=> '0',
                                     'date_'=> $xdArray[$i][0]
@@ -3472,19 +3516,19 @@ class WorkflowController extends Controller
                                         'PRJID'=> $request->projectName,
                                         'payee_id' => '0',
                                         'PAYEE' => $request->payeeName, 
-                                        'CLIENT_NAME'=> $request->clientName,
-                                        'DESTINATION_FRM' => $tdArray[$i][1],
-                                        'DESTINATION_TO' => $tdArray[$i][2],
-                                        'DESCRIPTION' => $tdArray[$i][4],
-                                        'AMT_SPENT' => $tdArray[$i][5],
+                                        'CLIENT_NAME'=> $tdArray[$i][2],
+                                        'DESTINATION_FRM' => $tdArray[$i][3],
+                                        'DESTINATION_TO' => $tdArray[$i][4],
+                                        'DESCRIPTION' => $tdArray[$i][6],
+                                        'AMT_SPENT' => $tdArray[$i][7],
                                         'TITLEID'=> session('LoggedUser_CompanyID'),
-                                        'MOT' => $tdArray[$i][3],
+                                        'MOT' => $tdArray[$i][5],
                                         'PROJECT' => $project_name,
                                         'GUID' =>$request->guid,
                                         'TS' =>now(),
                                         'MAINID'=> $request->mainID,
                                         'STATUS'=> 'ACTIVE',
-                                        'CLIENT_ID'=> $request->clientID,
+                                        'CLIENT_ID'=> $tdArray[$i][1],
                                         'DEPT'=> session('LoggedUser_DepartmentName'),
                                         'RELEASEDCASH'=> '0',
                                         'date_'=> $tdArray[$i][0]
@@ -3599,7 +3643,7 @@ class WorkflowController extends Controller
                    WHERE a.`ID` = '".$request->reID."' ");
        
                    // For clarification to in progress
-                   DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+                   DB::update("UPDATE general.`actual_sign` a SET a.`webapp` = '1', a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
                    WHERE a.`PROCESSID` = '".$request->reID."' AND a.`FRM_NAME` = 'Reimbursement Request' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
 
                 return back()->with('form_submitted', 'Your request is now In Progress.');               
@@ -3610,19 +3654,19 @@ class WorkflowController extends Controller
 
     // Approved Workflow list 
     public function getApproved(Request $request) { 
-        $posts = DB::select("call general.Display_Completed_Company_web('%', '" . session('LoggedUser') . "','', '1', '2020-01-01', '2020-12-31', 'True')");
+        $posts = DB::select("call general.Display_Completed_Company_web('%', '" . session('LoggedUser') . "','', '".session('LoggedUser_CompanyID')."', '2020-01-01', '2020-12-31', 'True')");
         // $postsCount = count($posts);
-        Paginator::useBootstrap();
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $itemCollection = collect($posts);
-        $perPage = 10;
-        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
-        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
-        $paginatedItems->setPath($request->url());
-        // <div>{{ $posts->links() }}</div>
-        return view('MyWorkflow.approved', ['posts' => $paginatedItems]);
+        // Paginator::useBootstrap();
+        // $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        // $itemCollection = collect($posts);
+        // $perPage = 10;
+        // $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        // $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        // $paginatedItems->setPath($request->url());
+        // // <div>{{ $posts->links() }}</div>
+        // return view('MyWorkflow.approved', ['posts' => $paginatedItems]);
 
-        // return view('MyWorkflow.approved', compact('posts'));
+        return view('MyWorkflow.approved', compact('posts'));
         //return $posts;
     }
 
@@ -3750,17 +3794,17 @@ class WorkflowController extends Controller
 
     // Withdrawn List
     public function getWithdrawn(Request $request) { 
-        $posts = DB::select("call general.Display_withdrawn_Company_web('%', '" . session('LoggedUser') . "','', '1', '2020-01-01', '2020-12-31', 'True')");
-        Paginator::useBootstrap();
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $itemCollection = collect($posts);
-        $perPage = 10;
-        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
-        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
-        $paginatedItems->setPath($request->url());
-        // <div>{{ $posts->links() }}</div>
-        return view('MyWorkflow.withdrawn', ['posts' => $paginatedItems]);
-        // return view('MyWorkflow.withdrawn', compact('posts'));
+        $posts = DB::select("call general.Display_withdrawn_Company_web('%', '" . session('LoggedUser') . "','', '".session('LoggedUser_CompanyID')."', '2020-01-01', '2020-12-31', 'True')");
+        // Paginator::useBootstrap();
+        // $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        // $itemCollection = collect($posts);
+        // $perPage = 10;
+        // $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        // $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        // $paginatedItems->setPath($request->url());
+        // // <div>{{ $posts->links() }}</div>
+        // return view('MyWorkflow.withdrawn', ['posts' => $paginatedItems]);
+        return view('MyWorkflow.withdrawn', compact('posts'));
     }
 
         // View withdrawn by id
@@ -3872,7 +3916,10 @@ class WorkflowController extends Controller
 
 
 
-
+            if($class === 'frmOvertimeRequest'){
+                $post = DB::select("SELECT *,(SELECT project_name FROM general.`setup_project` WHERE project_id = PRJID) AS 'Project_Name' FROM humanresource.`overtime_request` WHERE main_id = $id;");
+                return view('MyWorkflow.withdrawn-byid.wit-hr-ot', compact('post'));
+            }
 
 
 
@@ -3903,18 +3950,18 @@ class WorkflowController extends Controller
 
     // Rejected
     public function getRejected(Request $request) { 
-        $posts = DB::select("call general.Display_Rejected_Company_web('%', '" . session('LoggedUser') . "','', '1', '2020-01-01', '2020-12-31', 'True')");
-        Paginator::useBootstrap();
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $itemCollection = collect($posts);
-        $perPage = 10;
-        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
-        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
-        $paginatedItems->setPath($request->url());
-        // <div>{{ $posts->links() }}</div>
-        return view('MyWorkflow.rejected', ['posts' => $paginatedItems]);
+        $posts = DB::select("call general.Display_Rejected_Company_web('%', '" . session('LoggedUser') . "','', '".session('LoggedUser_CompanyID')."', '2020-01-01', '2020-12-31', 'True')");
+        // Paginator::useBootstrap();
+        // $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        // $itemCollection = collect($posts);
+        // $perPage = 10;
+        // $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        // $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        // $paginatedItems->setPath($request->url());
+        // // <div>{{ $posts->links() }}</div>
+        // return view('MyWorkflow.rejected', ['posts' => $paginatedItems]);
 
-        // return view('MyWorkflow.rejected', compact('posts'));
+        return view('MyWorkflow.rejected', compact('posts'));
         //return $posts;
     }
         // View Rejcted by id
@@ -4047,7 +4094,7 @@ class WorkflowController extends Controller
         $userid = Auth::user()->id;
         $mngrs = DB::select("SELECT RMID, RMName FROM general.`systemreportingmanager` WHERE UID = '" . session('LoggedUser') . "' ORDER BY RMName");
         $projects = DB::select("SELECT project_id, project_name FROM general.`setup_project` WHERE project_type <> 'MAIN OFFICE' AND `status` = 'Active' AND title_id = 1 ORDER BY project_name");
-        //$user_info = DB::select("SELECT FirstName_Empl AS 'FNAME', LastName_Empl AS 'LNAME', DepartmentName AS 'Department', a.PositionName AS 'PositionName' FROM humanresource.`employees` a INNER JOIN erpweb.`users` b ON (a.`SysPK_Empl` = b.`employee_id`) WHERE b.`id` = '" . $userid . "'");
+        //$user_info = DB::select("SELECT FirstName_Empl AS 'FNAME', LastName_Empl AS 'LNAME', DepartmentName AS 'Department', a.PositionName AS 'PositionName' FROM humanresource.`employees` a INNER JOIN webapp.`users` b ON (a.`SysPK_Empl` = b.`employee_id`) WHERE b.`id` = '" . $userid . "'");
         return view('AccountingRequest.create-rfp', compact('mngrs', 'projects', 'user_info'));
     } 
 

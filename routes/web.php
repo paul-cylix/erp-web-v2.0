@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountingRequestController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\HumanResourceRequestController;
+use App\Http\Controllers\LayoutController;
 use App\Http\Controllers\MasterListRequestController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OperationRequestController;
@@ -85,7 +86,8 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
 
 
-
+    // Export to csv
+    Route::get('/export-to-csv', [LayoutController::class, 'exporttoCSV'])->name('export.csv');
 
 
 
@@ -104,7 +106,7 @@ Route::group(['middleware'=>['AuthCheck']], function(){
             Route::post('/inputs/rejected-re',[WorkflowController::class, 'rejectedRENpu'])->name(('npu.rejected.re'));
 
 
-            // RFP
+            // RFP // Inputs
             // Approve, Clarify, Withdraw, 
             Route::post('/inputs/approved',[WorkflowController::class, 'approvedByIDRemarksInputs'])->name(('npu.approved.post'));
             Route::post('/inputs/clarify',[WorkflowController::class, 'clarifyBtnInputs'])->name(('npu.clarify.post'));
@@ -321,6 +323,32 @@ Route::group(['middleware'=>['AuthCheck']], function(){
     Route::get('/create-leave', [HumanResourceRequestController::class, 'createLeave']);
     Route::get('/create-itinerary', [HumanResourceRequestController::class, 'createItinerary']);
     Route::get('/create-ir', [HumanResourceRequestController::class, 'createIncedentReport']);
+
+    // get clientname and clientid 
+    Route::get('getClientNameAnd/{id}',[HumanResourceRequestController::class, 'getClient'])->name('get.client');
+
+    // HR - OVER TIME ROUTES
+    Route::post('/save-OT', [HumanResourceRequestController::class, 'saveOT'])->name('save.ot.post');
+    Route::post('/withdraw-hr', [HumanResourceRequestController::class, 'withdrawHR'])->name('withdraw.hr');
+    Route::post('/rejected-hr', [HumanResourceRequestController::class, 'rejectedHR'])->name('rejected.hr');
+    Route::post('/approved-hr', [HumanResourceRequestController::class, 'approvedHR'])->name('approved.hr');
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Master List Controller
     Route::get('/create-ce', [MasterListRequestController::class, 'createCustomerEntry']);

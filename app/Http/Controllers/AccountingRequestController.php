@@ -128,12 +128,10 @@ class AccountingRequestController extends Controller
                 'amount'=>'required|not_in:0',
                 'purpose'=>'required'
                 
-
-
             ]);
 
 
-            $dataREQREF = DB::select("SELECT IFNULL((SELECT MAX(SUBSTRING(REQREF ,10)) FROM accounting.`request_for_payment` WHERE YEAR(TS)=YEAR(NOW()) AND TITLEID = '1'),0) + 1 'REF'");
+            $dataREQREF = DB::select("SELECT IFNULL((SELECT MAX(SUBSTRING(REQREF ,10)) FROM accounting.`request_for_payment` WHERE YEAR(TS)=YEAR(NOW()) AND TITLEID = '".session('LoggedUser_CompanyID')."'),0) + 1 'REF'");
             $getref = $dataREQREF[0]->REF;
             $ref = str_pad($getref, 4, "0", STR_PAD_LEFT); 
             $ref = "RFP-" . date('Y') . "-" . $ref;
@@ -177,7 +175,8 @@ class AccountingRequestController extends Controller
                 'POSITION' => session('LoggedUser_PositionName'),
                 'GUID' => $GUID,
                 'ISRELEASED' => '0',
-                'TITLEID' => session('LoggedUser_CompanyID')
+                'TITLEID' => session('LoggedUser_CompanyID'),
+                'webapp' => '1'
             ]);
             
             $project_name = DB::select("SELECT project_name FROM general.`setup_project` WHERE `project_id` = '" . $request->projectName . "'");             
@@ -510,12 +509,16 @@ class AccountingRequestController extends Controller
         $expenseType = DB::select("SELECT type FROM accounting.`expense_type_setup`");
 
         $transpoSetup = DB::select("SELECT MODE FROM accounting.`transpo_setup`");
+        $businesslist = DB::select("SELECT * FROM general.`business_list` a WHERE a.`status` LIKE 'Active%' AND a.`title_id` = '".session('LoggedUser_CompanyID')."' AND a.`Type` = 'CLIENT' ORDER BY a.`business_fullname` ASC");
 
-        return view('AccountingRequest.create-reimbursement', compact('posts','mgrs','projects','expenseType','transpoSetup'));
+
+        return view('AccountingRequest.create-reimbursement', compact('posts','mgrs','projects','expenseType','transpoSetup','businesslist'));
 
     }
 
     public function saveRE(Request $request){
+
+        // dd($request->xdData, $request->tdData);
 
         $request->validate([
             'reportingManager'=>'required',
@@ -604,7 +607,8 @@ class AccountingRequestController extends Controller
                 'CLIENT_NAME' => $request->clientName, 
                 'TITLEID' => session('LoggedUser_CompanyID'),
                 'MAINID' => $request->mainID,
-                'CLIENTID' => $request->clientID
+                'CLIENTID' => $request->clientID,
+                'webapp' => '1'
     
             ]);
 
@@ -750,18 +754,18 @@ class AccountingRequestController extends Controller
                         'REID' => $reID,
                         'payee_id'=>'0',
                         'PAYEE' => $request->payeeName,
-                        'CLIENT_NAME' => $request->clientName, 
+                        'CLIENT_NAME' => $xdArray[$i][2],
                         'TITLEID'=>session('LoggedUser_CompanyID'),
                         'PRJID' =>$request->projectName,
                         'PROJECT' =>$project_name[0]->project_name,
-                        'DESCRIPTION' => $xdArray[$i][2],
-                        'AMOUNT' => $xdArray[$i][3],
+                        'DESCRIPTION' => $xdArray[$i][4],
+                        'AMOUNT' => $xdArray[$i][5],
                         'GUID'=>$GUID,
                         'TS' => now(),
                         'MAINID' => $request->mainID,
                         'STATUS' =>'ACTIVE',
-                        'CLIENT_ID' =>$request->clientID,
-                        'EXPENSE_TYPE'=> $xdArray[$i][1],
+                        'CLIENT_ID' =>$xdArray[$i][1],
+                        'EXPENSE_TYPE'=> $xdArray[$i][3],
                         'DEPT'=> session('LoggedUser_DepartmentName'),
                         'RELEASEDCASH'=> '0',
                         'date_'=> $xdArray[$i][0]
@@ -781,19 +785,19 @@ class AccountingRequestController extends Controller
                         'PRJID'=> $request->projectName,
                         'payee_id' => '0',
                         'PAYEE' => $request->payeeName, 
-                        'CLIENT_NAME'=> $request->clientName,
-                        'DESTINATION_FRM' => $tdArray[$i][1],
-                        'DESTINATION_TO' => $tdArray[$i][2],
-                        'DESCRIPTION' => $tdArray[$i][4],
-                        'AMT_SPENT' => $tdArray[$i][5],
+                        'CLIENT_NAME'=> $tdArray[$i][2],
+                        'DESTINATION_FRM' => $tdArray[$i][3],
+                        'DESTINATION_TO' => $tdArray[$i][4],
+                        'DESCRIPTION' => $tdArray[$i][6],
+                        'AMT_SPENT' => $tdArray[$i][7],
                         'TITLEID'=> session('LoggedUser_CompanyID'),
-                        'MOT' => $tdArray[$i][3],
+                        'MOT' => $tdArray[$i][5],
                         'PROJECT' => $project_name[0]->project_name,
                         'GUID' =>$GUID,
                         'TS' =>now(),
                         'MAINID'=> $request->mainID,
                         'STATUS'=> 'ACTIVE',
-                        'CLIENT_ID'=> $request->clientID, 
+                        'CLIENT_ID'=> $tdArray[$i][1],
                         'DEPT'=> session('LoggedUser_DepartmentName'),
                         'RELEASEDCASH'=> '0',
                         'date_'=> $tdArray[$i][0]
@@ -898,7 +902,8 @@ class AccountingRequestController extends Controller
                 'PRJID' => $request->projectName,
                 'CLIENT_NAME' => $request->clientName,
                 'CLIENT_ID' =>   $request->clientID,
-                'TITLEID' => session('LoggedUser_CompanyID')
+                'TITLEID' => session('LoggedUser_CompanyID'),
+                'webapp' => '1'
 
             ]);
 

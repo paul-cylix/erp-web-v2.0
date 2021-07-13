@@ -47,8 +47,14 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   {{-- Data Tables --}}
  
+  {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css"> --}}
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.bootstrap4.min.css">
+
+
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
@@ -251,14 +257,14 @@ max-width: 60%; */
       
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+          <a class="nav-link" data-widget="pushmenu" id="pushmenuBTN" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         {{-- <li class="nav-item d-none d-sm-inline-block">
           <a href="/dashboard" class="nav-link">Dashboard</a>
         </li>  --}}
       </ul> 
      
-      <ul class="navbar-nav ml-auto"> 
+      <ul class="navbar-nav ml-auto">   
        
         <li class="nav-item dropdown">
           {{-- <a class="nav-link" data-toggle="dropdown" href="#"> --}}
@@ -308,7 +314,7 @@ max-width: 60%; */
       <div style="height: 100%;" class="sidebar">
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image">
-            <img src="{{asset('assets/dist/img/jr.jpg')}}" class="img-circle elevation-2" alt="User Image">
+            {{-- <img src="{{asset('assets/dist/img/jr.jpg')}}" class="img-circle elevation-2" alt="User Image"> --}}
           </div>
           <div class="info">
             {{-- <a href="#" class="d-block">{{ $LoggedUserInfo['name'] }}</a> --}}
@@ -340,7 +346,7 @@ max-width: 60%; */
             </li>
             <li class="nav-item">
               <a href="/inputs" class="nav-link {{ Request::is('inputs*') ? 'active' : '' }}">
-                <i class="nav-icon far fa-circle text-primary"></i>
+                <i class="nav-icon far fa-circle text-primary" style="color:yellow !important;"></i>
                 <p class="text">Inputs</p>
                 <span class="badge badge-pill badge-light float-right" id="notifinpu"></span>
               </a>
@@ -354,7 +360,7 @@ max-width: 60%; */
             </li>
             <li class="nav-item">
               <a href="/in-progress" class="nav-link {{ Request::is('in-progress*') ? 'active' : '' }}">
-                <i class="nav-icon far fa-circle text-warning"></i>
+                <i class="nav-icon far fa-circle text-primary" ></i>
                 <p>In Progress</p>
                 <span class="badge badge-pill badge-light float-right" id="notifinpr"></span>
                 
@@ -363,7 +369,7 @@ max-width: 60%; */
             </li>
             <li class="nav-item">
               <a href="/clarifications" class="nav-link {{ Request::is('clarifications*') ? 'active' : '' }}" >
-                <i class="nav-icon far fa-circle text-info"></i>
+                <i class="nav-icon far fa-circle " style="color:orange !important;"></i>
                 <p class="text">Clarifications</p>
                 <span class="badge badge-pill badge-light float-right" id="notifclar"></span>
               </a>
@@ -736,6 +742,78 @@ max-width: 60%; */
   // DropzoneJS Demo Code End
 </script>
 
+<script>
+  $('#pushmenuBTN').on('click',function(){
+    // alert('hi');
+
+    $( ".badge" ).toggle( "slow", function() {
+    // Animation complete.
+  });
+  })
+</script>
+
+
+
+
+
+
+{{-- Datatables --}}
+{{-- <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script> --}}
+{{-- Dont Un comment --}}
+{{-- <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script> --}} 
+
+
+{{-- <script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script> --}}
+
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.colVis.min.js"></script>
+
+
+
+
+<script>
+    $('#example').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    } );
+
+    $('input[type="search"]').css("width", "500px");
+    // $('#example_filter').addClass("d-inline").addClass("text-right");
+
+</script>
+
+{{-- <script src="">
+  $('#example').DataTable( {
+    dom: 'Bfrtip',
+
+    buttons: [
+        {
+            extend: 'collection',
+            text: 'Export',
+            buttons: [ 'csv-flash', 'xls-flash', 'pdf-flash' ]
+        }
+    ]
+} );
+</script> --}}
+
+{{--  --}}
+
 {{-- Get Notification --}}
 <script>
 $(function(){
@@ -762,9 +840,9 @@ $(function(){
           $('#notifwith').text(withdrawn);
           $('#notifreje').text(reject);
           
-          $('#indexForInput').text(input);
-          $('#indexForApprovals').text(approval);
-          $('#indexForClarification').text(clarification);
+          $('#indexForInput').text(approval);
+          $('#indexForApprovals').text(clarification);
+          $('#indexForClarification').text(input);
           $('#indexForRejected').text(reject);
 
 

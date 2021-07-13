@@ -166,6 +166,7 @@
                                             <thead>
                                             <tr>
                                                 <th>Date</th>
+                                                <th>Client Name</th>
                                                 <th>Expense Type</th>
                                                 <th>Description</th>
                                                 <th>Currency</th>
@@ -178,6 +179,8 @@
                                                 @foreach ($qeLiquidationTable as $qeData)
                                                 <tr>
                                                     <td>{{ $qeData->trans_date }}</td>
+                            <td>{{ $qeData->client_name }}</td>
+
                                                     <td>{{ $qeData->expense_type }}</td>
                                                     <td>{{ $qeData->description }}</td>
                                                     <td>{{ $qeData->currency }}</td>

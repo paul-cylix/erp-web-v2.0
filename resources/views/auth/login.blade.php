@@ -85,7 +85,7 @@ section{
                 @csrf
                 <div class="control">
                     <label for="name">Username</label>
-                    <input type="email" name="email" class="form-control" placeholder="Username" value="{{ old('email') }}" >
+                    <input type="email" name="email" class="form-control" placeholder="Username" value="{{old('email')}}" >
                     <span class="text-danger">@error('email'){{ $message }}@enderror</span>
                 </div>
 

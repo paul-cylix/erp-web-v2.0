@@ -7,26 +7,14 @@
             <div class="small-box bg-info">
               <div class="inner">
                 <h3 id="indexForInput">0</h3>
+                {{-- {{  }} --}}
 
-                <p>For Inputs</p>
+                {{-- <a href="data:image/jpeg;base64, {{ session('img') }}" target="_blank">View</a> --}}
+
+                <p>Approvals</p>
               </div>
               <div class="icon">
                 <i class="ion ion-bag"></i>
-              </div>
-              <a href="/inputs" class="small-box-footer">View list <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3 id="indexForApprovals">0</h3>
-
-                <p>For Approvals</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
               </div>
               <a href="/approvals" class="small-box-footer">View list <i class="fas fa-arrow-circle-right"></i></a>
             </div>
@@ -34,16 +22,31 @@
           <!-- ./col -->
           <div class="col-lg-3 col-6">
             <!-- small box -->
-            <div class="small-box bg-warning">
+            <div class="small-box bg-success"  style="background-color: orange !important; ">
               <div class="inner">
-                <h3 id="indexForClarification">0</h3>
+                <h3 id="indexForApprovals">0</h3>
 
                 <p>Clarifications</p>
               </div>
               <div class="icon">
-                <i class="ion ion-person-add"></i>
+                <i class="ion ion-stats-bars"></i>
               </div>
               <a href="/clarifications" class="small-box-footer">View list <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning" style="background-color: yellow !important; ">
+              <div class="inner">
+                <h3 id="indexForClarification">0</h3>
+
+                <p>Inputs</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-person-add"></i>
+              </div>
+              <a href="/inputs" class="small-box-footer">View list <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
           <!-- ./col -->
@@ -93,26 +96,37 @@
 </div>
 </div>
 
-{{-- <div class="panel panel-default">
-<div class="panel-heading" role="tab" id="headingTwo">
-  <h4 class="panel-title">
-  <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-    <i class="fa fa-users" aria-hidden="true"></i>
-    Human Resource
-  </a>
-</h4>
-</div>
-<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
-  <div class="panel-body">
-    <div class="list-group">
-      <a href="/create-ot" class="list-group-item list-group-item-action">Overtime</a>
-      <a href="/create-leave" class="list-group-item list-group-item-action">Leave</a>
-      <a href="/create-itinerary" class="list-group-item list-group-item-action">Itinerary</a>
-      <a href="/create-ir" class="list-group-item list-group-item-action">Incident Report</a>
+  
+
+<div class="panel panel-default">
+  <div class="panel-heading" role="tab" id="headingTwo">
+    <h4 class="panel-title">
+    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+      <i class="fa fa-users" aria-hidden="true"></i>
+      Human Resource
+    </a>
+  </h4>
+  </div>
+  <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
+    <div class="panel-body">
+      <div class="list-group">
+        <a href="/create-ot" class="list-group-item list-group-item-action">Overtime</a>
+        <a href="/create-leave" class="list-group-item list-group-item-action">Leave</a>
+        <a href="/create-itinerary" class="list-group-item list-group-item-action">Itinerary</a>
+        <a href="/create-ir" class="list-group-item list-group-item-action">Incident Report</a>
+      </div>
     </div>
   </div>
-</div>
-</div> --}}
+  </div>
+
+
+
+
+
+
+
+
+
 
 {{-- <div class="panel panel-default">
 <div class="panel-heading" role="tab" id="headingThree">

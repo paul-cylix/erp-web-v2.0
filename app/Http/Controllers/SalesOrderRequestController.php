@@ -267,7 +267,8 @@ class SalesOrderRequestController extends Controller
             'dp_percentage' => $downPaymentPercentage,
             'project_shorttext' => $request->projectShortText,
             'ForwardProcess' => '', // wala apa
-            'warranty' => $request->warranty
+            'warranty' => $request->warranty,
+            'erpweb' => '1'
             
         ]);
             
@@ -684,7 +685,8 @@ class SalesOrderRequestController extends Controller
             'dp_percentage' => $downPaymentPercentage,
             'project_shorttext' => $request->projectShortText,
             'ForwardProcess' => '', // wala apa
-            'warranty' => $request->warranty
+            'warranty' => $request->warranty,
+            'erpweb' => '1'
             
         ]);
             
@@ -1062,7 +1064,8 @@ class SalesOrderRequestController extends Controller
             'dp_percentage' => $downPaymentPercentage,
             'project_shorttext' => $request->projectShortText,
             'ForwardProcess' => '', // wala apa
-            'warranty' => $request->warranty
+            'warranty' => $request->warranty,
+            'erpweb' => '1'
             
         ]);
             
@@ -1446,7 +1449,8 @@ class SalesOrderRequestController extends Controller
             'dp_percentage' => $downPaymentPercentage,
             'project_shorttext' => $request->projectShortText,
             'ForwardProcess' => '', // wala apa
-            'warranty' => $request->warranty
+            'warranty' => $request->warranty,
+            'erpweb' => '1'
             
         ]);
             

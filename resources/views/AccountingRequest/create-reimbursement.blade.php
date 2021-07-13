@@ -194,6 +194,7 @@ closeOnEsc: false,
                                             <thead>
                                                 <tr>
                                                     <th style="position: sticky; top: 0; background: white; ">Date</th>
+                                                    <th style="position: sticky; top: 0; background: white; ">Client Name</th>
                                                     <th style="position: sticky; top: 0; background: white; ">Expense Type</th>
                                                     <th style="position: sticky; top: 0; background: white; ">Remarks</th>
                                                     <th style="position: sticky; top: 0; background: white; ">Amount</th>
@@ -242,6 +243,7 @@ closeOnEsc: false,
                                             <thead>
                                                 <tr>
                                                     <th style="position: sticky; top: 0; background: white;" >Date</th>
+                                                    <th style="position: sticky; top: 0; background: white; ">Client Name</th>
                                                     <th style="position: sticky; top: 0; background: white;" >Destination From</th>
                                                     <th style="position: sticky; top: 0; background: white;" >Destination To</th>
                                                     <th style="position: sticky; top: 0; background: white;" >Mode of Transportation</th>
@@ -327,6 +329,10 @@ closeOnEsc: false,
                         {{-- End Attachments --}}
                         {{-- Attachments --}}        
                         
+
+                        <input type="hidden" name="clientNameXD" id="clientNameXD">
+                        <input type="hidden" name="clientNameTD" id="clientNameTD">
+
                     </form>
 
 
@@ -352,8 +358,8 @@ closeOnEsc: false,
                                     <div class="row">
                                         <div class="col-md-12">
                                     
-                                                <div class="row">
-                                                <div class="col">
+                                            <div class="row">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label>Date</label>
                                                         <input type="date" class="form-control" aria-describedby="helpId" id="dateXD">
@@ -366,6 +372,38 @@ closeOnEsc: false,
                                                         <span class="text-danger" id="dateErrXD"></span>                                                  
                                                     </div>
                                                 </div>
+
+                                                <div class="col-md-9">
+                                                    <div class="form-group">
+                                                        <label for="">Client Name</label>
+                                                        <select id="clientIDXD" name="clientIDXD" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" onchange="getLiqClientNameXD(this)"  >
+                                                            <option selected="selected" hidden disabled value="0">Select Client Name</option>
+
+                                                            @foreach ($businesslist as $business )
+                                                            <option value="{{ $business->Business_Number }}">{{ $business->business_fullname }}</option>
+                                                            @endforeach
+                                                            {{-- @foreach ($projects as $prj)
+                                                                 <option value="{{$prj->project_id}}">{{$prj->project_name}}</option>
+                                                            @endforeach --}}
+                                                        </select>
+                                                    <span class="text-danger" id="clientIDXDErr"></span>                                                  
+            
+                                                    </div>
+                                                </div>    
+
+                                            </div>
+                                            <div class="row">
+
+
+
+
+
+
+
+
+
+
+
 
                                                 <div class="col">
                                                     <div class="form-group">
@@ -387,7 +425,7 @@ closeOnEsc: false,
                                                         <span class="text-danger" id="amountErrXD"></span>
                                                     </div>
                                                 </div>
-                                                </div>
+                                            </div>
 
                                                 <div class="row">
                                                     <div class="col-md-12">
@@ -433,7 +471,7 @@ closeOnEsc: false,
                                     <div class="row">
                                         <div class="col-md-12">                                   
                                             <div class="row">
-                                                <div class="col">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label>Date</label>
                                                         <input type="date" class="form-control" aria-describedby="helpId" id="dateTD">
@@ -446,6 +484,27 @@ closeOnEsc: false,
                                                         <span class="text-danger" id="dateErrTD"></span>                                                  
                                                     </div>
                                                 </div>
+
+                                                <div class="col-md-9">
+                                                    <div class="form-group">
+                                                        <label for="">Client Name</label>
+                                                        <select id="clientIDTD" name="clientIDTD" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" onchange="getLiqClientNameTD(this)"  >
+                                                            <option selected="selected" hidden disabled value="0">Select Client Name</option>
+                                                            @foreach ($businesslist as $business )
+                                                            <option value="{{ $business->Business_Number }}">{{ $business->business_fullname }}</option>
+                                                            @endforeach
+                                                            {{-- @foreach ($projects as $prj)
+                                                                 <option value="{{$prj->project_id}}">{{$prj->project_name}}</option>
+                                                            @endforeach --}}
+                                                        </select>
+                                                    <span class="text-danger" id="clientIDTDErr"></span>                                                  
+            
+                                                    </div>
+                                                </div>  
+
+                                                </div>
+                                                <div class="row">
+
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label for="">Mode of transportation</label>
@@ -506,6 +565,25 @@ closeOnEsc: false,
                         {{-- End Modal Transportation Details --}}
                         {{-- End Modal --}}
 
+
+<button>
+    {{-- modal --}}
+
+</button>
+
+<table>
+
+    <th>
+        <td>name</td>
+        <td>action</td>
+    </th>
+
+    <tr>
+        <td>Elon</td>
+        <td>edit</td>
+    </tr>
+    
+</table>
 
                     
                     </div>                            
@@ -639,7 +717,25 @@ function xdUpdateData(){
 }
 </script> --}}
 
+<script>
+    function getLiqClientNameXD(){
+        let clientNameXD = $( "#clientIDXD option:selected" ).text();
+        // alert(liqclientname);
+        $('#clientNameXD').val(clientNameXD);
 
+        console.log(clientNameXD);
+    }
+</script>
+
+<script>
+    function getLiqClientNameTD(){
+        let clientNameTD = $( "#clientIDTD option:selected" ).text();
+        // alert(liqclientname);
+        $('#clientNameTD').val(clientNameTD);
+
+        console.log(clientNameTD);
+    }
+</script>
 
 
 {{-- Expense Details --}}
@@ -649,12 +745,26 @@ function xdUpdateData(){
         var typeXD = $('#typeXD').val(); 
         var amountXD = $('#amountXD').val(); 
         var remarksXD = $('#remarksXD').val(); 
+        var clientIDXD = $('#clientIDXD').val(); 
+        var clientNameXD = $('#clientNameXD').val(); 
+
 
     
     
         var amountXDChecker = false;
         var remarksXDChecker = false;
+        var clientIDXDChecker = false;
+
     
+
+        if(clientIDXD){
+            clientIDXDChecker = true;
+            $('#clientIDXDErr').text('');
+        }else{
+            $('#clientIDXDErr').text('Client Name is required!');
+            $('#xpsuccessdiv').addClass('d-none')
+        }
+
     
         if(amountXD){
             amountXDChecker = true;
@@ -674,10 +784,12 @@ function xdUpdateData(){
             $('#xpsuccessdiv').addClass('d-none');
         }
     
-        if(amountXDChecker && remarksXDChecker){
+        if(amountXDChecker && remarksXDChecker && clientIDXDChecker){
     
             $('#xdTable tbody').append('<tr>'+
                                                 '<td>'+dateXD+'</td>'+
+                                                '<td class = "d-none">'+clientIDXD+'</td>'+
+                                                '<td>'+clientNameXD+'</td>'+
                                                 '<td>'+typeXD+'</td>'+
                                                 '<td>'+remarksXD+'</td>'+
                                                 '<td>'+amountXD+'</td>'+
@@ -715,23 +827,41 @@ function xdUpdateData(){
     
     $("#xdTable > #xdTbody > tr").each(function () {
             var dateXD = $(this).find('td').eq(0).text();
-            var typeXD = $(this).find('td').eq(1).text();
-            var remarksXD = $(this).find('td').eq(2).text();
-            var amountXD = $(this).find('td').eq(3).text();
+            var clientIdXD = $(this).find('td').eq(1).text();
+            var clientNameXD = $(this).find('td').eq(2).text();
+            var typeXD = $(this).find('td').eq(3).text();
+            var remarksXD = $(this).find('td').eq(4).text();
+            var amountXD = $(this).find('td').eq(5).text();
+
       
          
             var listXD = [];
-            listXD.push(dateXD,typeXD,remarksXD,amountXD);
+            listXD.push(dateXD,clientIdXD,clientNameXD,typeXD,remarksXD,amountXD);
             objectXD.push(listXD);
     
          
         });
 
+
+
         var xdJsonData = JSON.stringify(objectXD);
-        $( "#xdData" ).val(xdJsonData);
+
+console.log(xdJsonData);
+console.log(typeof(xdJsonData));
+console.log(xdJsonData.length);
+
+        if (xdJsonData.length == 2) {
+            $( "#xdData" ).val(0);
+       
+        } else {
+            $( "#xdData" ).val(xdJsonData);
+
+        }
+
+
     
         for(var i = 0; i<objectXD.length; i++){
-                    var numAmt = objectXD[i]['3'];
+                    var numAmt = objectXD[i]['5'];
                     myAmtXD += parseFloat(numAmt);
             
         }
@@ -758,14 +888,35 @@ function getTransportationData(){
     var fromTD = $('#fromTD').val(); 
     var toTD = $('#toTD').val(); 
     var remarksTD = $('#remarksTD').val();
+    var clientIDTD = $('#clientIDTD').val(); 
+    var clientNameTD = $('#clientNameTD').val(); 
 
 
+
+
+
+
+
+
+
+
+    var clientIDTDChecker = false;
     var dateTDChecker = false;
     // var typeTDChecker = false;
     var amountTDChecker = false;
     var fromTDChecker = false;
     var toTDChecker = false;
     var remarksTDChecker = false;
+
+
+
+    if(clientIDTD){
+        clientIDTDChecker = true;
+        $('#clientIDTDErr').text('');
+    }else{
+        $('#clientIDTDErr').text('Client Name is required!');
+        $('#xpsuccessdiv').addClass('d-none')
+    }
 
 
     if(amountTD){
@@ -775,7 +926,6 @@ function getTransportationData(){
     }else{
         $('#amountErrTD').text('Amount is required!');
         $('#tdsuccessdiv').addClass('d-none');
-
     }
 
 
@@ -806,11 +956,13 @@ function getTransportationData(){
 
     }
 
-    if(amountTDChecker && fromTDChecker && toTDChecker && remarksTDChecker){
+    if(amountTDChecker && fromTDChecker && toTDChecker && remarksTDChecker && clientIDTDChecker){
 
 
         $('#tdTable tbody').append('<tr>'+
                                             '<td>'+dateTD+'</td>'+
+                                            '<td class="d-none">'+clientIDTD+'</td>'+
+                                            '<td>'+clientNameTD+'</td>'+
                                             '<td>'+fromTD+'</td>'+
                                             '<td>'+toTD+'</td>'+
                                             '<td>'+typeTD+'</td>'+
@@ -840,7 +992,6 @@ function deleteTDRow(){
     $(this).closest('tr').remove();
     tdUpdateData()
     });
-
 }
 
 
@@ -851,23 +1002,39 @@ var myAmtTD = 0 ;
 
 $("#tdTable > #tdTbody > tr").each(function () {
         var dateTD = $(this).find('td').eq(0).text();
-        var fromTD = $(this).find('td').eq(1).text();
-        var toTD = $(this).find('td').eq(2).text();
-        var typeTD = $(this).find('td').eq(3).text();
-        var remarksTD = $(this).find('td').eq(4).text();
-        var amountTD = $(this).find('td').eq(5).text();
+        var clientIdTD = $(this).find('td').eq(1).text();
+        var clientNameXD = $(this).find('td').eq(2).text();
+        var fromTD = $(this).find('td').eq(3).text();
+        var toTD = $(this).find('td').eq(4).text();
+        var typeTD = $(this).find('td').eq(5).text();
+        var remarksTD = $(this).find('td').eq(6).text();
+        var amountTD = $(this).find('td').eq(7).text();
      
         var listTD = [];
-        listTD.push(dateTD,fromTD,toTD,typeTD,remarksTD,amountTD);
+        listTD.push(dateTD,clientIdTD,clientNameXD,fromTD,toTD,typeTD,remarksTD,amountTD);
         objectTD.push(listTD);
 
      
     });
     var tdJsonData = JSON.stringify(objectTD);
-    $( "#tdData" ).val(tdJsonData);
+
+    if (tdJsonData.length == 2) {
+        $( "#tdData" ).val(0);
+
+    } else {
+        $( "#tdData" ).val(tdJsonData);
+
+    }
+
+
+
+
+
+
+    // $( "#tdData" ).val(tdJsonData);
 
     for(var i = 0; i<objectTD.length; i++){
-                var numAmt = objectTD[i]['5'];
+                var numAmt = objectTD[i]['7'];
                 myAmtTD += parseFloat(numAmt);
         
     }

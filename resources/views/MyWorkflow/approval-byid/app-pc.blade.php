@@ -180,6 +180,8 @@
                         <thead>
                             <tr>
                                 <th style="position: sticky; top: 0; background: white; ">Date</th>
+                            <th style="position: sticky; top: 0; background: white; ">Client Name</th>
+
                                 <th style="position: sticky; top: 0; background: white; ">Expense Type</th>
                                 <th style="position: sticky; top: 0; background: white; ">Remarks</th>
                                 <th style="position: sticky; top: 0; background: white; ">Amount</th>
@@ -226,6 +228,7 @@
                         <thead>
                             <tr>
                                 <th style="position: sticky; top: 0; background: white;" >Date</th>
+                                <th style="position: sticky; top: 0; background: white; ">Client Name</th>
                                 <th style="position: sticky; top: 0; background: white;" >Destination From</th>
                                 <th style="position: sticky; top: 0; background: white;" >Destination To</th>
                                 <th style="position: sticky; top: 0; background: white;" >Mode of Transportation</th>
@@ -275,6 +278,8 @@
 
 
                                         {{-- Hidden Elements --}}
+                                        <input type="hidden" name="clientNameXD" id="clientNameXD">
+                                        <input type="hidden" name="clientNameTD" id="clientNameTD">
                                         <input type="hidden" name="xdData" id="xdData">
                                         <input type="hidden" name="tdData" id="tdData">
                                         <input type="hidden" name="guid" value="{{ $post->GUID }}">
@@ -643,6 +648,8 @@
                 <thead>
                     <tr>
                         <th style="position: sticky; top: 0; background: white; ">Date</th>
+                        <th style="position: sticky; top: 0; background: white; ">Client Name</th>
+
                         <th style="position: sticky; top: 0; background: white; ">Expense Type</th>
                         <th style="position: sticky; top: 0; background: white; ">Remarks</th>
                         <th style="position: sticky; top: 0; background: white; ">Amount</th>
@@ -653,6 +660,8 @@
                     @forelse ($expenseDetails as $xdData)
                         <tr>
                             <td>{{ $xdData->date_ }}</td>
+                            <td>{{ $xdData->CLIENT_NAME }}</td>
+
                             <td>{{ $xdData->EXPENSE_TYPE }}</td>
                             <td>{{ $xdData->DESCRIPTION }}</td>
                             <td>{{ $xdData->AMOUNT }}</td>
@@ -707,6 +716,8 @@
                 <thead>
                     <tr>
                         <th style="position: sticky; top: 0; background: white;" >Date</th>
+                        <th style="position: sticky; top: 0; background: white; ">Client Name</th>
+
                         <th style="position: sticky; top: 0; background: white;" >Destination From</th>
                         <th style="position: sticky; top: 0; background: white;" >Destination To</th>
                         <th style="position: sticky; top: 0; background: white;" >Mode of Transportation</th>
@@ -719,6 +730,7 @@
                     @forelse ($transpoDetails as $tdData)
                         <tr>
                             <td>{{ $tdData->date_ }}</td>
+                            <td>{{ $tdData->CLIENT_NAME }}</td>
                             <td>{{ $tdData->DESTINATION_FRM }}</td>
                             <td>{{ $tdData->DESTINATION_TO }}</td>
                             <td>{{ $tdData->MOT }}</td>
@@ -834,7 +846,7 @@
                                         <div class="col-md-12">
                                     
                                                 <div class="row">
-                                                <div class="col">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label>Date</label>
                                                         <input type="date" class="form-control" aria-describedby="helpId" id="dateXD">
@@ -847,6 +859,28 @@
                                                         <span class="text-danger" id="dateErrXD"></span>                                                  
                                                     </div>
                                                 </div>
+                                                <div class="col-md-9">
+                                                    <div class="form-group">
+                                                        <label for="">Client Name</label>
+                                                        <select id="clientIDXD" name="clientIDXD" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" onchange="getLiqClientNameXD(this)"  >
+                                                            <option selected="selected" hidden disabled value="0">Select Client Name</option>
+
+                                                            {{-- @foreach ($projects as $prj)
+                                                                 <option value="{{$prj->project_id}}">{{$prj->project_name}}</option>
+                                                            @endforeach --}}
+
+                                                            @foreach ($businesslist as $business )
+                                                            <option value="{{ $business->Business_Number }}">{{ $business->business_fullname }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    <span class="text-danger" id="clientIDXDErr"></span>                                                  
+            
+                                                    </div>
+                                                </div>    
+
+                                            </div>
+                                                <div class="row">
+
 
                                                 <div class="col">
                                                     <div class="form-group">
@@ -912,7 +946,7 @@
                                     <div class="row">
                                         <div class="col-md-12">                                   
                                             <div class="row">
-                                                <div class="col">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label>Date</label>
                                                         <input type="date" class="form-control" aria-describedby="helpId" id="dateTD">
@@ -925,6 +959,27 @@
                                                         <span class="text-danger" id="dateErrTD"></span>                                                  
                                                     </div>
                                                 </div>
+
+                                                <div class="col-md-9">
+                                                    <div class="form-group">
+                                                        <label for="">Client Name</label>
+                                                        <select id="clientIDTD" name="clientIDTD" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" onchange="getLiqClientNameTD(this)"  >
+                                                            <option selected="selected" hidden disabled value="0">Select Client Name</option>
+                                                            @foreach ($businesslist as $business )
+                                                            <option value="{{ $business->Business_Number }}">{{ $business->business_fullname }}</option>
+                                                            @endforeach
+                                                            {{-- @foreach ($projects as $prj)
+                                                                 <option value="{{$prj->project_id}}">{{$prj->project_name}}</option>
+                                                            @endforeach --}}
+                                                        </select>
+                                                    <span class="text-danger" id="clientIDTDErr"></span>                                                  
+            
+                                                    </div>
+                                                </div>  
+
+                                            </div>
+                                                <div class="row">
+
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label for="">Mode of transportation</label>
@@ -988,115 +1043,25 @@
 
 
 
- {{-- Expense Details
 <script>
-function getExpenseData(){
-    var dateXD = $('#dateXD').val();
-    var typeXD = $('#typeXD').val(); 
-    var amountXD = $('#amountXD').val(); 
-    var remarksXD = $('#remarksXD').val(); 
-    // console.log(dateXD,typeXD,amountXD,remarksXD);
+    function getLiqClientNameXD(){
+        let clientNameXD = $( "#clientIDXD option:selected" ).text();
+        // alert(liqclientname);
+        $('#clientNameXD').val(clientNameXD);
 
-    var dateXDChecker = false;
-    // var typeXDChecker = false;
-    var amountXDChecker = false;
-    var remarksXDChecker = false;
-
-
-if(dateXD){
-    dateXDChecker = true;
-    $('#dateErrXD').text('');
-
-}else{
-    $('#dateErrXD').text('Date is required!');
-    
-}
-
-if(amountXD){
-    amountXDChecker = true;
-    $('#amountErrXD').text('');
-
-}else{
-    $('#amountErrXD').text('Amount is required!');
-}
-
-if(remarksXD){
-    remarksXDChecker = true;
-    $('#remarksErrXD').text('');
-
-}else{
-    $('#remarksErrXD').text('Remarks is required!');
-}
-
-
-if(dateXDChecker && amountXDChecker && remarksXDChecker ){
-
-    $('#xdTable tbody').append('<tr>'+
-                                        '<td>'+dateXD+'</td>'+
-                                        '<td>'+typeXD+'</td>'+
-                                        '<td>'+remarksXD+'</td>'+
-                                        '<td>'+amountXD+'</td>'+
-                                        '<td>'+
-                                            '<a class="btn btn-danger removeXDRow" onClick ="deleteXDRow()" >Delete</a>'+
-                                        '</td>'+
-                                    '</tr>'
-        );
-        xdUpdateData()
-        $('#dateErrXD').text('');
-        $('#amountErrXD').text('');
-        $('#remarksErrXD').text('');
-
+        console.log(clientNameXD);
     }
-}
-
-
-
-function deleteXDRow(){
-    $('#xdTable').on('click','tr a.removeXDRow',function(e){
-    e.preventDefault();
-    $(this).closest('tr').remove();
-    xdUpdateData()
-    });
-}
-
-
-function xdUpdateData(){
-
-    var objectXD = [];
-    var myAmt = 0 ;
-
-    $("#xdTable > #xdTbody > tr").each(function () {
-            var dateXD = $(this).find('td').eq(0).text();
-            var typeXD = $(this).find('td').eq(1).text();
-            var remarksXD = $(this).find('td').eq(2).text();
-            var amountXD = $(this).find('td').eq(3).text();
-            
-            var listXD = [];
-            listXD.push(dateXD,typeXD,remarksXD,amountXD);
-            objectXD.push(listXD);
-
-            var xdJsonData = JSON.stringify(objectXD);
-            $( "#xdData" ).val(xdJsonData);
-        });
-
-        console.log(objectXD);
-}
 </script>
- --}}
 
+<script>
+    function getLiqClientNameTD(){
+        let clientNameTD = $( "#clientIDTD option:selected" ).text();
+        // alert(liqclientname);
+        $('#clientNameTD').val(clientNameTD);
 
-{{-- <script>
-    $('#submit-all').on('click',function(){
-
-        if( ($('#attachmentsTable #initTbody tr').length) <= 0){
-        $('#myError').removeClass('d-none');
-        $('#myError').text('Please complete required fields.');
-        return false; 
-        }
-        
-    })
-</script> --}}
-
+        console.log(clientNameTD);
+    }
+</script>
 
 
 
@@ -1108,12 +1073,21 @@ function xdUpdateData(){
         var typeXD = $('#typeXD').val(); 
         var amountXD = $('#amountXD').val(); 
         var remarksXD = $('#remarksXD').val(); 
-
+        var clientIDXD = $('#clientIDXD').val(); 
+        var clientNameXD = $('#clientNameXD').val(); 
     
     
         var amountXDChecker = false;
         var remarksXDChecker = false;
+        var clientIDXDChecker = false;
     
+        if(clientIDXD){
+            clientIDXDChecker = true;
+            $('#clientIDXDErr').text('');
+        }else{
+            $('#clientIDXDErr').text('Client Name is required!');
+            $('#xpsuccessdiv').addClass('d-none')
+        }
     
         if(amountXD){
             amountXDChecker = true;
@@ -1133,10 +1107,12 @@ function xdUpdateData(){
             $('#xpsuccessdiv').addClass('d-none');
         }
     
-        if(amountXDChecker && remarksXDChecker){
-    
+  
+            if(amountXDChecker && remarksXDChecker && clientIDXDChecker){
             $('#xdTable tbody').append('<tr>'+
                                                 '<td>'+dateXD+'</td>'+
+                                                '<td class = "d-none">'+clientIDXD+'</td>'+
+                                                '<td>'+clientNameXD+'</td>'+
                                                 '<td>'+typeXD+'</td>'+
                                                 '<td>'+remarksXD+'</td>'+
                                                 '<td>'+amountXD+'</td>'+
@@ -1174,36 +1150,38 @@ function xdUpdateData(){
     
     $("#xdTable > #xdTbody > tr").each(function () {
             var dateXD = $(this).find('td').eq(0).text();
-            var typeXD = $(this).find('td').eq(1).text();
-            var remarksXD = $(this).find('td').eq(2).text();
-            var amountXD = $(this).find('td').eq(3).text();
+            var clientIdXD = $(this).find('td').eq(1).text();
+            var clientNameXD = $(this).find('td').eq(2).text();
+            var typeXD = $(this).find('td').eq(3).text();
+            var remarksXD = $(this).find('td').eq(4).text();
+            var amountXD = $(this).find('td').eq(5).text();
+
       
          
             var listXD = [];
-            listXD.push(dateXD,typeXD,remarksXD,amountXD);
+            listXD.push(dateXD,clientIdXD,clientNameXD,typeXD,remarksXD,amountXD);
             objectXD.push(listXD);
 
             
         });
 
 
-    
-        // if(objectXD.length){
-        //     var xdJsonData = JSON.stringify(objectXD);
-        //     $( "#xdData" ).val(xdJsonData);
-        //     alert('true')
-        //     } else {
-        //     $( "#xdData" ).val("");
-        //     alert('false')
-        // }
+
 
         var xdJsonData = JSON.stringify(objectXD);
-        $( "#xdData" ).val(xdJsonData);
+        // $( "#xdData" ).val(xdJsonData);
 
+        if (xdJsonData.length == 2) {
+            $( "#xdData" ).val(0);
+       
+        } else {
+            $( "#xdData" ).val(xdJsonData);
+
+        }
 
     
         for(var i = 0; i<objectXD.length; i++){
-                    var numAmt = objectXD[i]['3'];
+                    var numAmt = objectXD[i]['5'];
                     myAmtXD += parseFloat(numAmt);
             
         }
@@ -1232,8 +1210,11 @@ function xdUpdateData(){
         var fromTD = $('#fromTD').val(); 
         var toTD = $('#toTD').val(); 
         var remarksTD = $('#remarksTD').val();
+        var clientIDTD = $('#clientIDTD').val(); 
+        var clientNameTD = $('#clientNameTD').val(); 
     
-    
+
+        var clientIDTDChecker = false;
         var dateTDChecker = false;
         // var typeTDChecker = false;
         var amountTDChecker = false;
@@ -1241,7 +1222,17 @@ function xdUpdateData(){
         var toTDChecker = false;
         var remarksTDChecker = false;
     
-    
+
+
+        if(clientIDTD){
+            clientIDTDChecker = true;
+            $('#clientIDTDErr').text('');
+        }else{
+            $('#clientIDTDErr').text('Client Name is required!');
+            $('#xpsuccessdiv').addClass('d-none')
+        }
+
+ 
         if(amountTD){
             amountTDChecker = true;
             $('#amountErrTD').text('');
@@ -1280,11 +1271,13 @@ function xdUpdateData(){
     
         }
     
-        if(amountTDChecker && fromTDChecker && toTDChecker && remarksTDChecker){
-    
+ 
+            if(amountTDChecker && fromTDChecker && toTDChecker && remarksTDChecker && clientIDTDChecker){
     
             $('#tdTable tbody').append('<tr>'+
                                                 '<td>'+dateTD+'</td>'+
+                                                '<td class="d-none">'+clientIDTD+'</td>'+
+                                            '<td>'+clientNameTD+'</td>'+
                                                 '<td>'+fromTD+'</td>'+
                                                 '<td>'+toTD+'</td>'+
                                                 '<td>'+typeTD+'</td>'+
@@ -1324,25 +1317,39 @@ function xdUpdateData(){
     var myAmtTD = 0 ;
     
     $("#tdTable > #tdTbody > tr").each(function () {
+ 
             var dateTD = $(this).find('td').eq(0).text();
-            var fromTD = $(this).find('td').eq(1).text();
-            var toTD = $(this).find('td').eq(2).text();
-            var typeTD = $(this).find('td').eq(3).text();
-            var remarksTD = $(this).find('td').eq(4).text();
-            var amountTD = $(this).find('td').eq(5).text();
-            
+            var clientIdTD = $(this).find('td').eq(1).text();
+            var clientNameXD = $(this).find('td').eq(2).text();
+            var fromTD = $(this).find('td').eq(3).text();
+            var toTD = $(this).find('td').eq(4).text();
+            var typeTD = $(this).find('td').eq(5).text();
+            var remarksTD = $(this).find('td').eq(6).text();
+            var amountTD = $(this).find('td').eq(7).text();
+        
             var listTD = [];
-            listTD.push(dateTD,fromTD,toTD,typeTD,remarksTD,amountTD);
+            listTD.push(dateTD,clientIdTD,clientNameXD,fromTD,toTD,typeTD,remarksTD,amountTD);
             objectTD.push(listTD);
-    
+        
 
         });
     
         var tdJsonData = JSON.stringify(objectTD);
-        $( "#tdData" ).val(tdJsonData);
+
+
+        
+    if (tdJsonData.length == 2) {
+            $( "#tdData" ).val(0);
+       
+        } else {
+            $( "#tdData" ).val(tdJsonData);
+
+        }
+
+        // $( "#tdData" ).val(tdJsonData);
 
         for(var i = 0; i<objectTD.length; i++){
-                    var numAmt = objectTD[i]['5'];
+                    var numAmt = objectTD[i]['7'];
                     myAmtTD += parseFloat(numAmt);
             
         }
@@ -1354,189 +1361,6 @@ function xdUpdateData(){
     }
     
     </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{{-- Transportation Details --}}
-{{-- <script>
-function getTransportationData(){
-    var dateTD = $('#dateTD').val();
-    var typeTD = $('#typeTD').val(); 
-    var amountTD = $('#amountTD').val(); 
-    var fromTD = $('#fromTD').val(); 
-    var toTD = $('#toTD').val(); 
-    var remarksTD = $('#remarksTD').val();
-
-
-    var dateTDChecker = false;
-    // var typeTDChecker = false;
-    var amountTDChecker = false;
-    var fromTDChecker = false;
-    var toTDChecker = false;
-    var remarksTDChecker = false;
-
-
-    if(dateTD){
-        dateTDChecker = true;
-        $('#dateErrTD').text('');
-    }else{
-        $('#dateErrTD').text('Date is required!');
-    }
-
-
-    if(amountTD){
-        amountTDChecker = true;
-        $('#amountErrTD').text('');
-
-    }else{
-        $('#amountErrTD').text('Amount is required!');
-    }
-
-
-    if(fromTD){
-        fromTDChecker = true;
-        $('#fromErrTD').text('');
-    }else{
-        $('#fromErrTD').text('Destination from is required!');
-    }
-
-    if(toTD){
-        toTDChecker = true;
-        $('#toErrTD').text('');
-    }else{
-        $('#toErrTD').text('Destination to is required!');
-    }
-
-    if(remarksTD){
-        remarksTDChecker = true;
-        $('#remarksErrTD').text('');
-    }else{
-        $('#remarksErrTD').text('Remarks is required!');
-    }
-
-    if(dateTDChecker && amountTDChecker && fromTDChecker && toTDChecker && remarksTDChecker){
-
-
-        $('#tdTable tbody').append('<tr>'+
-                                            '<td>'+dateTD+'</td>'+
-                                            '<td>'+fromTD+'</td>'+
-                                            '<td>'+toTD+'</td>'+
-                                            '<td>'+typeTD+'</td>'+
-                                            '<td>'+remarksTD+'</td>'+
-                                            '<td>'+amountTD+'</td>'+
-                                            '<td>'+
-                                                '<a class="btn btn-danger removeTDRow" onClick ="deleteTDRow()" >Delete</a>'+
-                                            '</td>'+
-                                        '</tr>'
-        );
-        tdUpdateData()
-        $('#dateErrTD').text('');
-        $('#amountErrTD').text('');
-        $('#fromErrTD').text('');
-        $('#toErrTD').text('');
-        $('#remarksErrTD').text('');
-    }
-
-}
-
-
-function deleteTDRow(){
-    $('#tdTable').on('click','tr a.removeTDRow',function(e){
-    e.preventDefault();
-    $(this).closest('tr').remove();
-    tdUpdateData()
-    });
-
-}
-
-
-function tdUpdateData(){
-
-var objectTD = [];
-var myAmt = 0 ;
-
-$("#tdTable > #tdTbody > tr").each(function () {
-        var dateTD = $(this).find('td').eq(0).text();
-        var fromTD = $(this).find('td').eq(1).text();
-        var toTD = $(this).find('td').eq(2).text();
-        var typeTD = $(this).find('td').eq(3).text();
-        var remarksTD = $(this).find('td').eq(4).text();
-        var amountTD = $(this).find('td').eq(5).text();
-        
-        var listTD = [];
-        listTD.push(dateTD,fromTD,toTD,typeTD,remarksTD,amountTD);
-        objectTD.push(listTD);
-
-        var tdJsonData = JSON.stringify(objectTD);
-        $( "#tdData" ).val(tdJsonData);
-    });
-}
-</script>    --}}
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
