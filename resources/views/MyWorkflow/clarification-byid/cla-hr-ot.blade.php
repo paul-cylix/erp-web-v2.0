@@ -922,6 +922,15 @@
 
 
 
+{{-- Delete ROw Start --}}
+    <script>
+        $('.deleteRow').on('click',function(e){
+            e.preventDefault();
+            $(this).closest('tr').remove();
+        })
+    </script>
+{{-- Delete Row End --}}
+
 
 
 {{-- get data to json start --}}
@@ -1396,6 +1405,11 @@
             
         })
 
+
+        $('.deleteRow').on('click',function(e){
+            e.preventDefault();
+            $(this).closest('tr').remove();
+        })
 
         });
 
