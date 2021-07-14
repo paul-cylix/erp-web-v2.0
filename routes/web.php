@@ -334,10 +334,13 @@ Route::group(['middleware'=>['AuthCheck']], function(){
     Route::post('/approved-hr', [HumanResourceRequestController::class, 'approvedHR'])->name('approved.hr');
     Route::post('/approved-init', [HumanResourceRequestController::class, 'approvedInit'])->name('approved.init');
     Route::post('/clarify-hr', [HumanResourceRequestController::class, 'clarifyHR'])->name('clarify.hr');
+    Route::post('/reply-hr', [HumanResourceRequestController::class, 'replyHR'])->name('reply.hr');
+    Route::post('/approvedApprvr-hr', [HumanResourceRequestController::class, 'approvedApprvrHR'])->name('approvedApprvr.hr');
+    Route::post('/rejectedApprvr-hr', [HumanResourceRequestController::class, 'rejectedApprvrHR'])->name('rejectedApprvr.hr');
 
 
     
-
+    
 
 
 

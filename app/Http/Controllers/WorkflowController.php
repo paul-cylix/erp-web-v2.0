@@ -150,6 +150,11 @@ class WorkflowController extends Controller
 
             }
 
+            if($class === 'frmOvertimeRequest'){
+                $post = DB::select("SELECT *,(SELECT project_name FROM general.`setup_project` WHERE project_id = PRJID) AS 'Project_Name' FROM humanresource.`overtime_request` WHERE main_id = $id;");
+                return view('MyWorkflow.participants-byid.part-hr-ot', compact('post'));
+            }
+
 
 
         }
@@ -2448,6 +2453,20 @@ class WorkflowController extends Controller
 
      
 
+            if($class === 'frmOvertimeRequest'){
+                $post = DB::select("SELECT *,(SELECT project_name FROM general.`setup_project` WHERE project_id = PRJID) AS 'Project_Name' FROM humanresource.`overtime_request` WHERE main_id = $id;");
+                $actualSignData = DB::table('general.actual_sign')->where('PROCESSID',$id)->where('FRM_NAME',$frmname)->where('COMPID',session('LoggedUser_CompanyID'))->first();
+                
+                $employee = DB::select("SELECT SysPK_Empl, Name_Empl FROM humanresource.`employees` WHERE Status_Empl LIKE 'Active%' AND CompanyID = ".session('LoggedUser_CompanyID')." ORDER BY Name_Empl");
+                $project = DB::select("SELECT project_id, project_name FROM general.`setup_project` WHERE title_id = ".session('LoggedUser_CompanyID')." AND `status` = 'Active' AND project_type IN ('Project Site', 'Non-Project') ORDER BY project_name;");
+                $managers = DB::select("SELECT RMID, RMName FROM general.`systemreportingmanager` WHERE UID = '" . session('LoggedUser') . "' ORDER BY RMName");
+        
+                $recipientCheck = DB::select("SELECT IFNULL((SELECT a.`CurrentReceiver` FROM general.`actual_sign` a WHERE a.`FRM_CLASS` = '".$class."' AND a.`PROCESSID` = $id AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification' AND a.`CurrentReceiver` = '".session('LoggedUser')."' ), FALSE) AS recipientCheck;");
+                $recipientCheck = $recipientCheck[0]->recipientCheck;
+        
+                return view('MyWorkflow.clarification-byid.cla-hr-ot', compact('post','actualSignData','employee','project','managers','recipientCheck'));
+            }
+
 
 
 
@@ -3794,6 +3813,12 @@ class WorkflowController extends Controller
 
             }
 
+            if($class === 'frmOvertimeRequest'){
+                $post = DB::select("SELECT *,(SELECT project_name FROM general.`setup_project` WHERE project_id = PRJID) AS 'Project_Name' FROM humanresource.`overtime_request` WHERE main_id = $id;");
+                return view('MyWorkflow.approved-byid.appd-hr-ot', compact('post'));
+            }
+
+
         }
 
 
@@ -4090,6 +4115,12 @@ class WorkflowController extends Controller
                     return view('MyWorkflow.rejected-byid.rej-sof-poc', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject'));
                 } 
 
+            }
+
+            
+            if($class === 'frmOvertimeRequest'){
+                $post = DB::select("SELECT *,(SELECT project_name FROM general.`setup_project` WHERE project_id = PRJID) AS 'Project_Name' FROM humanresource.`overtime_request` WHERE main_id = $id;");
+                return view('MyWorkflow.rejected-byid.rej-hr-ot', compact('post'));
             }
 
 

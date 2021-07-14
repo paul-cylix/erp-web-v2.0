@@ -167,21 +167,26 @@
                         </tr>
                     </thead>
                     <tbody id="overtimeDetailsTbody">
-                        {{-- <tr class="d-flex" style="font-size: 13px;">
-                           <td class="col-2">Paul Iverson Cortez</td>
-                           <td class="col-2">Cylix Technologies Inc.</td>
-                           <td class="col-1">7/8/2021</td>
-                           <td class="col-1">7:00 AM</td>
-                           <td class="col-1">7:00 PM</td>
-                           <td class="col-1">12 Hrs</td>
-                           <td class="col-1">7:00 AM</td>
-                           <td class="col-1">7:00 PM</td>
-                           <td class="col-1">12 Hrs</td>
-                           <td class="col-3">ERP-WEB bug fixing and adding extra features</td>
+                        <tr class="d-flex" style="font-size: 13px;">
+                           <td class="col-2">employee_name</td>
+                           <td class="col-2">Project_Name</td>
+                           <td class="col-1">overtime_date</td>
+                           <td class="col-1">ot_in</td>
+                           <td class="col-1">ot_out</td>
+                           <td class="col-1">ot_totalhrs</td>
+                           <td class="col-1">ot_in_actual</td>
+                           <td class="col-1">ot_out_actual</td>
+                           <td class="col-1">ot_totalhrs_actual</td>
+                           <td class="col-3">purpose</td>
+                           <div class="d-none">employee_id</div>
+                           <div class="d-none">PRJID</div>
+                           <div class="d-none">cust_id</div>
+                           <div class="d-none">cust_name</div>
+                           <div class="d-none">id</div>
                            <td class="col-1 text-center px-0">
                                <button class="btn btn-success"><i class="fas fa-edit"></i></button>
                                <button class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
-                           </td> --}}
+                           </td>
                         </tr>
                     </tbody>
                 </table>
@@ -193,6 +198,20 @@
     </div>                                    
 </div>
 {{-- Overtime Details --}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

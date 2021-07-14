@@ -246,7 +246,7 @@
                                     <div class="input-group date" id="datetimepicker7" data-target-input="nearest">
                                         <input type="text" class="form-control datetimepicker-input" id="authTimeStart" data-target="#datetimepicker7"/>
                                         <div class="input-group-append" data-target="#datetimepicker7" data-toggle="datetimepicker">
-                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                            <div class="input-group-text"><i class="fas fa-clock"></i></div>
                                         </div>
                                     </div>
                                     <span class="text-danger" id="authTimeStartErr"></span>                                                  
@@ -260,7 +260,7 @@
                                     <div class="input-group date" id="datetimepicker8" data-target-input="nearest">
                                         <input type="text" class="form-control datetimepicker-input" id="authTimeEnd" data-target="#datetimepicker8"/>
                                         <div class="input-group-append" data-target="#datetimepicker8" data-toggle="datetimepicker">
-                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                            <div class="input-group-text"><i class="fas fa-clock"></i></div>
                                         </div>
                                     </div>
                                     <span class="text-danger" id="authTimeEndErr"></span>                                                  
@@ -581,7 +581,7 @@
         var authTimeEndChecker = false;
         var purposeTwoChecker = false;
 
-    // Validation
+        // Validation
         if(employeeID === "0"){
             $('#employeeIDErr').text('Employee Name is required!');
             $('#successDiv').addClass('d-none')
@@ -665,14 +665,14 @@
         $('#authTotalHrs').val('');
         $('#purposeTwo').val('');
 
-        };
+    };
 
 
-    // Delete Row Data from table
-    $('.deleteRow').on('click',function(e){
-        e.preventDefault();
-        $(this).closest('tr').remove();
-    })
+        // Delete Row Data from table
+        $('.deleteRow').on('click',function(e){
+            e.preventDefault();
+            $(this).closest('tr').remove();
+        })
 
 
     // Edit Row Data

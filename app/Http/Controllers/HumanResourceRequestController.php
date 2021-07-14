@@ -79,7 +79,7 @@ class HumanResourceRequestController extends Controller
                         'ot_in' => date_format($ot_in, 'Y-m-d H:i:s'),
                         'ot_out' => date_format($ot_out, 'Y-m-d H:i:s'),
                         'ot_totalhrs' => $otData[$i][5],
-                        'employee_id' => $otData[$i][9],
+                        'employee_id' => $otData[$i][7],
                         'employee_name' => $otData[$i][0],
                         'purpose' => $otData[$i][6],
                         'status' => 'In Progress',
@@ -200,66 +200,166 @@ class HumanResourceRequestController extends Controller
     }
 
 
-
-
-// Clarify HR
-
-        public function clarifyHR(Request $request){
-
-            $actualID = DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In Progress'), FALSE) AS inpid;");
-
+// Reply HR
+        public function replyHR(Request $request){
             
-            $notificationIdClarity = DB::table('general.notifications')->insertGetId([
-                'ParentID' =>'0',
-                'levels'=>'0',
-                'FRM_NAME' =>$request->frmName,
-                'PROCESSID' =>$request->main_id,
-                'SENDERID' =>session('LoggedUser'),
-                'RECEIVERID' =>$request->clarityRecipient,
-                'MESSAGE' =>$request->clarificationRemarks,
-                'TS' =>NOW(),
-                'SETTLED' =>'NO',
-                'ACTUALID' => $actualID[0]->inpid,
-                'SENDTOACTUALID' =>'0',
-                'UserFullName' =>session('LoggedUser_FullName')
+            $request->validate([
+                'rmID'=>'required',
+                'purpose'=>'required',
+                'jsonOTdata'=>'required',           
             ]);
-
-            DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
-            a.`NOTIFICATIONID` = '".$notificationIdClarity."', a.`UID_SIGN` = '".session('LoggedUser')."',a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->clarificationRemarks."' WHERE
-            a.`PROCESSID` = '".$request->main_id."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`STATUS` = 'In Progress'
-            ");
-            
-            DB::update("UPDATE humanresource.`overtime_request` a SET a.`status` =  'For Clarification' WHERE a.`main_id` = '".$request->main_id."' AND a.`titleid` = '".session('LoggedUser_CompanyID')."' ");
-
-    
-
-            
-            
-            
-
 
             $success = true;
             DB::beginTransaction();
             try{    
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
-                
-                DB::commit();
-            }catch(\Exception $e){
-                DB::rollback();
-                $success = false;
+
+            
+            $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC ");
+          
+            $nParentId= $notif[0]->ID;
+            $nReceiverId= $notif[0]->SENDERID;
+            $nActualId= $notif[0]->ACTUALID;
+
+
+           DB::table('general.notifications')->insert([
+
+            'ParentID' =>$nParentId,
+            'levels'=>'0',
+            'FRM_NAME' =>$request->frmName,
+            'PROCESSID' =>$request->main_id,
+            'SENDERID' =>session('LoggedUser'),
+            'RECEIVERID' =>$nReceiverId,
+            'MESSAGE' =>$request->replyRemarks,
+            'TS' =>NOW(),
+            'SETTLED' => 'YES',
+            'ACTUALID' => $nActualId,
+            'SENDTOACTUALID' =>'0',
+            'UserFullName' =>session('LoggedUser_FullName'),
+
+           ]);
+
+
+           $mainData = DB::table('humanresource.overtime_request')->where('main_id', $request->main_id)->first();
+           DB::table('humanresource.overtime_request')->where('main_id', $request->main_id)->delete();
+
+           $otData = $request->jsonOTdata;
+           $otData =json_decode($otData,true);
+
+           $dateRequested = date_create($mainData->request_date);
+    
+
+
+           for($i = 0; $i <count($otData); $i++) {
+
+            $ot_date = date_create($otData[$i][2]);
+            $ot_in = date_create($otData[$i][3]);
+            $ot_out = date_create($otData[$i][4]);
+            
+            if (!empty($otData[$i][6]) || !empty($otData[$i][7])) {
+                $ot_in_actual = date_create($otData[$i][6]);   
+                $ot_out_actual = date_create($otData[$i][7]);   
+                $ot_in_actual = date_format($ot_in_actual, 'Y-m-d H:i:s');
+                $ot_out_actual = date_format($ot_out_actual, 'Y-m-d H:i:s');
+
+
+                $setOTData[] = [
+                    'reference' => $mainData->reference,
+                    'request_date' => date_format($dateRequested, 'Y-m-d'),
+                    'overtime_date' => date_format($ot_date, 'Y-m-d'),
+                    'ot_in' => date_format($ot_in, 'Y-m-d H:i:s'),
+                    'ot_out' => date_format($ot_out, 'Y-m-d H:i:s'),
+                    'ot_totalhrs' => $otData[$i][5],
+                    'employee_id' => $otData[$i][10],
+                    'employee_name' => $otData[$i][0],
+                    'purpose' => $otData[$i][9],
+                    'status' => 'In Progress',
+                    'UID' => session('LoggedUser'),
+                    'fname' => session('LoggedUser_FirstName'), 
+                    'lname' => session('LoggedUser_LastName'),
+                    'department' => session('LoggedUser_DepartmentName'), 
+                    'reporting_manager' => $request->rmName, 
+                    'position' => session('LoggedUser_PositionName'),
+                    'ts' => now(),
+                    'GUID' => $mainData->GUID,
+                    // 'comments' => , 
+                    'ot_in_actual' => $ot_in_actual, 
+                    'ot_out_actual' => $ot_out_actual,
+                    'ot_totalhrs_actual' => $otData[$i][8], 
+                    'main_id' => $mainData->main_id,
+                    'remarks' => $request->purpose,
+                    'cust_id' => $otData[$i][12],
+                    'cust_name' => $otData[$i][13],
+                    'TITLEID' => session('LoggedUser_CompanyID'),
+                    'PRJID' => $otData[$i][11]
+                ];
+
+               
+            } else {
+                $setOTData[] = [
+                    'reference' => $mainData->reference,
+                    'request_date' => date_format($dateRequested, 'Y-m-d'),
+                    'overtime_date' => date_format($ot_date, 'Y-m-d'),
+                    'ot_in' => date_format($ot_in, 'Y-m-d H:i:s'),
+                    'ot_out' => date_format($ot_out, 'Y-m-d H:i:s'),
+                    'ot_totalhrs' => $otData[$i][5],
+                    'employee_id' => $otData[$i][10],
+                    'employee_name' => $otData[$i][0],
+                    'purpose' => $otData[$i][9],
+                    'status' => 'In Progress',
+                    'UID' => session('LoggedUser'),
+                    'fname' => session('LoggedUser_FirstName'), 
+                    'lname' => session('LoggedUser_LastName'),
+                    'department' => session('LoggedUser_DepartmentName'), 
+                    'reporting_manager' => $request->rmName, 
+                    'position' => session('LoggedUser_PositionName'),
+                    'ts' => now(),
+                    'GUID' => $mainData->GUID,
+                    // 'comments' => , 
+                    // 'ot_in_actual' => $ot_in_actual, 
+                    // 'ot_out_actual' => $ot_out_actual,
+                    // 'ot_totalhrs_actual' => $otData[$i][8], 
+                    'main_id' => $mainData->main_id,
+                    'remarks' => $request->purpose,
+                    'cust_id' => $otData[$i][12],
+                    'cust_name' => $otData[$i][13],
+                    'TITLEID' => session('LoggedUser_CompanyID'),
+                    'PRJID' => $otData[$i][11]
+                ];
             }
-            if($success){
-                return back()->with('form_submitted', 'The request has been Approved.');
-            }
-            else{
-                return back()->with('form_error', 'Error in Transaction');
-            }
+            
+
+
+        }
+        DB::table('humanresource.overtime_request')->insert($setOTData);
+
+        // For clarification to in progress
+        DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+        WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
+
+        // Update form in actual sign
+        DB::update("UPDATE general.`actual_sign` a 
+        SET 
+        a.`REMARKS` = '".$request->purpose."', 
+        a.`TS` = NOW(), 
+        a.`RM_ID` = '".$request->rmID."', 
+        a.`REPORTING_MANAGER` = '".$request->rmName."' 
+        WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."'  AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ");
 
 
 
 
 
+        DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+            $success = false;
+        }
+        if($success){
+            return back()->with('form_submitted', 'The request is now For Clarification.');
+        }
+        else{
+            return back()->with('form_error', 'Error in Transaction');
+        }
 
 
         }
@@ -272,6 +372,153 @@ class HumanResourceRequestController extends Controller
 
 
 
+// Approved Approver HR
+        public function approvedApprvrHR(Request $request){
+            $success = true;
+            DB::beginTransaction();
+            try{    
+
+            
+            $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC ");
+          
+            $nParentId= $notif[0]->ID;
+            $nReceiverId= $notif[0]->SENDERID;
+            $nActualId= $notif[0]->ACTUALID;
+
+
+            DB::table('general.notifications')->insert([
+
+                'ParentID' =>$nParentId,
+                'levels'=>'0',
+                'FRM_NAME' =>$request->frmName,
+                'PROCESSID' =>$request->main_id,
+                'SENDERID' =>session('LoggedUser'),
+                'RECEIVERID' =>$nReceiverId,
+                'MESSAGE' =>$request->approveRemarks,
+                'TS' =>NOW(),
+                'SETTLED' => 'YES',
+                'ACTUALID' => $nActualId,
+                'SENDTOACTUALID' =>'0',
+                'UserFullName' =>session('LoggedUser_FullName'),
+    
+            ]);
+
+
+
+            DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+            WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
+    
+            DB::update("UPDATE humanresource.`overtime_request` a SET a.`status` = 'In Progress' WHERE a.`main_id` = '".$request->main_id."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
+
+            
+            DB::commit();
+            }catch(\Exception $e){
+                DB::rollback();
+                $success = false;
+            }
+            if($success){
+                return back()->with('form_submitted', 'The request is now In Progress.');
+            }
+            else{
+                return back()->with('form_error', 'Error in Transaction');
+            }
+
+        }
+
+
+// Rejected by approver in Clarification
+        
+        public function rejectedApprvrHR(Request $request){
+            $success = true;
+            DB::beginTransaction();
+            try{    
+
+                DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'Rejected', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' ,a.`ApprovedRemarks` = '".$request->rejectedRemarks."'
+                WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ");
+        
+                DB::update("UPDATE humanresource.`overtime_request` a SET a.`status` = 'Rejected' WHERE a.`main_id` = '".$request->main_id."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
+
+
+                DB::commit();
+            }catch(\Exception $e){
+                DB::rollback();
+                $success = false;
+            }
+            if($success){
+                return back()->with('form_submitted', 'The request is now In Progress.');
+            }
+            else{
+                return back()->with('form_error', 'Error in Transaction');
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+// Clarify HR
+
+        public function clarifyHR(Request $request){
+
+            $success = true;
+            DB::beginTransaction();
+            try{    
+       
+                $actualID = DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In Progress'), FALSE) AS inpid;");
+         
+                $notificationIdClarity = DB::table('general.notifications')->insertGetId([
+                    'ParentID' =>'0',
+                    'levels'=>'0',
+                    'FRM_NAME' =>$request->frmName,
+                    'PROCESSID' =>$request->main_id,
+                    'SENDERID' =>session('LoggedUser'),
+                    'RECEIVERID' =>$request->clarityRecipient,
+                    'MESSAGE' =>$request->clarificationRemarks,
+                    'TS' =>NOW(),
+                    'SETTLED' =>'NO',
+                    'ACTUALID' => $actualID[0]->inpid,
+                    'SENDTOACTUALID' =>'0',
+                    'UserFullName' =>session('LoggedUser_FullName')
+                ]);
+    
+                DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
+                a.`NOTIFICATIONID` = '".$notificationIdClarity."', a.`UID_SIGN` = '".session('LoggedUser')."',a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->clarificationRemarks."' WHERE
+                a.`PROCESSID` = '".$request->main_id."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`STATUS` = 'In Progress'
+                ");
+                
+                DB::update("UPDATE humanresource.`overtime_request` a SET a.`status` =  'For Clarification' WHERE a.`main_id` = '".$request->main_id."' AND a.`titleid` = '".session('LoggedUser_CompanyID')."' ");
+    
+                DB::commit();
+            }catch(\Exception $e){
+                DB::rollback();
+                $success = false;
+            }
+            if($success){
+                return back()->with('form_submitted', 'The request is now For Clarification.');
+            }
+            else{
+                return back()->with('form_error', 'Error in Transaction');
+            }
+
+        }
 
 
 // approved HR
@@ -341,11 +588,13 @@ class HumanResourceRequestController extends Controller
                 $ot_out_actual = date_create($otData[$i][7]);   
 
                 DB::update("UPDATE humanresource.`overtime_request` SET `ot_in_actual` = '".date_format($ot_in_actual, 'Y-m-d H:i:s')."', ot_out_actual = '".date_format($ot_out_actual, 'Y-m-d H:i:s')."', ot_totalhrs_actual = '".$otData[$i][8]."' WHERE `id` = '".$otData[$i][10]."' ;");
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
-                DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
-
+            
             }
         };
+
+        DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+        DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
+        
 
         return back()->with('form_submitted', 'The request has been Approved.');
 

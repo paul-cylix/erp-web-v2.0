@@ -4,11 +4,11 @@
 <div class="row">
     <div class="col-md-12" style="margin: -20px 0 20px 0 " >
         <div class="form-group" style="margin: 0 -5px 0 -5px;">
-                <div class="col-md-1 float-left"><a href="/in-progress" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
+                <div class="col-md-1 float-left"><a href="/approved" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled>Reply</button></div>     
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
-                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " data-toggle="modal" data-target="#withdrawModal" >Withdraw</button></div>        
+                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " disabled >Withdraw</button></div>        
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" disabled>Approve</button></div>   
         </div> 
@@ -162,43 +162,7 @@
 {{-- Row END --}}
 
 
-{{-- Withdraw Modal Start--}}
-    <div class="modal fade"  id="withdrawModal" tabindex="-1" role="dialog" aria-labelledby="withdrawModal" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-dark" >
-            <h5 class="modal-title" id="withdrawModalLabel">Withdraw Request</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            </div>
-            <form action="{{ route('withdraw.hr') }}" method="POST">
-                @csrf
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-12">                     
-                            <label for="withdrawRemarks">Remarks</label>
-                            <div class="card-body">
-                                <div class="form-floating">
-                                    <input type="hidden" name="main_id" id="" value="{{ $post[0]->main_id }}">
-                                    <input type="hidden" value="@yield('title')" name="frmName">
-                                    <textarea class="form-control" placeholder="Leave a comment here" name="withdrawRemarks" id="withdrawRemarks" style="height: 100px"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-            <input type="submit" class="btn btn-primary" value="Proceed">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-            </form>
-        </div>
-        </div>
-    </div>
-{{-- Withdraw Modal End--}}
+
 
 @if(Session::get('form_submitted'))
 <Script>

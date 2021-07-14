@@ -32,7 +32,7 @@
 <div class="row">
     <div class="col-md-12" style="margin: -20px 0 20px 0 " >
         <div class="form-group" style="margin: 0 -5px 0 -5px;">
-                <div class="col-md-1 float-left"><a href="/in-progress" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
+                <div class="col-md-1 float-left"><a href="/approvals" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled>Reply</button></div>     
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" data-toggle="modal" data-target="#clarityModal" >Clarify</button></div>                    
@@ -88,7 +88,7 @@
                         <div class="col-md-12">
                             <div class="form-group">                                            
                                 <label for="purpose">Purpose</label> 
-                                <textarea style="resize:none" class="form-control" id="purpose" name="purpose" rows="4" readonly placeholder="">{{ $post[0]->purpose }}</textarea>
+                                <textarea style="resize:none" class="form-control" id="purpose" name="purpose" rows="4" readonly placeholder="">{{ $post[0]->remarks }}</textarea>
     
                             </div>
                         </div>
@@ -223,7 +223,8 @@
                             </select>
                         </div>
                     </div>
-                    
+                    <input type="hidden" name="main_id" id="" value="{{ $post[0]->main_id }}">
+                    <input type="hidden" value="@yield('title')" name="frmName">
                    
 
                     <div class="row" style="margin-top: 7px;">
