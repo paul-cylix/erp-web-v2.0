@@ -326,7 +326,12 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
     // get clientname and clientid 
     Route::get('getClientNameAnd/{id}',[HumanResourceRequestController::class, 'getClient'])->name('get.client');
+    // get OT date and time
+    // Route::get('getotdatetime/{employeeID}',[HumanResourceRequestController::class, 'getotdatetime'])->name('get.ot.date.time');
+    Route::get('getotdatetime/{employeeID}/{overtimeDate}/{authTimeStart}/{authTimeEnd}',[HumanResourceRequestController::class, 'getotdatetime'])->name('get.ot.date.time');
 
+    
+    
     // HR - OVER TIME ROUTES
     Route::post('/save-OT', [HumanResourceRequestController::class, 'saveOT'])->name('save.ot.post');
     Route::post('/withdraw-hr', [HumanResourceRequestController::class, 'withdrawHR'])->name('withdraw.hr');

@@ -24,6 +24,37 @@ class HumanResourceRequestController extends Controller
         return json_encode(DB::select("SELECT Business_Number 'clientID', Business_fullname 'clientName' FROM general.`business_list` WHERE Business_Number = (SELECT ClientID FROM general.`setup_project` WHERE project_id = ".$project_id.");"));
     }
 
+    public function getotdatetime($employeeID,$overtimeDate,$authTimeStart,$authTimeEnd){
+
+        // $employeeID = '710';
+
+        // $overtimeDate = '07-13-2021';
+        // $authTimeStart = '07-13-2021%11:35%AM';
+        // $authTimeEnd = '07-13-2021%1:40%PM';
+
+        $overtimeDate = str_replace("-","/",$overtimeDate);
+        $authTimeStart = str_replace("-","/",$authTimeStart);
+        $authTimeEnd = str_replace("-","/",$authTimeEnd);
+
+        $authTimeStart = str_replace("%"," ",$authTimeStart);
+        $authTimeEnd = str_replace("%"," ",$authTimeEnd);
+
+        $ot_date = date_create($overtimeDate);
+        $ot_in = date_create($authTimeStart);
+        $ot_out = date_create($authTimeEnd);   
+        
+        $overtimeDate= date_format($ot_date, 'Y-m-d');
+        $authTimeStart= date_format($ot_in, 'Y-m-d H:i:s');
+        $authTimeEnd= date_format($ot_out, 'Y-m-d H:i:s');
+
+        return json_encode(DB::select("SELECT IFNULL((SELECT TRUE FROM humanresource.`overtime_request` a WHERE a.`employee_id` = '".$employeeID."' AND a.`status` = 'In Progress' AND a.`overtime_date` = '".$overtimeDate."' AND a.`ot_in` ='".$authTimeStart."' AND a.`ot_out` ='".$authTimeEnd."'), FALSE) AS checker;"));
+ 
+    
+
+    }
+
+
+
     public function saveOT(Request $request){
 
         $request->validate([
@@ -364,14 +395,6 @@ class HumanResourceRequestController extends Controller
 
         }
 
-
-
-
-
-
-
-
-
 // Approved Approver HR
         public function approvedApprvrHR(Request $request){
             $success = true;
@@ -438,7 +461,6 @@ class HumanResourceRequestController extends Controller
         
                 DB::update("UPDATE humanresource.`overtime_request` a SET a.`status` = 'Rejected' WHERE a.`main_id` = '".$request->main_id."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
 
-
                 DB::commit();
             }catch(\Exception $e){
                 DB::rollback();
@@ -452,28 +474,7 @@ class HumanResourceRequestController extends Controller
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         
-
 // Clarify HR
 
         public function clarifyHR(Request $request){
@@ -676,7 +677,13 @@ class HumanResourceRequestController extends Controller
 
     public function createLeave() { 
         $posts = DB::select("call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '1', '2020-01-01', '2020-12-31', 'True')");
-        return view('HumanResourceRequest.create-leave', compact('posts'));
+        $mediumofreport = DB::select("SELECT id, item FROM general.`setup_dropdown_items` WHERE `type` = 'Medium of Report' AND `status` = 'Active' ORDER BY OrderingPref ASC;");
+        $employee = DB::select("SELECT SysPK_Empl, Name_Empl FROM humanresource.`employees` WHERE Status_Empl LIKE 'Active%' AND CompanyID = ".session('LoggedUser_CompanyID')." ORDER BY Name_Empl");
+        $managers = DB::select("SELECT RMID, RMName FROM general.`systemreportingmanager` WHERE UID = '" . session('LoggedUser') . "' ORDER BY RMName");
+        $leavetype = DB::select("SELECT id, item FROM general.`setup_dropdown_items` WHERE `type` = 'Leave Type' AND `status` = 'Active' ORDER BY OrderingPref ASC;");
+
+
+        return view('HumanResourceRequest.create-leave', compact('posts','mediumofreport','employee','managers','leavetype'));
     
     }
 
