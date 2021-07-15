@@ -171,20 +171,17 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Add Overtime Details</h5>
-                    <button type="button" class="close closeBtn" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="p-3 mb-2 bg-success text-white d-none" id="successDiv">Added Successfully</div>                                             
-                    <div class="p-3 mb-2 bg-danger text-white d-none" id="failedDiv">This OT Requests are already exist</div>                                             
                    
                         <div class="row">
                             <input type="hidden" name="clientID" id="clientID">
                             <input type="hidden" name="clientName" id="clientName">
                             <input type="hidden" name="projectName" id="projectName">
-                            <input type="hidden" name="checker" id="checkerAjaxOT" >
-
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Project Name</label>
@@ -279,7 +276,7 @@
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary closeBtn" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="insertOTDetails">Add</button>
                 </div>
             </div>
@@ -294,7 +291,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Update Overtime Details</h5>
-                    <button type="button" class="close closeBtn" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -391,7 +388,7 @@
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary closeBtn" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="save">Save changes</button>
                     <input type="hidden" name="btnID" id="btnID">
                 </div>
@@ -640,83 +637,35 @@
 
         // Insert Data to table
         if(employeeIDChecker && projectIDChecker && overtimeDateChecker && authTimeStartChecker && authTimeEndChecker && purposeTwoChecker){
-            var result  = overtimeDate.replace(/\//g,'-');
-            var result1  = authTimeStart.replace(/\//g,'-');
-            var result2  = authTimeEnd.replace(/\//g,'-');
-            var checkerBool = false;
+        $("#overtimeDetailsTable #overtimeDetailsTbody").append(`
+            <tr class="d-flex" style="font-size: 13px;">
+                <td class="col-2">${employeeName}</td>
+                <td class="col-2">${projectName}</td>
+                <td class="col-1">${overtimeDate}</td>
+                <td class="col-1">${authTimeStart}</td>
+                <td class="col-1">${authTimeEnd}</td>
+                <td class="col-1">${authTotalHrs}</td>
+                <td class="col-3">${purposeTwo}</td>
+                <td class="d-none">${employeeID}</td>
+                <td class="d-none">${projectID}</td>
+                <td class="d-none">${clientID}</td>
+                <td class="d-none">${clientName}</td>
+                <td class="d-none">${btnID}</td>
+                <td class="col-1 text-center px-0">
+                    <button class="btn btn-success editRowBtn" id="newID${btnID}" data-toggle="modal" data-target="#exampleModal" ><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger deleteRow"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            </tr>              
+        `);
 
-        
-        
-            $.ajax({
-                type: 'GET',
-                url: 'getotdatetime/'+employeeID+'/'+result+'/'+result1+'/'+result2,
-                success: function (response) {
-                var response = JSON.parse(response);
-                response.forEach(element => {
-                        console.log(element);
-                        console.log(element['checker']);
-
-                        $('#checkerAjaxOT').val(element['checker']);
-                        // $('#clientName1').val(element['clientName'])
-
-                    });
-
-                    var checkerAjaxOT = $('#checkerAjaxOT').val();
-                    console.log('this is '+checkerAjaxOT);
-                    console.log(typeof(checkerAjaxOT))
-                    console.log(checkerAjaxOT)
-
-
-                    if(checkerAjaxOT == '1'){
-                    $('#successDiv').addClass('d-none');
-                    $('#failedDiv').removeClass('d-none')
-
-                    }else{
-                    checkerBool = true;
-                    }
-        
-        
-                    console.log(checkerBool)
-                    if(checkerBool){
-                    $("#overtimeDetailsTable #overtimeDetailsTbody").append(`
-                        <tr class="d-flex" style="font-size: 13px;">
-                            <td class="col-2">${employeeName}</td>
-                            <td class="col-2">${projectName}</td>
-                            <td class="col-1">${overtimeDate}</td>
-                            <td class="col-1">${authTimeStart}</td>
-                            <td class="col-1">${authTimeEnd}</td>
-                            <td class="col-1">${authTotalHrs}</td>
-                            <td class="col-3">${purposeTwo}</td>
-                            <td class="d-none">${employeeID}</td>
-                            <td class="d-none">${projectID}</td>
-                            <td class="d-none">${clientID}</td>
-                            <td class="d-none">${clientName}</td>
-                            <td class="d-none">${btnID}</td>
-                            <td class="col-1 text-center px-0">
-                                <button class="btn btn-success editRowBtn" id="newID${btnID}" data-toggle="modal" data-target="#exampleModal" ><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-danger deleteRow"><i class="fas fa-trash-alt"></i></button>
-                            </td>
-                        </tr>              
-                    `);
-
-                checkerBool = false;
-
-
-                    $('#successDiv').removeClass('d-none');
-                    $('#overtimeDate').val('');
-                    $('#authTimeStart').val('');
-                    $('#authTimeEnd').val('');
-                    $('#authTotalHrs').val('');
-                    $('#purposeTwo').val('');
-                    }
-
-                }
-            });
-
-
+        $('#successDiv').removeClass('d-none');
+        $('#overtimeDate').val('');
+        $('#authTimeStart').val('');
+        $('#authTimeEnd').val('');
+        $('#authTotalHrs').val('');
+        $('#purposeTwo').val('');
 
     };
-    // if else loob
 
 
         // Delete Row Data from table
@@ -1041,15 +990,6 @@
     </script>
 {{-- Auth Time Date End --}}
 
-{{-- CloseBtn --}}
-    <script>
-        $('.closeBtn').on('click',function(){
-            $('#successDiv').addClass('d-none');
-            $('#failedDiv').addClass('d-none');
-            $('#successDiv1').addClass('d-none');
-        })
-    </script>
-{{-- CloseBtn --}}
 
 {{-- OT Date Start --}}
     <script type="text/javascript">

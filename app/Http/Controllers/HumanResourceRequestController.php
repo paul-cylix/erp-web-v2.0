@@ -47,7 +47,7 @@ class HumanResourceRequestController extends Controller
         $authTimeStart= date_format($ot_in, 'Y-m-d H:i:s');
         $authTimeEnd= date_format($ot_out, 'Y-m-d H:i:s');
 
-        return json_encode(DB::select("SELECT IFNULL((SELECT TRUE FROM humanresource.`overtime_request` a WHERE a.`employee_id` = '".$employeeID."' AND a.`status` = 'In Progress' AND a.`overtime_date` = '".$overtimeDate."' AND a.`ot_in` ='".$authTimeStart."' AND a.`ot_out` ='".$authTimeEnd."'), FALSE) AS checker;"));
+        return json_encode(DB::select("SELECT IFNULL((SELECT TRUE FROM humanresource.`overtime_request` a WHERE a.`employee_id` = '".$employeeID."' AND a.`status` IN ('In Progress', 'Completed') AND a.`overtime_date` = '".$overtimeDate."' AND (a.`ot_in` ='".$authTimeStart."' OR a.`ot_out` ='".$authTimeEnd."')), FALSE) AS checker;"));
  
     
 
