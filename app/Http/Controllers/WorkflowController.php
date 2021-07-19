@@ -786,14 +786,24 @@ class WorkflowController extends Controller
                 $getRecipientName = DB::select("SELECT a.uid,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.uid) AS 'Name'
                 FROM (SELECT initid AS 'uid' FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = '".$frmname."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND initid <> '".session('LoggedUser')."'
                 UNION ALL SELECT UID_SIGN AS 'uid'  FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = '".$frmname."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND `status` = 'Completed' AND uid_sign <> '".session('LoggedUser')."') a GROUP BY uid;");
-
-
-
-
-
-
                 return view('MyWorkflow.approval-byid.app-hr-ot', compact('post','getRecipientName'));
             }
+
+
+            if($class === 'frmLeaveApplication'){
+                $post = DB::select("SELECT * FROM humanresource.`leave_request` WHERE main_id = $id;");
+                $getRecipientName = DB::select("SELECT a.uid,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.uid) AS 'Name'
+                FROM (SELECT initid AS 'uid' FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = '".$frmname."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND initid <> '".session('LoggedUser')."'
+                UNION ALL SELECT UID_SIGN AS 'uid'  FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = '".$frmname."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND `status` = 'Completed' AND uid_sign <> '".session('LoggedUser')."') a GROUP BY uid;");
+                return view('MyWorkflow.approval-byid.app-hr-leave', compact('post','getRecipientName'));
+            }
+
+
+
+
+
+
+
        
 }
 
@@ -2101,8 +2111,20 @@ class WorkflowController extends Controller
                 $post = DB::select("SELECT *,(SELECT project_name FROM general.`setup_project` WHERE project_id = PRJID) AS 'Project_Name' FROM humanresource.`overtime_request` WHERE main_id = $id;");
                 return view('MyWorkflow.in-progress-byid.inp-hr-ot', compact('post'));
             }
-        
 
+
+            if($class === 'frmLeaveApplication'){
+                $post = DB::select("SELECT * FROM humanresource.`leave_request` WHERE main_id = $id;");
+                return view('MyWorkflow.in-progress-byid.inp-hr-leave', compact('post'));
+            }
+
+            if($class === 'frmItinerary'){
+                $post = DB::table('humanresource.itinerary_main')->where('id',$id)->first();
+                $postDetails = DB::table('humanresource.itinerary_details')->where('main_id',$id)->get();
+                return view('MyWorkflow.in-progress-byid.inp-hr-itinerary', compact('post','postDetails'));
+            }
+  
+            
      
 
         }
@@ -2467,8 +2489,30 @@ class WorkflowController extends Controller
                 return view('MyWorkflow.clarification-byid.cla-hr-ot', compact('post','actualSignData','employee','project','managers','recipientCheck'));
             }
 
+            if($class === 'frmLeaveApplication'){
+                $post = DB::select("SELECT * FROM humanresource.`leave_request` WHERE main_id = $id;");
+                $mediumofreport = DB::select("SELECT id, item FROM general.`setup_dropdown_items` WHERE `type` = 'Medium of Report' AND `status` = 'Active' ORDER BY OrderingPref ASC;");
+                $employee = DB::select("SELECT SysPK_Empl, Name_Empl FROM humanresource.`employees` WHERE Status_Empl LIKE 'Active%' AND CompanyID = ".session('LoggedUser_CompanyID')." ORDER BY Name_Empl");
+                $managers = DB::select("SELECT RMID, RMName FROM general.`systemreportingmanager` WHERE UID = '" . session('LoggedUser') . "' ORDER BY RMName");
+                $actualSignData = DB::table('general.actual_sign')->where('PROCESSID',$id)->where('FRM_NAME',$frmname)->where('COMPID',session('LoggedUser_CompanyID'))->first();
+                $leavetype = DB::select("SELECT id, item FROM general.`setup_dropdown_items` WHERE `type` = 'Leave Type' AND `status` = 'Active' ORDER BY OrderingPref ASC;");
+                $getmediumofreport = DB::select("SELECT id,(SELECT b.`medium_of_report`  FROM humanresource.`leave_request` b WHERE b.`main_id` = '".$id."' AND `item` = b.`medium_of_report`  LIMIT 1 )AS medium_of_report FROM general.`setup_dropdown_items` WHERE `type` = 'Medium of Report' AND `status` = 'Active' ORDER BY OrderingPref ASC LIMIT 1");
+
+                $recipientCheck = DB::select("SELECT IFNULL((SELECT a.`CurrentReceiver` FROM general.`actual_sign` a WHERE a.`FRM_CLASS` = '".$class."' AND a.`PROCESSID` = $id AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification' AND a.`CurrentReceiver` = '".session('LoggedUser')."' ), FALSE) AS recipientCheck;");
+                $recipientCheck = $recipientCheck[0]->recipientCheck;
+
+                return view('MyWorkflow.clarification-byid.cla-hr-leave', compact('post','managers','leavetype','employee','mediumofreport','actualSignData','getmediumofreport','recipientCheck'));
+            }
 
 
+
+
+
+
+
+
+
+            
 
 
         }
@@ -3818,6 +3862,11 @@ class WorkflowController extends Controller
                 return view('MyWorkflow.approved-byid.appd-hr-ot', compact('post'));
             }
 
+            if($class === 'frmLeaveApplication'){
+                $post = DB::select("SELECT * FROM humanresource.`leave_request` WHERE main_id = $id;");
+                return view('MyWorkflow.approved-byid.appd-hr-leave', compact('post'));
+            }
+
 
         }
 
@@ -3954,10 +4003,18 @@ class WorkflowController extends Controller
             }
 
 
+            if($class === 'frmLeaveApplication'){
+                $post = DB::select("SELECT * FROM humanresource.`leave_request` WHERE main_id = $id;");
+                return view('MyWorkflow.withdrawn-byid.wit-hr-leave', compact('post'));
+            }
 
 
-
-
+            if($class === 'frmItinerary'){
+                $post = DB::table('humanresource.itinerary_main')->where('id',$id)->first();
+                $postDetails = DB::table('humanresource.itinerary_details')->where('main_id',$id)->get();
+                return view('MyWorkflow.withdrawn-byid.wit-hr-itinerary', compact('post','postDetails'));
+            }
+  
 
 
 
@@ -4123,7 +4180,10 @@ class WorkflowController extends Controller
                 return view('MyWorkflow.rejected-byid.rej-hr-ot', compact('post'));
             }
 
-
+            if($class === 'frmLeaveApplication'){
+                $post = DB::select("SELECT * FROM humanresource.`leave_request` WHERE main_id = $id;");
+                return view('MyWorkflow.rejected-byid.rej-hr-leave', compact('post'));
+            }
 
 
         }

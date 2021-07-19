@@ -787,6 +787,7 @@ max-width: 60%; */
 
 <script>
     $('#example').DataTable( {
+      "order": [],
         dom: 'Bfrtip',
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'

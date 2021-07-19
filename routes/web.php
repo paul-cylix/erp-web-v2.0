@@ -348,6 +348,16 @@ Route::group(['middleware'=>['AuthCheck']], function(){
     
 
 
+    // HR - LEAVE DATE ROUTES
+    Route::post('/save-leave', [HumanResourceRequestController::class, 'saveLeave'])->name('save.leave.post');
+    Route::post('/withdraw-leave', [HumanResourceRequestController::class, 'withdrawLeave'])->name('withdraw.leave');
+    Route::post('/rejected-leave', [HumanResourceRequestController::class, 'rejectedLeave'])->name('rejected.leave');
+    Route::post('/approved-leave', [HumanResourceRequestController::class, 'approvedLeave'])->name('approved.leave');
+    Route::post('/clarify-leave', [HumanResourceRequestController::class, 'clarifyLeave'])->name('clarify.leave');
+    Route::post('/withdraw-init-leave', [HumanResourceRequestController::class, 'withdrawInitLeave'])->name('withdraw.init.leave');
+    Route::post('/reply-init-leave', [HumanResourceRequestController::class, 'replyInitLeave'])->name('reply.init.leave');
+    Route::post('/approvedApprvr-leave', [HumanResourceRequestController::class, 'approvedApprvrLeave'])->name('approvedApprvr.leave');
+    Route::post('/rejectedApprvr-leave', [HumanResourceRequestController::class, 'rejectedApprvrLeave'])->name('rejectedApprvr.leave');
 
 
 
@@ -355,7 +365,13 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
 
 
+    // HR - ITINERARY REQUEST ROUTES
+    Route::post('/save-itinerary', [HumanResourceRequestController::class, 'saveItinerary'])->name('save.itinerary.post');
+    Route::post('/withdraw-itinerary', [HumanResourceRequestController::class, 'withdrawItinerary'])->name('withdraw.itinerary');
+    
 
+
+    
 
 
 

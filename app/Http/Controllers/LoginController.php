@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 
 class LoginController extends Controller
 {
@@ -47,8 +48,8 @@ class LoginController extends Controller
         ->where('b.CompanyID',$request->company)
         ->first();
 
-        // $userInfo_Full = DB::select("call erpweb.getUserLoggedInfo('" . $userInfo->id . "','" .$request->company. "')");
-            $userInfo_Full = DB::select("call erpweb.getUserLoggedInfo('" . $userInfo->id . "')");
+        $userInfo_Full = DB::select("call erpweb.getUserLoggedInfo('" . $userInfo->id . "','" .$request->company. "')");
+            //$userInfo_Full = DB::select("call erpweb.getUserLoggedInfo('" . $userInfo->id . "')");
         
 
         if(!$userInfo){
@@ -74,9 +75,9 @@ class LoginController extends Controller
 
 
 
-
-                return redirect('dashboard');
-
+                //return view('index');
+                return redirect('dashboard'); 
+                //return Redirect::to('http://intranet.cylix.ph/');
             }else{
                 return back()->with('fail','Incorrect Password');
             }
@@ -91,6 +92,7 @@ class LoginController extends Controller
     }
 
     function dashboard(){
+
 
         // $participantsPosts = DB::select("call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '1', '2020-01-01', '2020-12-31', 'True')");
         // $participantsCount = count($participantsPosts);
@@ -124,8 +126,11 @@ class LoginController extends Controller
         // $rejectedCount = count($rejectedPosts);
         // session()->put('rejectedCount',$rejectedCount);
 
+        
+
         $data = ['LoggedUserInfo'=>User::where('id','=',session('LoggedUser'))->first()];
         return view('index', $data);
+        
     }
 
     

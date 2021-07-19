@@ -83,7 +83,7 @@
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Reporting Manager</label>
                                     <select class="form-control select2 select2-default" name="rmID" id="rmID" data-dropdown-css-class="select2-default" onchange="getReportingManagerName(this)">
-                                        <option value="0" selected class="d-none"></option>
+                                        <option value="0" selected class="d-none">Select Reporting Manager</option>
                                         @foreach ($managers as $mgr )
                                             <option value="{{ $mgr->RMID }}">{{ $mgr->RMName }}</option>
                                         @endforeach
