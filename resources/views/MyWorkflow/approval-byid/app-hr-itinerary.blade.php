@@ -4,15 +4,16 @@
 <div class="row">
     <div class="col-md-12" style="margin: -20px 0 20px 0 " >
         <div class="form-group" style="margin: 0 -5px 0 -5px;">
-                <div class="col-md-1 float-left"><a href="/in-progress" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
+                <div class="col-md-1 float-left"><a href="/approvals" ><button type="button" style="width: 100%;" class="btn btn-dark" >Back</button></a></div>  
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-primary float-right" disabled>Restart</button></div>                   
                 <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-warning float-right" disabled>Reply</button></div>     
-                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" disabled>Clarify</button></div>                    
-                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right " data-toggle="modal" data-target="#withdrawModal" >Withdraw</button></div>        
-                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" disabled>Reject</button></div>      
-                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" disabled>Approve</button></div>   
+                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-info float-right" data-toggle="modal" data-target="#clarityModal"  >Clarify</button></div>                    
+                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-secondary float-right" disabled >Withdraw</button></div>        
+                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-danger float-right" data-toggle="modal" data-target="#rejectedModal" >Reject</button></div>      
+                <div class="col-md-1 float-right"><button type="button" style="width: 100%;" class="btn btn-success float-right" data-toggle="modal" data-target="#approveModal" >Approve</button></div>   
         </div> 
     </div> 
+    
     <div class="col-md-12">
         <div class="card card-gray">
             <div class="card-header">
@@ -52,13 +53,7 @@
                                 <span class="text-danger">@error('rmID'){{ $message }}@enderror</span>
                             </div>                            
                         </div>
-
                     </div>
-
-
-
-
-
 
 {{-- Overtime Details Table Start--}}
       <div class="row  mt-4">
@@ -74,8 +69,8 @@
                         <thead>
                             <tr class="d-flex text-center" style="font-size: 13px;">
                                 <th class="col-3 text-left" style="position: sticky; top: 0; background: white; ">Client Name</th>
-                                <th class="col-1 text-left" style="position: sticky; top: 0; background: white; ">Auth. Time Start</th>
-                                <th class="col-1 text-left" style="position: sticky; top: 0; background: white; ">Auth. Time End</th>
+                                <th class="col-1 text-left tdx" style="position: sticky; top: 0; background: white; ">Auth. Time Start</th>
+                                <th class="col-1 text-left tdx" style="position: sticky; top: 0; background: white; ">Auth. Time End</th>
                                 <th class="col-1 text-left tdid" style="position: sticky; top: 0; background: white; ">Actual Time Start</th>
                                 <th class="col-1 text-left tdid" style="position: sticky; top: 0; background: white; ">Actual Time End</th>
                                 <th class="col-4 text-left" style="position: sticky; top: 0; background: white; ">Purpose</th>
@@ -91,26 +86,31 @@
                                          $date = date_create($detail->time_start);
                                          $date = date_format($date,"n/d/Y");             
                                     @endphp
-                                    <td class="col-md-1">{{ $date }}</td>
+                                    <td class="col-md-1 tdxi">{{ $date }}</td>
                                     @php                
                                         $date = date_create($detail->time_end);
                                         $date = date_format($date,"n/d/Y");
                                     @endphp
-                                    <td class="col-md-1">{{ $date }}</td>
+                                    <td class="col-md-1 tdxi">{{ $date }}</td>
                                     @if (!empty($detail->actual_start) && !empty($detail->actual_end))
                                         @php
                                             $date = date_create($detail->actual_start);
                                             $date = date_format($date,"n/d/Y");
                                         @endphp
-                                        <td class="col-md-1">{{ $date }}</td>
+                                        <td class="col-md-1 ">{{ $date }}</td>
                                         @php
                                             $date = date_create($detail->actual_end);
                                             $date = date_format($date,"n/d/Y");
                                         @endphp
-                                        <td class="col-md-1">{{ $date }}</td>
+                                        <td class="col-md-1 ">{{ $date }}</td>
                                     @else
                                         <script>
                                             $('.tdid').addClass('d-none');
+                                            $('.tdx').addClass('col-2');
+                                            $('.tdx').removeClass('col-1');
+                                            $('.tdxi').addClass('col-md-2');
+                                            $('.tdxi').removeClass('col-md-1');
+                        
                                         </script>
                                     @endif
                                     <td class="col-md-4">{{ $detail->purpose }}</td>
@@ -140,43 +140,144 @@
 {{-- Row END --}}
 
 
-{{-- Withdraw Modal Start--}}
-    <div class="modal fade"  id="withdrawModal" tabindex="-1" role="dialog" aria-labelledby="withdrawModal" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-dark" >
-            <h5 class="modal-title" id="withdrawModalLabel">Withdraw Request</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+
+
+
+
+
+{{-- Modal Clarity with message--}}
+<div class="modal fade" id="clarityModal" tabindex="-1" role="dialog" aria-labelledby="clarityModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header bg-dark">
+        <h5 class="modal-title" id="clarityModalLabel">Clarity Request</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+<form action="{{ route('clarify.itinerary') }}" method="POST">
+            @csrf
+        </div>
+        <div class="modal-body">
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="clarityRecipient">Choose Recipient</label>
+                        <select id="clarityRecipient" name="clarityRecipient" class="form-control select2 select2-default" data-dropdown-css-class="select2-default" style="width: 100%;">
+                            @foreach($getRecipientName as $recipientName)
+                                <option value="{{ $recipientName->uid }}">{{ $recipientName->Name }} </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <input type="hidden" name="main_id" id="" value="{{ $post->id }}">
+                <input type="hidden" value="@yield('title')" name="frmName">
+                <div class="row" style="margin-top: 7px;">
+                    <div class="col-md-12">                     
+                        <label for="clarificationRemarks">Message</label>
+                        {{-- <div class="card-body"> --}}
+                            <div class="form-floating">
+                                <input type="hidden" value=" " name="idName">
+                                <textarea class="form-control" placeholder="Leave a comment here" name="clarificationRemarks" id="clarificationRemarks" style="height: 100px"></textarea>
+                            </div>
+                        {{-- </div> --}}
+                    </div>
+                </div>
             </div>
-            <form action="{{ route('withdraw.itinerary') }}" method="POST">
-                @csrf
-            <div class="modal-body">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-12">                     
-                            <label for="withdrawRemarks">Remarks</label>
-                            <div class="card-body">
-                                <div class="form-floating">
-                                    <input type="hidden" name="main_id" id="" value="{{ $post->id }}">
-                                    <input type="hidden" value="@yield('title')" name="frmName">
-                                    <textarea class="form-control" placeholder="Leave a comment here" name="withdrawRemarks" id="withdrawRemarks" style="height: 100px"></textarea>
-                                </div>
+        </div>
+        <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" value="Proceed"></input>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+</form>
+    </div>
+    </div>
+</div>
+{{-- End Modal --}}
+
+
+
+
+
+
+{{-- Modal Approve --}}
+<div class="modal fade"  id="approveModal" tabindex="-1" role="dialog" aria-labelledby="approveModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header bg-dark" >
+        <h5 class="modal-title" id="approveModalLabel">Approve Request</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <form action="{{ route('approved.itinerary') }}" method="POST">
+            @csrf
+        <div class="modal-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">                     
+                        <label for="approvedRemarks">Remarks</label>
+                        <div class="card-body">
+                            <div class="form-floating">
+                                <input type="hidden" name="main_id" id="" value="{{ $post->id }}">
+                                <input type="hidden" value="@yield('title')" name="frmName">
+                                <textarea class="form-control" placeholder="Leave a comment here" name="approveRemarks" id="approveRemarks" style="height: 100px"></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-            <input type="submit" class="btn btn-primary" value="Proceed">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-            </form>
         </div>
+        <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" value="Proceed">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         </div>
+    </form>
     </div>
-{{-- Withdraw Modal End--}}
+    </div>
+</div>
+{{-- End Approved Modal --}}
+
+
+
+{{-- Modal Reject --}}
+<div class="modal fade"  id="rejectedModal" tabindex="-1" role="dialog" aria-labelledby="rejectedModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header bg-dark" >
+        <h5 class="modal-title" id="rejectedModalLabel">Reject Request</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <form action="{{ route('rejected.itinerary') }}" method="POST">
+            @csrf
+        <div class="modal-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">                     
+                        <label for="rejectedRemarks">Remarks</label>
+                        <div class="card-body">
+                            <div class="form-floating">
+                                <input type="hidden" name="main_id" id="" value="{{ $post->id }}">
+                                <input type="hidden" value="@yield('title')" name="frmName">
+                                <textarea class="form-control" placeholder="Leave a comment here" name="rejectedRemarks" id="rejectedRemarks" style="height: 100px"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" value="Proceed">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        </form>
+    </div>
+    </div>
+</div>
+{{-- End Reject Modal --}}
+
 
 @if(Session::get('form_submitted'))
 <Script>
@@ -188,7 +289,7 @@
         })
         .then(okay => {
         if (okay) {
-        window.location.href = "/in-progress";
+        window.location.href = "/approvals";
         }});
 </Script>
 @endif
@@ -207,6 +308,5 @@
 
 
 @endsection
-
 {{-- Sweet ALert --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous"></script>

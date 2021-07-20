@@ -368,7 +368,14 @@ Route::group(['middleware'=>['AuthCheck']], function(){
     // HR - ITINERARY REQUEST ROUTES
     Route::post('/save-itinerary', [HumanResourceRequestController::class, 'saveItinerary'])->name('save.itinerary.post');
     Route::post('/withdraw-itinerary', [HumanResourceRequestController::class, 'withdrawItinerary'])->name('withdraw.itinerary');
-    
+    Route::post('/rejected-itinerary', [HumanResourceRequestController::class, 'rejectedItinerary'])->name('rejected.itinerary');
+    Route::post('/approved-itinerary', [HumanResourceRequestController::class, 'approvedItinerary'])->name('approved.itinerary');
+    Route::post('/approved-itinerary-init', [HumanResourceRequestController::class, 'approvedItineraryInit'])->name('approved.itinerary.init');
+    Route::post('/clarify-itinerary', [HumanResourceRequestController::class, 'clarifyItinerary'])->name('clarify.itinerary');
+    Route::post('/withdraw-itinerary-init', [HumanResourceRequestController::class, 'withdrawItineraryInit'])->name('withdraw.itinerary.init');
+    Route::post('/reply-itinerary', [HumanResourceRequestController::class, 'replyItinerary'])->name('reply.itinerary');
+    Route::post('/approvedApprvr-itinerary', [HumanResourceRequestController::class, 'approvedApprvrItinerary'])->name('approvedApprvr.itinerary');
+    Route::post('/rejectedApprvr-itinerary', [HumanResourceRequestController::class, 'rejectedApprvrItinerary'])->name('rejectedApprvr.itinerary');
 
 
     

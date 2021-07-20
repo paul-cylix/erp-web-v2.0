@@ -156,6 +156,23 @@ class WorkflowController extends Controller
             }
 
 
+            if($class === 'frmLeaveApplication'){
+                $post = DB::select("SELECT * FROM humanresource.`leave_request` WHERE main_id = $id;");
+                return view('MyWorkflow.participants-byid.part-hr-leave', compact('post'));
+            }
+
+
+            if($class === 'frmItinerary'){
+                $post = DB::table('humanresource.itinerary_main')->where('id',$id)->first();
+                $postDetails = DB::table('humanresource.itinerary_details')->where('main_id',$id)->get();
+                return view('MyWorkflow.participants-byid.part-hr-itinerary', compact('post','postDetails'));
+            }
+
+
+
+
+
+
 
         }
 
@@ -255,12 +272,6 @@ class WorkflowController extends Controller
             }
 
             if($class === 'SALES_ORDER_FRM'){
-
- 
-            
-            
-            
-            
             
                 if ($frmname === 'Sales Order - Project') {
                     $salesOrder = DB::table('sales_order.sales_orders')->where('id',$id)->first();
@@ -277,18 +288,13 @@ class WorkflowController extends Controller
                     UNION ALL SELECT UID_SIGN AS 'uid'  FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = 'Sales Order - Project' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND `status` = 'Completed' AND uid_sign <> '".session('LoggedUser')."') a GROUP BY uid;");
     
                     $qeInProgressID = DB::select("SELECT IFNULL((SELECT ID AS inpId FROM general.`actual_sign` a WHERE a.`PROCESSID` = $id AND a.`FRM_CLASS` = 'SALES_ORDER_FRM' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In progress'), FALSE) AS inpId;");
-    
                     
                     return view('MyWorkflow.inputs-byid.npu-sof-prj', compact('salesOrder','salesOrderSystem','salesOrderDocs','attachmentsDetails','setupProject','approvalOfPrjHeadChecker','projectCoordinator','siConfirmationChecker','getRecipientName','qeInProgressID'));
-               
-
-
-                    
+  
                 } 
     
                 if ($frmname === 'Sales Order - Delivery') {
 
-            
                     $salesOrder = DB::table('sales_order.sales_orders')->where('id',$id)->first();
                     $setupProject = DB::table('general.setup_project')->where('SOID',$id)->first();
                     $salesOrderSystem = DB::table('sales_order.sales_order_system')->where('soid',$id)->get();
@@ -309,31 +315,6 @@ class WorkflowController extends Controller
                
 
                 } 
-    
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
             }
 
             
@@ -359,6 +340,14 @@ class WorkflowController extends Controller
                 humanresource.`overtime_request` a
               WHERE a.`main_id` = $id");
                 return view('MyWorkflow.inputs-byid.npu-hr-ot', compact('post'));
+            }
+
+
+
+            if($class === 'frmItinerary'){
+                $post = DB::table('humanresource.itinerary_main')->where('id',$id)->first();
+                $postDetails = DB::select("SELECT a.`id`,a.`main_id`,a.`client_id`,a.`client_name`,a.`time_start`,a.`time_end`,a.`purpose`,IFNULL(a.`actual_start`, a.`time_start`) AS 'actual_start', IFNULL(a.`actual_end`, a.`time_end`) AS 'actual_end' FROM humanresource.`itinerary_details` a WHERE a.`main_id` = '".$id."'");
+                return view('MyWorkflow.inputs-byid.npu-hr-itinerary', compact('post','postDetails'));
             }
 
 
@@ -798,6 +787,15 @@ class WorkflowController extends Controller
                 return view('MyWorkflow.approval-byid.app-hr-leave', compact('post','getRecipientName'));
             }
 
+
+            if($class === 'frmItinerary'){
+                $post = DB::table('humanresource.itinerary_main')->where('id',$id)->first();
+                $postDetails = DB::table('humanresource.itinerary_details')->where('main_id',$id)->get();
+                $getRecipientName = DB::select("SELECT a.uid,(SELECT UserFull_name FROM general.`users` usr WHERE usr.id = a.uid) AS 'Name'
+                FROM (SELECT initid AS 'uid' FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = '".$frmname."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND initid <> '".session('LoggedUser')."'
+                UNION ALL SELECT UID_SIGN AS 'uid'  FROM general.`actual_sign` WHERE processid = $id AND `FRM_NAME` = '".$frmname."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' AND `status` = 'Completed' AND uid_sign <> '".session('LoggedUser')."') a GROUP BY uid;");
+                return view('MyWorkflow.approval-byid.app-hr-itinerary', compact('post','postDetails','getRecipientName'));
+            }
 
 
 
@@ -2505,14 +2503,24 @@ class WorkflowController extends Controller
             }
 
 
+            if($class === 'frmItinerary'){
+                $post = DB::table('humanresource.itinerary_main')->where('id',$id)->first();
+                $postDetails = DB::table('humanresource.itinerary_details')->where('main_id',$id)->get();
+                $actualSignData = DB::table('general.actual_sign')->where('PROCESSID',$id)->where('FRM_NAME',$frmname)->where('COMPID',session('LoggedUser_CompanyID'))->first();
+                
+                $employee = DB::select("SELECT SysPK_Empl, Name_Empl FROM humanresource.`employees` WHERE Status_Empl LIKE 'Active%' AND CompanyID = ".session('LoggedUser_CompanyID')." ORDER BY Name_Empl");
+                $project = DB::select("SELECT project_id, project_name FROM general.`setup_project` WHERE title_id = ".session('LoggedUser_CompanyID')." AND `status` = 'Active' AND project_type IN ('Project Site', 'Non-Project') ORDER BY project_name;");
+                $managers = DB::select("SELECT RMID, RMName FROM general.`systemreportingmanager` WHERE UID = '" . session('LoggedUser') . "' ORDER BY RMName");
+                $businesslist = DB::select("SELECT * FROM general.`business_list` a WHERE a.`status` LIKE 'Active%' AND a.`title_id` = '".session('LoggedUser_CompanyID')."' AND a.`Type` = 'CLIENT' ORDER BY a.`business_fullname` ASC");
+
+                $recipientCheck = DB::select("SELECT IFNULL((SELECT a.`CurrentReceiver` FROM general.`actual_sign` a WHERE a.`FRM_CLASS` = '".$class."' AND a.`PROCESSID` = $id AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification' AND a.`CurrentReceiver` = '".session('LoggedUser')."' ), FALSE) AS recipientCheck;");
+                $recipientCheck = $recipientCheck[0]->recipientCheck;
 
 
-
-
-
-
-
-            
+                return view('MyWorkflow.clarification-byid.cla-hr-itinerary', compact('post','postDetails','managers','actualSignData','businesslist','recipientCheck'));
+            }
+  
+  
 
 
         }
@@ -3867,6 +3875,12 @@ class WorkflowController extends Controller
                 return view('MyWorkflow.approved-byid.appd-hr-leave', compact('post'));
             }
 
+            if($class === 'frmItinerary'){
+                $post = DB::table('humanresource.itinerary_main')->where('id',$id)->first();
+                $postDetails = DB::table('humanresource.itinerary_details')->where('main_id',$id)->get();
+                return view('MyWorkflow.approved-byid.appd-hr-itinerary', compact('post','postDetails'));
+            }
+
 
         }
 
@@ -3995,8 +4009,6 @@ class WorkflowController extends Controller
             }
 
 
-
-
             if($class === 'frmOvertimeRequest'){
                 $post = DB::select("SELECT *,(SELECT project_name FROM general.`setup_project` WHERE project_id = PRJID) AS 'Project_Name' FROM humanresource.`overtime_request` WHERE main_id = $id;");
                 return view('MyWorkflow.withdrawn-byid.wit-hr-ot', compact('post'));
@@ -4015,13 +4027,6 @@ class WorkflowController extends Controller
                 return view('MyWorkflow.withdrawn-byid.wit-hr-itinerary', compact('post','postDetails'));
             }
   
-
-
-
-
-
-
-
 
 
         }
@@ -4184,6 +4189,19 @@ class WorkflowController extends Controller
                 $post = DB::select("SELECT * FROM humanresource.`leave_request` WHERE main_id = $id;");
                 return view('MyWorkflow.rejected-byid.rej-hr-leave', compact('post'));
             }
+
+            if($class === 'frmItinerary'){
+                $post = DB::table('humanresource.itinerary_main')->where('id',$id)->first();
+                $postDetails = DB::table('humanresource.itinerary_details')->where('main_id',$id)->get();
+                return view('MyWorkflow.rejected-byid.rej-hr-itinerary', compact('post','postDetails'));
+            }
+
+
+
+
+
+
+
 
 
         }

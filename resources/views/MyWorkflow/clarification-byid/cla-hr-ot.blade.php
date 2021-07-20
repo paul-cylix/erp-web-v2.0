@@ -37,7 +37,6 @@
 
 
 {{-- Initiator Check --}}
-
     @if ($actualSignData->INITID == session('LoggedUser'))
         
 {{-- Modal Add OT Details Start --}}
@@ -739,23 +738,6 @@
         {{-- End Reject Modal --}}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         <div class="col-md-12">
             <div class="card card-gray">
                 <div class="card-header">
@@ -857,23 +839,23 @@
                                         <td class="col-1">{{ $date}}</td>
                                         <td class="col-1">{{ $p->ot_totalhrs }}</td>
     
-                                    @if (!empty($p->ot_in_actual) && !empty($p->ot_out_actual) && !empty($p->ot_totalhrs_actual))
-                                        @php
-                                        $date = date_create($p->ot_in_actual);
-                                        $date = date_format($date,"n/d/Y  h:i A");
-                                        @endphp  
-                                        <td class="col-1">{{ $date }}</td>
-                                        @php
-                                        $date = date_create($p->ot_out_actual);
-                                        $date = date_format($date,"n/d/Y  h:i A");
-                                        @endphp  
-                                        <td class="col-1">{{ $date}}</td>
-                                        <td class="col-1">{{ $p->ot_totalhrs_actual }}</td>
-                                    @else
-                                        <script>
-                                            $('.tdid').addClass('d-none');
-                                        </script>
-                                    @endif
+                                        @if (!empty($p->ot_in_actual) && !empty($p->ot_out_actual) && !empty($p->ot_totalhrs_actual))
+                                            @php
+                                            $date = date_create($p->ot_in_actual);
+                                            $date = date_format($date,"n/d/Y  h:i A");
+                                            @endphp  
+                                            <td class="col-1">{{ $date }}</td>
+                                            @php
+                                            $date = date_create($p->ot_out_actual);
+                                            $date = date_format($date,"n/d/Y  h:i A");
+                                            @endphp  
+                                            <td class="col-1">{{ $date}}</td>
+                                            <td class="col-1">{{ $p->ot_totalhrs_actual }}</td>
+                                        @else
+                                            <script>
+                                                $('.tdid').addClass('d-none');
+                                            </script>
+                                        @endif
     
                                         <td class="col-3">{{ $p->purpose }}</td>
                                         <td class="col-1 text-center px-0">
@@ -1211,7 +1193,7 @@
                 var actualTimeEndChecker = false;
 
 
-            // Validation
+                // Validation
                 if(employeeID === "0"){
                     $('#employeeIDErr').text('Employee Name is required!');
                     $('#successDiv').addClass('d-none')

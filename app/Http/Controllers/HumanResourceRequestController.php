@@ -1245,26 +1245,6 @@ public function rejectedApprvrLeave(Request $request){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public function createItinerary() { 
         $posts = DB::select("call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '1', '2020-01-01', '2020-12-31', 'True')");
         $employee = DB::select("SELECT SysPK_Empl, Name_Empl FROM humanresource.`employees` WHERE Status_Empl LIKE 'Active%' AND CompanyID = ".session('LoggedUser_CompanyID')." ORDER BY Name_Empl");
@@ -1486,6 +1466,395 @@ public function rejectedApprvrLeave(Request $request){
 
 
 
+
+
+    // rejected Itinerary
+    public function rejectedItinerary(Request $request){
+
+        $success = true;
+        DB::beginTransaction();
+        try{    
+            DB::update("UPDATE humanresource.`itinerary_main` a SET a.`status` = 'Rejected'  WHERE a.`id` = '".$request->main_id."' AND a.`titleid` = '".session('LoggedUser_CompanyID')."' ");
+            DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Rejected', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->rejectedRemarks. "' 
+            WHERE a.`FRM_NAME` = '".$request->frmName."' AND a.`PROCESSID` = '".$request->main_id."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In Progress'");
+    
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+            $success = false;
+        }
+        if($success){
+            return back()->with('form_submitted', 'The request has been Rejected.');
+        }
+        else{
+            return back()->with('form_error', 'Error in Transaction');
+        }
+    }
+
+
+
+
+    // approved Itinerary
+    public function approvedItinerary(Request $request){
+
+        // Check if approver is the final approver for it to be completed
+        $isInprogress =DB::select("SELECT IFNULL((SELECT TRUE FROM general.`actual_sign` a WHERE a.`PROCESSID` = '".$request->main_id."'  AND a.`FRM_NAME` = '".$request->frmName."' AND a.`STATUS` = 'In Progress' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`ORDERS` = 4), FALSE) AS tableCheck;");
+        // dd($isInprogress[0]->tableCheck);
+        
+        if (empty($isInprogress[0]->tableCheck)) {
+
+            $success = true;
+            DB::beginTransaction();
+            try{    
+                DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+                DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
+                
+                DB::commit();
+            }catch(\Exception $e){
+                DB::rollback();
+                $success = false;
+            }
+            if($success){
+                return back()->with('form_submitted', 'The request has been Approved.');
+            }
+            else{
+                return back()->with('form_error', 'Error in Transaction');
+            }
+
+        } else {
+
+            $success = true;
+            DB::beginTransaction();
+            try{   
+
+                DB::update("UPDATE general.`actual_sign` SET `DoneApproving` = '1', `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' ;");
+                DB::update("UPDATE humanresource.`itinerary_main` set `status` = 'Completed' WHERE `id` = '".$request->main_id."';  ");
+
+                DB::commit();
+            }catch(\Exception $e){
+                DB::rollback();
+                $success = false;
+            }
+            if($success){
+                return back()->with('form_submitted', 'The request has been Approved.');
+            }
+            else{
+                return back()->with('form_error', 'Error in Transaction');
+            }
+
+        }
+        
+    }
+
+
+
+    public function approvedItineraryInit(Request $request){
+        $itineraryData = $request->jsonItineraryData;
+        $itineraryData =json_decode($itineraryData,true);
+        $success = true;
+        DB::beginTransaction();
+        try{   
+
+        if(!empty($itineraryData)){
+            // insert to hr.ot main table
+            for($i = 0; $i <count($itineraryData); $i++) {
+    
+                $ot_in_actual = date_create($itineraryData[$i][4]);
+                $ot_out_actual = date_create($itineraryData[$i][5]);   
+
+                DB::update("UPDATE humanresource.`itinerary_details` SET `actual_start` = '".date_format($ot_in_actual, 'Y-m-d H:i:s')."', actual_end = '".date_format($ot_out_actual, 'Y-m-d H:i:s')."' WHERE `id` = '".$itineraryData[$i][7]."' ;");
+            }
+        };
+
+        DB::update("UPDATE general.`actual_sign` SET `status` = 'Completed', UID_SIGN = '".session('LoggedUser')."', SIGNDATETIME = NOW(), ApprovedRemarks = '" .$request->approveRemarks. "' WHERE `status` = 'In Progress' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."'  ;");
+        DB::update("UPDATE general.`actual_sign` SET `status` = 'In Progress' WHERE `status` = 'Not Started' AND PROCESSID = '".$request->main_id."' AND `FRM_NAME` = '".$request->frmName."' AND `COMPID` = '".session('LoggedUser_CompanyID')."' LIMIT 1;");
+        
+        DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+            $success = false;
+        }
+        if($success){
+            return back()->with('form_submitted', 'The request has been Approved.');
+        }
+        else{
+            return back()->with('form_error', 'Error in Transaction');
+        }
+
+    }
+
+
+    
+    public function clarifyItinerary(Request $request){
+
+        $success = true;
+        DB::beginTransaction();
+        try{    
+   
+            $actualID = DB::select("SELECT IFNULL((SELECT a.`ID` FROM general.`actual_sign` a WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'In Progress'), FALSE) AS inpid;");
+     
+            $notificationIdClarity = DB::table('general.notifications')->insertGetId([
+                'ParentID' =>'0',
+                'levels'=>'0',
+                'FRM_NAME' =>$request->frmName,
+                'PROCESSID' =>$request->main_id,
+                'SENDERID' =>session('LoggedUser'),
+                'RECEIVERID' =>$request->clarityRecipient,
+                'MESSAGE' =>$request->clarificationRemarks,
+                'TS' =>NOW(),
+                'SETTLED' =>'NO',
+                'ACTUALID' => $actualID[0]->inpid,
+                'SENDTOACTUALID' =>'0',
+                'UserFullName' =>session('LoggedUser_FullName')
+            ]);
+
+            DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'For Clarification', a.`CurrentSender` = '".session('LoggedUser')."', a.`CurrentReceiver` = '".$request->clarityRecipient."' ,
+            a.`NOTIFICATIONID` = '".$notificationIdClarity."', a.`UID_SIGN` = '".session('LoggedUser')."',a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '".$request->clarificationRemarks."' WHERE
+            a.`PROCESSID` = '".$request->main_id."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`STATUS` = 'In Progress'
+            ");
+            
+            DB::update("UPDATE humanresource.`itinerary_main` a SET a.`status` =  'For Clarification' WHERE a.`id` = '".$request->main_id."' AND a.`titleid` = '".session('LoggedUser_CompanyID')."' ");
+
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+            $success = false;
+        }
+        if($success){
+            return back()->with('form_submitted', 'The request is now For Clarification.');
+        }
+        else{
+            return back()->with('form_error', 'Error in Transaction');
+        }
+
+    }
+
+
+
+    public function replyItinerary(Request $request){
+        $request->validate([
+            'rmID'=>'required',
+            'jsonitineraryData'=>'required',           
+        ]);
+
+        
+        $success = true;
+        DB::beginTransaction();
+        try{    
+
+            $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC ");
+          
+            $nParentId= $notif[0]->ID;
+            $nReceiverId= $notif[0]->SENDERID;
+            $nActualId= $notif[0]->ACTUALID;
+
+
+           DB::table('general.notifications')->insert([
+
+            'ParentID' =>$nParentId,
+            'levels'=>'0',
+            'FRM_NAME' =>$request->frmName,
+            'PROCESSID' =>$request->main_id,
+            'SENDERID' =>session('LoggedUser'),
+            'RECEIVERID' =>$nReceiverId,
+            'MESSAGE' =>$request->replyRemarks,
+            'TS' =>NOW(),
+            'SETTLED' => 'YES',
+            'ACTUALID' => $nActualId,
+            'SENDTOACTUALID' =>'0',
+            'UserFullName' =>session('LoggedUser_FullName'),
+
+           ]);
+
+
+           $mainData = DB::table('humanresource.overtime_request')->where('main_id', $request->main_id)->first();
+           DB::table('humanresource.itinerary_details')->where('main_id', $request->main_id)->delete();
+
+           $otData = $request->jsonOTdata;
+           $otData =json_decode($otData,true);
+    
+
+           $itineraryData = $request->jsonitineraryData;
+           $itineraryData =json_decode($itineraryData,true);
+      
+
+
+
+        
+              for($i = 0; $i <count($itineraryData); $i++) {
+
+                   $time_start = date_create($itineraryData[$i][2]);
+                   $time_end = date_create($itineraryData[$i][3]);                    
+
+                if (!empty($itineraryData[$i][4]) || !empty($itineraryData[$i][5])) {
+
+                    $actual_start = date_create($itineraryData[$i][4]);
+                    $actual_end = date_create($itineraryData[$i][5]);   
+
+                    $setItineraryData[] = [
+                        'main_id' => $request->main_id,
+                        'client_id' => $itineraryData[$i][0],
+                        'client_name' => $itineraryData[$i][1],
+                        'time_start' => date_format($time_start, 'Y-m-d H:i:s'),
+                        'time_end' => date_format($time_end, 'Y-m-d H:i:s'),
+                        'actual_start' => date_format($actual_start, 'Y-m-d H:i:s'),
+                        'actual_end' => date_format($actual_end, 'Y-m-d H:i:s'),
+                        'purpose' => $itineraryData[$i][6],
+                        'ts' => now()
+                        // 'updated_by' => session('LoggedUser_FirstName'), 
+                        // 'updated_ts' => session('LoggedUser_LastName'),
+                    ];
+                } else {
+                    $setItineraryData[] = [
+                        'main_id' => $request->main_id,
+                        'client_id' => $itineraryData[$i][0],
+                        'client_name' => $itineraryData[$i][1],
+                        'time_start' => date_format($time_start, 'Y-m-d H:i:s'),
+                        'time_end' => date_format($time_end, 'Y-m-d H:i:s'),
+                        // 'actual_start' => $itineraryData[$i][0],
+                        // 'actual_end' => $itineraryData[$i][6],
+                        'purpose' => $itineraryData[$i][6],
+                        'ts' => now()
+                        // 'updated_by' => session('LoggedUser_FirstName'), 
+                        // 'updated_ts' => session('LoggedUser_LastName'),
+                    ];
+                }
+                    
+
+               }
+               DB::table('humanresource.itinerary_details')->insert($setItineraryData);
+
+
+
+
+        // For clarification to in progress
+        DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+        WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
+
+        // Update form in actual sign
+        DB::update("UPDATE general.`actual_sign` a 
+        SET 
+        a.`TS` = NOW(), 
+        a.`RM_ID` = '".$request->rmID."', 
+        a.`REPORTING_MANAGER` = '".$request->rmName."' 
+        WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."'  AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' ");
+
+        DB::update("UPDATE humanresource.`itinerary_main` a SET a.`status` = 'In Progress' , a.`reporting_manager` = '".$request->rmName."' WHERE a.`id` = '".$request->main_id."';");
+
+
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+            $success = false;
+        }
+        if($success){
+            return back()->with('form_submitted', 'The request is now For Clarification.');
+        }
+        else{
+            return back()->with('form_error', 'Error in Transaction');
+        }
+    }
+
+
+    // Withdraw HR
+    public function withdrawItineraryInit(Request $request){
+        $success = true;
+        DB::beginTransaction();
+        try{    
+
+            DB::update("UPDATE humanresource.`itinerary_main` a SET a.`status` = 'Withdrawn'  WHERE a.`id` = '".$request->main_id."' AND a.`titleid` = '".session('LoggedUser_CompanyID')."' ");
+            DB::update("UPDATE general.`actual_sign` AS a SET a.`STATUS` = 'Withdrawn', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->withdrawRemarks. "' 
+            WHERE a.`FRM_NAME` = '".$request->frmName."' AND a.`PROCESSID` = '".$request->main_id."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
+
+
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+            $success = false;
+        }
+        if($success){
+            return back()->with('form_submitted', 'Your Itinerary Request was successfully withdrawn.');
+        }
+        else{
+            return back()->with('form_error', 'Please complete required fields!');
+        }
+    }
+
+
+    // Approved Approver Leave
+    public function approvedApprvrItinerary(Request $request){
+        $success = true;
+        DB::beginTransaction();
+        try{    
+        
+        $notif = DB::select("SELECT * FROM general.`notifications` a WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`SETTLED` = 'NO' ORDER BY a.`ID` DESC ");
+    
+        $nParentId= $notif[0]->ID;
+        $nReceiverId= $notif[0]->SENDERID;
+        $nActualId= $notif[0]->ACTUALID;
+
+        DB::table('general.notifications')->insert([
+
+            'ParentID' =>$nParentId,
+            'levels'=>'0',
+            'FRM_NAME' =>$request->frmName,
+            'PROCESSID' =>$request->main_id,
+            'SENDERID' =>session('LoggedUser'),
+            'RECEIVERID' =>$nReceiverId,
+            'MESSAGE' =>$request->approveRemarks,
+            'TS' =>NOW(),
+            'SETTLED' => 'YES',
+            'ACTUALID' => $nActualId,
+            'SENDTOACTUALID' =>'0',
+            'UserFullName' =>session('LoggedUser_FullName'),
+
+        ]);
+
+        DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'In Progress', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' 
+        WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
+
+        DB::update("UPDATE humanresource.`itinerary_main` a SET a.`status` = 'In Progress' WHERE a.`id` = '".$request->main_id."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
+
+        
+        DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+            $success = false;
+        }
+        if($success){
+            return back()->with('form_submitted', 'The request is now In Progress.');
+        }
+        else{
+            return back()->with('form_error', 'Error in Transaction');
+        }
+
+    }
+
+
+    // Rejected by approver in Clarification
+
+    public function rejectedApprvrItinerary(Request $request){
+        $success = true;
+        DB::beginTransaction();
+        try{    
+
+            DB::update("UPDATE general.`actual_sign` a SET a.`STATUS` = 'Rejected', a.`CurrentSender` = '0', a.`CurrentReceiver` = '0', a.`NOTIFICATIONID` = '0' ,a.`ApprovedRemarks` = '".$request->rejectedRemarks."'
+            WHERE a.`PROCESSID` = '".$request->main_id."' AND a.`FRM_NAME` = '".$request->frmName."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification' ");
+
+            DB::update("UPDATE humanresource.`itinerary_main` a SET a.`status` = 'Rejected' WHERE a.`id` = '".$request->main_id."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
+
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollback();
+            $success = false;
+        }
+        if($success){
+            return back()->with('form_submitted', 'The request is now Rejected.');
+        }
+        else{
+            return back()->with('form_error', 'Error in Transaction');
+        }
+    }
 
 
 
