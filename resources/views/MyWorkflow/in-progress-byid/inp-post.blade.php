@@ -107,7 +107,7 @@
 
 @php
 $foo = $post->AMOUNT;
-$myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
 @endphp
 
                             <div class="col-md-3">
@@ -166,7 +166,9 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                             <td>{{ $qeData->currency }}</td>
 @php
 $foo = $qeData->Amount;
-$myAMount = number_format((float)$foo, 2, '.', ''); 
+// $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
 @endphp
                             <td>{{ $myAMount }}</td>
                             <td><button class="btn btn-danger" disabled>Delete</button></td>
@@ -181,7 +183,9 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                         <div class="float-right">
 @php
 $foo = $qeSubTotal[0]->subTotalAmount ;
-$myAMount = number_format((float)$foo, 2, '.', ''); 
+// $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
 @endphp
                             <h6 style="margin-right:140px;">Total Amount: <span id ="spTotalAmount">{{ $myAMount }}</span></h6>
                         </div>

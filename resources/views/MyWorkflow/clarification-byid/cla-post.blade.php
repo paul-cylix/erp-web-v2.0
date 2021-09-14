@@ -259,7 +259,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                         
                         
                         
-                            @if (!empty($filesAttached))
+                         
                             <div class="row">
                             <div class="col-md-12">
                             <div class="card card-gray">
@@ -298,7 +298,7 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                             </div>
                             </div>
                             </div>
-                            @endif
+                         
                
                             {{-- End Attachments --}}
                            

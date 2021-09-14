@@ -12,7 +12,8 @@ class HumanResourceRequestController extends Controller
     public function createOt() { 
         $posts = DB::select("call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '1', '2020-01-01', '2020-12-31', 'True')");
         $employee = DB::select("SELECT SysPK_Empl, Name_Empl FROM humanresource.`employees` WHERE Status_Empl LIKE 'Active%' AND CompanyID = ".session('LoggedUser_CompanyID')." ORDER BY Name_Empl");
-        $project = DB::select("SELECT project_id, project_name FROM general.`setup_project` WHERE title_id = ".session('LoggedUser_CompanyID')." AND `status` = 'Active' AND project_type IN ('Project Site', 'Non-Project') ORDER BY project_name;");
+        // $project = DB::select("SELECT project_id, project_name FROM general.`setup_project` WHERE title_id = ".session('LoggedUser_CompanyID')." AND `status` = 'Active' AND project_type IN ('Project Site', 'Non-Project') ORDER BY project_name;");
+        $project = DB::select("SELECT project_id, project_name FROM general.`setup_project` WHERE `status` = 'Active' AND project_type IN ('Project Site', 'Non-Project') ORDER BY project_name;");
         $managers = DB::select("SELECT RMID, RMName FROM general.`systemreportingmanager` WHERE UID = '" . session('LoggedUser') . "' ORDER BY RMName");
 
 
@@ -59,7 +60,7 @@ class HumanResourceRequestController extends Controller
 
         $request->validate([
             'rmID'=>'required',
-            'purpose'=>'required',
+            // 'purpose'=>'required',
             'jsonOTdata'=>'required',           
         ]);
 
@@ -236,7 +237,7 @@ class HumanResourceRequestController extends Controller
             
             $request->validate([
                 'rmID'=>'required',
-                'purpose'=>'required',
+                // 'purpose'=>'required',
                 'jsonOTdata'=>'required',           
             ]);
 
@@ -1302,8 +1303,8 @@ public function rejectedApprvrLeave(Request $request){
                 // 'draft_iden' => date_format($dateRequested, 'Y-m-d'),
                 // 'draft_reference' => $ref,
                 'reference' => $ref,
-                'request_date' => date_format($dateRequested, 'Y-m-d'),
-                'date_needed' => date_format($dateRequested, 'Y-m-d'),
+                'request_date' => date_format($dateRequested, 'Y-m-d H:i:s'),
+                'date_needed' => date_format($dateRequested, 'Y-m-d H:i:s'),
                 'status' => 'In Progress',
                 'UID' => session('LoggedUser'),
                 'fname' => session('LoggedUser_FirstName'),

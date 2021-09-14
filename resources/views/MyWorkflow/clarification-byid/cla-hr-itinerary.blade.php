@@ -395,23 +395,23 @@
                                             <td class="col-md-3">{{ $detail->client_name }}</td>
                                             @php                
                                                 $date = date_create($detail->time_start);
-                                                $date = date_format($date,"n/d/Y");             
+                                                $date = date_format($date,"n/d/Y h:i A");             
                                             @endphp
                                             <td class="col-md-1 tdxi">{{ $date }}</td>
                                             @php                
                                                 $date = date_create($detail->time_end);
-                                                $date = date_format($date,"n/d/Y");
+                                                $date = date_format($date,"n/d/Y h:i A");
                                             @endphp
                                             <td class="col-md-1 tdxi">{{ $date }}</td>
                                             @if (!empty($detail->actual_start) && !empty($detail->actual_end))
                                                 @php
                                                     $date = date_create($detail->actual_start);
-                                                    $date = date_format($date,"n/d/Y");
+                                                    $date = date_format($date,"n/d/Y h:i A");
                                                 @endphp
                                                 <td class="col-md-1 ">{{ $date }}</td>
                                                 @php
                                                     $date = date_create($detail->actual_end);
-                                                    $date = date_format($date,"n/d/Y");
+                                                    $date = date_format($date,"n/d/Y h:i A");
                                                 @endphp
                                                 <td class="col-md-1 ">{{ $date }}</td>
                                                 <script>$('.tdid').addClass('filler');</script>
@@ -607,23 +607,23 @@
                                     <td class="col-md-3">{{ $detail->client_name }}</td>
                                     @php                
                                          $date = date_create($detail->time_start);
-                                         $date = date_format($date,"n/d/Y");             
+                                         $date = date_format($date,"n/d/Y h:i A");             
                                     @endphp
                                     <td class="col-md-1 tdxi">{{ $date }}</td>
                                     @php                
                                         $date = date_create($detail->time_end);
-                                        $date = date_format($date,"n/d/Y");
+                                        $date = date_format($date,"n/d/Y h:i A");
                                     @endphp
                                     <td class="col-md-1 tdxi">{{ $date }}</td>
                                     @if (!empty($detail->actual_start) && !empty($detail->actual_end))
                                         @php
                                             $date = date_create($detail->actual_start);
-                                            $date = date_format($date,"n/d/Y");
+                                            $date = date_format($date,"n/d/Y h:i A");
                                         @endphp
                                         <td class="col-md-1 ">{{ $date }}</td>
                                         @php
                                             $date = date_create($detail->actual_end);
-                                            $date = date_format($date,"n/d/Y");
+                                            $date = date_format($date,"n/d/Y h:i A");
                                         @endphp
                                         <td class="col-md-1 ">{{ $date }}</td>
                                     @else
@@ -1525,11 +1525,14 @@
 <script type="text/javascript">
     $(function () {
         $('#datetimepicker7').datetimepicker({
-            format: 'L'
+            // format: 'L'
         });
         $('#datetimepicker8').datetimepicker({
             useCurrent: false,
-            format: 'L'
+            // format: 'L'
+                            icons: {
+                            time:"fas fa-clock"
+                }
         });
         $("#datetimepicker7").on("change.datetimepicker", function (e) {
             $('#datetimepicker8').datetimepicker('minDate', e.date);
@@ -1539,11 +1542,17 @@
         });
 
         $('#datetimepicker77').datetimepicker({
-            format: 'L'
+            // format: 'L'
+                            icons: {
+                            time:"fas fa-clock"
+                }
         });
         $('#datetimepicker88').datetimepicker({
             useCurrent: false,
-            format: 'L'
+            // format: 'L'
+                            icons: {
+                            time:"fas fa-clock"
+                }
         });
         $("#datetimepicker77").on("change.datetimepicker", function (e) {
             $('#datetimepicker88').datetimepicker('minDate', e.date);
@@ -1553,11 +1562,17 @@
         });
 
         $('#datetimepicker71').datetimepicker({
-            format: 'L'
+            // format: 'L'
+                            icons: {
+                            time:"fas fa-clock"
+                }
         });
         $('#datetimepicker81').datetimepicker({
             useCurrent: false,
-            format: 'L'
+            // format: 'L'
+                            icons: {
+                            time:"fas fa-clock"
+                }
         });
         $("#datetimepicker71").on("change.datetimepicker", function (e) {
             $('#datetimepicker81').datetimepicker('minDate', e.date);
@@ -1567,11 +1582,17 @@
         });
 
         $('#datetimepicker711').datetimepicker({
-            format: 'L'
+            // format: 'L'
+                            icons: {
+                            time:"fas fa-clock"
+                }
         });
         $('#datetimepicker811').datetimepicker({
             useCurrent: false,
-            format: 'L'
+            // format: 'L'
+                            icons: {
+                            time:"fas fa-clock"
+                }
         });
         $("#datetimepicker711").on("change.datetimepicker", function (e) {
             $('#datetimepicker811').datetimepicker('minDate', e.date);

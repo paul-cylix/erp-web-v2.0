@@ -71,13 +71,17 @@ class LoginController extends Controller
                 $request->session()->put('LoggedUser_PositionName',$userInfo_Full[0]->positionName);
                 // $request->session()->put('img',$userInfo_Full[0]->IMG);
 
+                $companies = DB::select("SELECT title_id AS companyID, title_name AS companyName FROM general.`project_title` a INNER JOIN general.`allowedcmp` b ON (a.`title_id` = b.`CID`) WHERE b.`UID` = '".session('LoggedUser')."'");
+                $request->session()->put('companies', $companies);
+    
+
+            
+           
 
 
-
-
-                //return view('index');
+                // return view('index');
                 return redirect('dashboard'); 
-                //return Redirect::to('http://intranet.cylix.ph/');
+                // return Redirect::to('http://intranet.cylix.ph/');
             }else{
                 return back()->with('fail','Incorrect Password');
             }
@@ -126,12 +130,34 @@ class LoginController extends Controller
         // $rejectedCount = count($rejectedPosts);
         // session()->put('rejectedCount',$rejectedCount);
 
-        
-
         $data = ['LoggedUserInfo'=>User::where('id','=',session('LoggedUser'))->first()];
         return view('index', $data);
+        // return redirect('dashboard'); 
+
         
     }
+
+
+    public function changeCompany($id,$name){
+
+        // dd($id,$name);
+        session()->pull('LoggedUser_CompanyID');
+        session()->pull('LoggedUser_CompanyName');
+
+        session()->put('LoggedUser_CompanyID',$id);
+        session()->put('LoggedUser_CompanyName',$name);
+        
+        // return view('dashboard')
+        return redirect('dashboard'); 
+
+    }
+
+
+
+
+
+
+
 
     
    

@@ -81,15 +81,14 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">                                            
                                 <label for="purpose">Purpose</label> 
                                 <textarea style="resize:none" class="form-control" id="purpose" name="purpose" rows="4" readonly placeholder="">{{ $post[0]->purpose }}</textarea>
-    
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
 
 

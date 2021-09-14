@@ -166,7 +166,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="amount">Amount</label>
-                                    <input type="number" style="text-align: right" type="text" class="form-control currency" name="amount" id="amount" placeholder="" value="0.00">
+                                    <input type="number" style="text-align: right" type="text" class="form-control currency" name="amount" id="amount" placeholder="0.00" onkeydown="if(event.key==='.'){event.preventDefault();}"  oninput="event.target.value = event.target.value.replace(/[^0-9]*/g,'');">
                                     <span class="text-danger">@error('amount'){{ $message }}@enderror</span>
 
                                 </div>

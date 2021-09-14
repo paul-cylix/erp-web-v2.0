@@ -51,8 +51,8 @@
                                                 <td class="text-right">{{ number_format($post->Amount,2)}} </td>
                                                 <td>
 
-                                                    <a href="/approvals/{{$post->FRM_CLASS}}/{{ $post->ID }}/{{ $post->RequestType }}" class="btn btn-info btn-sm "><i class="fa fa-folder-open" aria-hidden="true"></i></a>
-                                                    <a href="javascript:void(0)" class="btn btn-secondary btn-sm " data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus('{{$post->FRM_CLASS}}',{{ $post->ID }})"><i class="fa fa-eye" aria-hidden="true"></i></a>                                                      
+                                                    <a href="/approvals/{{$post->FRM_CLASS}}/{{ $post->ID }}/{{ $post->RequestType }}" class="btn btn-info btn-sm "><i class="fas fa-book-open" aria-hidden="true"></i></a>
+                                                    <a href="javascript:void(0)" class="btn btn-secondary btn-sm " data-target="#viewStatusModal" data-toggle="modal" onclick="viewStatus('{{$post->FRM_CLASS}}',{{ $post->ID }})"><i class="fas fa-clipboard-list" aria-hidden="true"></i></a>                                                      
                                                     <a href="javascript:void(0)" class="btn btn-warning btn-sm " data-target="#viewMessagesModal" data-toggle="modal" onclick="viewClaComments('{{ $post->RequestType }}',{{ $post->ID }})"><i class="fa fa-comments" aria-hidden="true" style="color: white !important;"></i></a>
 
                                                 </td>

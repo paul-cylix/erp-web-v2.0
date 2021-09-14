@@ -102,7 +102,9 @@
 
                             @php
                             $foo = $post->TOTAL_AMT_SPENT;
-                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                            // $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
                             @endphp
                                                             
                             <div class="col-md-3">
@@ -162,7 +164,9 @@
 
 @php
 $foo = $xdData->AMOUNT;
-$myAMount = number_format((float)$foo, 2, '.', ''); 
+// $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
 @endphp
 
                                 <td>{{ $myAMount }}</td>
@@ -185,7 +189,9 @@ $myAMount = number_format((float)$foo, 2, '.', '');
             
 @php
 $foo = $subtotalExpenseDetails[0]->total ;
-$myAMount = number_format((float)$foo, 2, '.', ''); 
+// $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
 @endphp
 
             <div class="container">
@@ -248,7 +254,9 @@ $myAMount = number_format((float)$foo, 2, '.', '');
                                 <td>{{ $tdData->DESCRIPTION }}</td>
 @php
 $foo = $tdData->AMT_SPENT;
-$myAMount = number_format((float)$foo, 2, '.', ''); 
+// $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
 @endphp
                                 <td>{{ $myAMount }}</td>
                                 <td><button type="button"  class="btn btn-danger " disabled>Delete</button></td>
@@ -269,7 +277,9 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 
 @php
 $foo = $subtotalTranspoDetails[0]->total ;
-$myAMount = number_format((float)$foo, 2, '.', ''); 
+// $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
 @endphp
                 <div class="container">
                     <h6  class="text-right">Subtotal Amount: <span id ="tdTotalAmount">{{ $myAMount }}</span></h6>

@@ -93,7 +93,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">                                            
                                     <label for="purpose">Purpose</label> 
@@ -101,7 +101,7 @@
                                     <span class="text-danger">@error('rmID'){{ $message }}@enderror</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <input type="hidden" name="jsonOTdata" id="jsonOTdata">
 
@@ -410,11 +410,11 @@
             return false;
             }
 
-            if ($.trim($("#purpose").val()) === "") {
-            $('#myError').removeClass('d-none');
-            $('#myError').text('Please complete required fields.');
-            return false;
-            }
+            // if ($.trim($("#purpose").val()) === "") {
+            // $('#myError').removeClass('d-none');
+            // $('#myError').text('Please complete required fields.');
+            // return false;
+            // }
 
             if ($.trim($("#jsonOTdata").val()) === "") {
             $('#myError').removeClass('d-none');
@@ -903,7 +903,7 @@
                 }                                 
         
 
-                $('#datetimepicker8').datetimepicker('minDate', e.date);
+                // $('#datetimepicker8').datetimepicker('minDate', e.date);
             
             });
 
@@ -928,7 +928,7 @@
                     $('#authTotalHrs').val(total);
                 }
                 
-                $('#datetimepicker7').datetimepicker('maxDate', e.date);
+                // $('#datetimepicker7').datetimepicker('maxDate', e.date);
             });
 
 
@@ -956,7 +956,7 @@
                 }                                 
         
 
-                $('#datetimepicker81').datetimepicker('minDate', e.date);
+                // $('#datetimepicker81').datetimepicker('minDate', e.date);
             
             });
 
@@ -981,7 +981,7 @@
                     $('#authTotalHrs1').val(total);
                 }
                 
-                $('#datetimepicker71').datetimepicker('maxDate', e.date);
+                // $('#datetimepicker71').datetimepicker('maxDate', e.date);
             });
 
         });

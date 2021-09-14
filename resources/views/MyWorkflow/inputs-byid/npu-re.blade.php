@@ -249,7 +249,9 @@
 
                             @php
                             $foo = $post->TOTAL_AMT_SPENT;
-                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                            // $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
                             @endphp
                                                             
                             <div class="col-md-3">
@@ -306,7 +308,9 @@
 
 @php
 $foo = $xdData->AMOUNT;
-$myAMount = number_format((float)$foo, 2, '.', ''); 
+// $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
 @endphp
 
                                 <td>{{ $myAMount }}</td>
@@ -373,7 +377,9 @@ $myAMount = number_format((float)$foo, 2, '.', '');
 
 @php
 $foo = $tdData->AMT_SPENT;
-$myAMount = number_format((float)$foo, 2, '.', ''); 
+// $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
 @endphp
                                 <td>{{ $myAMount }}</td>
                                                         <td><button type="button"  class="btn btn-danger " disabled>Delete</button></td>

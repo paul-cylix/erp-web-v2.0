@@ -84,23 +84,23 @@
                                     <td class="col-md-3">{{ $detail->client_name }}</td>
                                     @php                
                                          $date = date_create($detail->time_start);
-                                         $date = date_format($date,"n/d/Y");             
+                                         $date = date_format($date,"n/d/Y h:i A");             
                                     @endphp
                                     <td class="col-md-1 tdxi">{{ $date }}</td>
                                     @php                
                                         $date = date_create($detail->time_end);
-                                        $date = date_format($date,"n/d/Y");
+                                        $date = date_format($date,"n/d/Y h:i A");
                                     @endphp
                                     <td class="col-md-1 tdxi">{{ $date }}</td>
                                     @if (!empty($detail->actual_start) && !empty($detail->actual_end))
                                         @php
                                             $date = date_create($detail->actual_start);
-                                            $date = date_format($date,"n/d/Y");
+                                            $date = date_format($date,"n/d/Y h:i A");
                                         @endphp
                                         <td class="col-md-1 ">{{ $date }}</td>
                                         @php
                                             $date = date_create($detail->actual_end);
-                                            $date = date_format($date,"n/d/Y");
+                                            $date = date_format($date,"n/d/Y h:i A");
                                         @endphp
                                         <td class="col-md-1 ">{{ $date }}</td>
                                     @else

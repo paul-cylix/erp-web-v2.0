@@ -159,7 +159,7 @@ closeOnEsc: false,
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="amount">Total Amount</label>
-                                    <input data-type="currency" min="0" style="text-align: right" type="number" readonly class="form-control" name="amount" id="amount" placeholder="0.00" >
+                                    <input data-type="currency" min="0" style="text-align: right" type="number" readonly class="form-control" name="amount" id="amount" placeholder="0.00" onkeydown="if(event.key==='.'){event.preventDefault();}"  oninput="event.target.value = event.target.value.replace(/[^0-9]*/g,'');" >
                                     <span class="text-danger">@error('amount'){{ $message }}@enderror</span>
                                 </div>
                             </div>
@@ -421,7 +421,7 @@ closeOnEsc: false,
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label for="">Amount</label>
-                                                        <input type="number" class="form-control" placeholder="0.00" aria-describedby="helpId"  id="amountXD">
+                                                        <input type="number" class="form-control" placeholder="0.00" aria-describedby="helpId"  id="amountXD" onkeydown="if(event.key==='.'){event.preventDefault();}"  oninput="event.target.value = event.target.value.replace(/[^0-9]*/g,'');">
                                                         <span class="text-danger" id="amountErrXD"></span>
                                                     </div>
                                                 </div>
@@ -519,7 +519,7 @@ closeOnEsc: false,
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label for="">Amount</label>
-                                                        <input type="number" class="form-control" id="amountTD" placeholder="0.00" dis aria-describedby="helpId" >
+                                                        <input type="number" class="form-control" id="amountTD" placeholder="0.00" dis aria-describedby="helpId" onkeydown="if(event.key==='.'){event.preventDefault();}"  oninput="event.target.value = event.target.value.replace(/[^0-9]*/g,'');" >
                                                         <span class="text-danger" id="amountErrTD"></span>                                                  
                                                     </div>
                                                 </div>                                               
@@ -565,25 +565,6 @@ closeOnEsc: false,
                         {{-- End Modal Transportation Details --}}
                         {{-- End Modal --}}
 
-
-<button>
-    {{-- modal --}}
-
-</button>
-
-<table>
-
-    <th>
-        <td>name</td>
-        <td>action</td>
-    </th>
-
-    <tr>
-        <td>Elon</td>
-        <td>edit</td>
-    </tr>
-    
-</table>
 
                     
                     </div>                            

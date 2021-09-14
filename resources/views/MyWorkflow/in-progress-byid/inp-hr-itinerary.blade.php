@@ -70,7 +70,7 @@
                     </div>                                       
                 </div> 
                 <div class="card-body table-responsive  p-0" style="max-height: 300px; overflow: auto; display:inline-block;">     
-                    <table class="table table-bordered " id="itineraryDetailsTable">
+                    {{-- <table class="table table-bordered " id="itineraryDetailsTable">
                         <thead>
                             <tr class="d-flex text-center" style="font-size: 13px;">
                                 <th class="col-3 text-left" style="position: sticky; top: 0; background: white; ">Client Name</th>
@@ -111,6 +111,64 @@
                                     @else
                                         <script>
                                             $('.tdid').addClass('d-none');
+                                        </script>
+                                    @endif
+                                    <td class="col-md-4">{{ $detail->purpose }}</td>
+                                    <td class="col-1 text-center px-0">
+                                        <button class="btn btn-success" disabled><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-danger" disabled><i class="fas fa-trash-alt"></i></button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table> --}}
+
+                    <table class="table table-bordered " id="itineraryDetailsTable">
+                        <thead>
+                            <tr class="d-flex text-center" style="font-size: 13px;">
+                                <th class="col-3 text-left" style="position: sticky; top: 0; background: white; ">Client Name</th>
+                                <th class="col-1 text-left tdx" style="position: sticky; top: 0; background: white; ">Auth. Time Start</th>
+                                <th class="col-1 text-left tdx" style="position: sticky; top: 0; background: white; ">Auth. Time End</th>
+                                <th class="col-1 text-left tdid" style="position: sticky; top: 0; background: white; ">Actual Time Start</th>
+                                <th class="col-1 text-left tdid" style="position: sticky; top: 0; background: white; ">Actual Time End</th>
+                                <th class="col-4 text-left" style="position: sticky; top: 0; background: white; ">Purpose</th>
+                                <th class="col-1 text-left" style="position: sticky; top: 0; background: white; ">Action</th>
+                            </tr>
+
+                        </thead>
+                        <tbody id="itineraryDetailsTbody">
+                            @foreach ($postDetails as $detail )
+                                <tr class="d-flex" style="font-size: 13px;">
+                                    <td class="col-md-3">{{ $detail->client_name }}</td>
+                                    @php                
+                                         $date = date_create($detail->time_start);
+                                         $date = date_format($date,"n/d/Y h:i A");             
+                                    @endphp
+                                    <td class="col-md-1 tdxi">{{ $date }}</td>
+                                    @php                
+                                        $date = date_create($detail->time_end);
+                                        $date = date_format($date,"n/d/Y h:i A");
+                                    @endphp
+                                    <td class="col-md-1 tdxi">{{ $date }}</td>
+                                    @if (!empty($detail->actual_start) && !empty($detail->actual_end))
+                                        @php
+                                            $date = date_create($detail->actual_start);
+                                            $date = date_format($date,"n/d/Y h:i A");
+                                        @endphp
+                                        <td class="col-md-1 ">{{ $date }}</td>
+                                        @php
+                                            $date = date_create($detail->actual_end);
+                                            $date = date_format($date,"n/d/Y h:i A");
+                                        @endphp
+                                        <td class="col-md-1 ">{{ $date }}</td>
+                                    @else
+                                        <script>
+                                            $('.tdid').addClass('d-none');
+                                            $('.tdx').addClass('col-2');
+                                            $('.tdx').removeClass('col-1');
+                                            $('.tdxi').addClass('col-md-2');
+                                            $('.tdxi').removeClass('col-md-1');
+                        
                                         </script>
                                     @endif
                                     <td class="col-md-4">{{ $detail->purpose }}</td>

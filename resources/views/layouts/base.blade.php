@@ -71,6 +71,17 @@
  
   <style>
 
+  #example{
+    font-size: 13px;
+    table-layout: fixed; // ***********add this
+  word-wrap:break-word;
+  }
+
+ #example_filter{
+   margin-left: 50px;
+   /* padding-left: 50px; */
+ }   
+
 /* circle button */
 .btn-circle.btn-xl {
   width: 50px;
@@ -257,11 +268,28 @@ max-width: 60%; */
       
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" data-widget="pushmenu" id="pushmenuBTN" href="#" role="button"><i class="fas fa-bars"></i></a>
+          <a class="nav-link " data-widget="pushmenu" id="pushmenuBTN" href="#" role="button"><i class="mt-1 fas fa-angle-double-left"></i></a>
         </li>
-        {{-- <li class="nav-item d-none d-sm-inline-block">
-          <a href="/dashboard" class="nav-link">Dashboard</a>
-        </li>  --}}
+        <li class="nav-item d-none d-sm-inline-block">
+          {{-- <a href="/dashboard" class="nav-link">{{ dd(session('session_detail')); }}</a> --}}
+        </li> 
+
+        @php
+        $company = session('companies');
+        @endphp
+ 
+
+        <div class="dropdown show nav-item d-none d-sm-inline-block">
+          <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+           {{ session('LoggedUser_CompanyName') }}
+          </a>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          @foreach ($company as $c )
+            <a class="dropdown-item" href="/change-company/{{ $c->companyID }}/{{ $c->companyName }}">{{ $c->companyName }}</a>
+          @endforeach
+            {{-- <button onClick="window.location.reload();">Refresh Page</button> --}}
+          </div>
+        </div>
       </ul> 
      
       <ul class="navbar-nav ml-auto">   
@@ -270,6 +298,11 @@ max-width: 60%; */
           {{-- <a class="nav-link" data-toggle="dropdown" href="#"> --}}
             {{-- <i class="far fa-bell"></i> --}}
             {{-- <span class="badge badge-warning navbar-badge">15</span> --}}
+
+
+
+
+
           </a>
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
             <span class="dropdown-item dropdown-header">15 Notifications</span>
@@ -296,8 +329,8 @@ max-width: 60%; */
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
               <span class="dropdown-item dropdown-header">My Account</span>
               <div class="dropdown-divider"></div>
-              <a href="#" class="dropdown-item">
-                <i class="fas fa-settings mr-2"></i> Settings
+              <a href="http://intranet.cylix.ph/" class="dropdown-item">
+                <i class="fas fa-settings mr-2"></i> Cylix Intranet
               </a>
               <div class="dropdown-divider"></div>
               <a href="{{ route('auth.logout') }}" class="dropdown-item">
@@ -745,6 +778,17 @@ max-width: 60%; */
 <script>
   $('#pushmenuBTN').on('click',function(){
     // alert('hi');
+    let myBool = $('#pushmenuBTN').children().hasClass("fa-angle-double-left");
+    if(myBool){
+      console.log('true');
+      $('#pushmenuBTN').children().removeClass("fa-angle-double-left");
+      $('#pushmenuBTN').children().addClass("fa-angle-double-right");
+
+    }else{
+      console.log('false');
+    $('#pushmenuBTN').children().removeClass("fa-angle-double-right");
+    $('#pushmenuBTN').children().addClass("fa-angle-double-left");
+    }
 
     $( ".badge" ).toggle( "slow", function() {
     // Animation complete.
@@ -791,12 +835,30 @@ max-width: 60%; */
         dom: 'Bfrtip',
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
+        ],
+    "columnDefs": [
+      { "width": "10px", "targets": 0 },
+      { "width": "40px", "targets": 1 },
+      { "width": "10px", "targets": 2 },
+      { "width": "70px", "targets": 3 },
+      { "width": "70px", "targets": 4 },
+      { "width": "70px", "targets": 5 },
+      { "width": "70px", "targets": 6 },
+      { "width": "70px", "targets": 7 },
+      { "width": "20px", "targets": 8 }
+    ]
     } );
 
     $('input[type="search"]').css("width", "500px");
-    // $('#example_filter').addClass("d-inline").addClass("text-right");
+    $('#example_filter').addClass("d-inline").addClass("text-right").addClass("p-0");
 
+</script>
+
+<script>
+  // $('#example_wrapper').append( "<div class="d-flex">" );
+  // $('#example_filter').after( "</div>" );
+
+    
 </script>
 
 {{-- <script src="">

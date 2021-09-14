@@ -379,6 +379,12 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
 
     
+    // Change Company
+    Route::get('/change-company/{id}/{name}',[LoginController::class, 'changeCompany'])->name('change.company');
+
+
+
+
 
 
 
@@ -514,6 +520,26 @@ Route::group(['middleware'=>['AuthCheck']], function(){
     
     Route::get('/sc-releasestocks', [SupplyChainRequestController::class, 'createReleaseStocks']);
     Route::get('/sc-rma', [SupplyChainRequestController::class, 'createRMA']);
+
+
+
+
+
+
+
+    // Materials Request
+    Route::get('/materials-request', function(){
+        return view('MyWorkflow.supply-chain.materials-request');
+    });
+
+
+
+
+
+
+
+
+
 });
 
 // Route::get('/', [LoginController::class, 'getCompanyList']);

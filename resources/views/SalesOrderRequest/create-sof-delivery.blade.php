@@ -375,7 +375,7 @@
                                                     <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="amount">Project Cost</label>
-                                                            <input data-type="currency" min="0" style="text-align: right" type="text" id="projectCost" class="form-control" name="projectCost" value="0.00"  placeholder="">
+                                                            <input data-type="currency" min="0" style="text-align: right" type="text" id="projectCost" class="form-control" name="projectCost"  placeholder="0.00" onkeydown="if(event.key==='.'){event.preventDefault();}"  oninput="event.target.value = event.target.value.replace(/[^0-9]*/g,'');">
                                                             <span class="text-danger">@error('projectCost'){{ $message }}@enderror</span>
                                                         </div>
                                                     </div>

@@ -3927,6 +3927,7 @@ class WorkflowController extends Controller
             }
 
             if($class === 'REIMBURSEMENT_REQUEST'){
+    
                 $post = DB::table('accounting.reimbursement_request')->where('ID',$id)->first();
                 // Expense Details
                 $expenseDetails = DB::select("SELECT * FROM accounting.`reimbursement_expense_details` a WHERE a.`REID` = $id");
@@ -3938,8 +3939,23 @@ class WorkflowController extends Controller
 
                 // Attachments
                 $attachmentsDetails = DB::select("SELECT * FROM general.`attachments` a WHERE a.`formName` = 'Reimbursement Request' AND a.`REQID` =$id");
+                $subtotalExpenseDetails = DB::select("SELECT SUM(AMOUNT) AS total FROM accounting.`reimbursement_expense_details` a WHERE a.`REID` = $id;");
+                $subtotalTranspoDetails = DB::select("SELECT SUM(AMT_SPENT) AS total FROM accounting.`reimbursement_request_details` a WHERE a.`REID` = $id;");
+
+
+
+
+
+
+
+
+
+
+
+
+
                 
-                return view('MyWorkflow.withdrawn-byid.wit-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails'));
+                return view('MyWorkflow.withdrawn-byid.wit-re', compact('post','initName','expenseDetails','transpoDetails','attachmentsDetails','subtotalExpenseDetails','subtotalTranspoDetails'));
             }
 
 

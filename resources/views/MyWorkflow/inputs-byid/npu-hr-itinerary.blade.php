@@ -84,22 +84,22 @@
                                     <td class="col-md-3">{{ $detail->client_name }}</td>
                                     @php                
                                          $date = date_create($detail->time_start);
-                                         $date = date_format($date,"n/d/Y");             
+                                         $date = date_format($date,"n/d/Y h:i A");             
                                     @endphp
                                     <td class="col-md-1">{{ $date }}</td>
                                     @php                
                                         $date = date_create($detail->time_end);
-                                        $date = date_format($date,"n/d/Y");
+                                        $date = date_format($date,"n/d/Y h:i A");
                                     @endphp
                                     <td class="col-md-1">{{ $date }}</td>
                                     @php
                                         $date = date_create($detail->actual_start);
-                                        $date = date_format($date,"n/d/Y");
+                                        $date = date_format($date,"n/d/Y h:i A");
                                     @endphp
                                     <td class="col-md-1">{{ $date }}</td>
                                     @php
                                         $date = date_create($detail->actual_end);
-                                        $date = date_format($date,"n/d/Y");
+                                        $date = date_format($date,"n/d/Y h:i A");
                                     @endphp
                                     <td class="col-md-1">{{ $date }}</td>
                                     <td class="col-md-4">{{ $detail->purpose }}</td>
@@ -411,11 +411,17 @@
     $(function () {
    
         $('#datetimepicker71').datetimepicker({
-            format: 'L'
+            // format: 'L'
+            icons: {
+                            time:"fas fa-clock"
+                }
         });
         $('#datetimepicker81').datetimepicker({
             useCurrent: false,
-            format: 'L'
+            // format: 'L'
+            icons: {
+                            time:"fas fa-clock"
+                }
         });
         $("#datetimepicker71").on("change.datetimepicker", function (e) {
             $('#datetimepicker81').datetimepicker('minDate', e.date);

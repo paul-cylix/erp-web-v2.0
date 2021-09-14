@@ -113,7 +113,7 @@
         <a href="/create-ot" class="list-group-item list-group-item-action">Overtime</a>
         <a href="/create-leave" class="list-group-item list-group-item-action">Leave</a>
         <a href="/create-itinerary" class="list-group-item list-group-item-action">Itinerary</a>
-        <a href="/create-ir" class="list-group-item list-group-item-action">Incident Report</a>
+        {{-- <a href="/create-ir" class="list-group-item list-group-item-action">Incident Report</a> --}}
       </div>
     </div>
   </div>
@@ -214,7 +214,7 @@
 </div>
 </div>
 
-{{-- <div class="panel panel-default">
+<div class="panel panel-default">
   <div class="panel-heading" role="tab" id="headingSix">
     <h4 class="panel-title">
     <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#colapseNine" aria-expanded="false" aria-controls="colapseNine">
@@ -226,13 +226,14 @@
   <div id="colapseNine" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
     <div class="panel-body">
       <div class="list-group">
+        <a href="/materials-request" class="list-group-item list-group-item-action">Materials Request</a>
         <a href="/create-ar-internal" class="list-group-item list-group-item-action">Materials Request</a>
         <a href="/create-sof-project" class="list-group-item list-group-item-action">Release Stocks</a>
         <a href="/create-sof-demo" class="list-group-item list-group-item-action">RMA</a>
       </div>
     </div>
   </div>
-</div> --}}
+</div>
 
 
 {{-- 

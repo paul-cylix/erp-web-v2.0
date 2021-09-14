@@ -153,7 +153,9 @@ window.location.href = "/inputs";
 
                             @php
                             $foo = $post->AMOUNT;
-                            $myAMount = number_format((float)$foo, 2, '.', ''); 
+                            // $myAMount = number_format((float)$foo, 2, '.', ''); 
+$myAMount = number_format($foo, 2, '.', ','); 
+
                         @endphp
                     
                     <div class="col-md-3">

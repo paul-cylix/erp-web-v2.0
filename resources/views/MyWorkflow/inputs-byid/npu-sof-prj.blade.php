@@ -443,12 +443,29 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-3">
+                                                    {{-- <div class="col-md-3">
                                                         <div class="form-group">
                                                             <label for="amount">Project Cost</label>
                                                             <input  style="text-align: right" type="text" value="{{ $salesOrder->amount }}" class="form-control" disabled placeholder="">
                                                         </div>
-                                                    </div>
+                                                    </div> --}}
+                                                    @php
+                                                    $foo = $salesOrder->amount;
+                                                    // $myAMount = number_format((float)$foo, 2, '.', ''); 
+                                                    $myAMount = number_format($foo, 2, '.', ','); 
+                                                    
+                                                    @endphp
+                                                    
+                                                    
+                                                    
+                                                                                                        <div class="col-md-3">
+                                                                                                            <div class="form-group">
+                                                                                                                <label for="amount">Project Cost</label>
+                                                                                                                <input  style="text-align: right" type="text" value="{{ $myAMount }}" class="form-control" disabled placeholder="">
+                                                                                                            </div>
+                                                                                                        </div>
+
+
                                                 </div>
                                             </div>                                                                                                    
                                         </div>

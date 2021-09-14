@@ -649,32 +649,44 @@
     <script type="text/javascript">
         $(function () {
             $('#datetimepicker7').datetimepicker({
-                format: 'L'
+                // format: 'L'
+                icons: {
+                            time:"fas fa-clock"
+                        }
             });
             $('#datetimepicker8').datetimepicker({
                 useCurrent: false,
-                format: 'L'
+                icons: {
+                            time:"fas fa-clock"
+                        }
+                // format: 'L'
             });
-            $("#datetimepicker7").on("change.datetimepicker", function (e) {
-                $('#datetimepicker8').datetimepicker('minDate', e.date);
-            });
-            $("#datetimepicker8").on("change.datetimepicker", function (e) {
-                $('#datetimepicker7').datetimepicker('maxDate', e.date);
-            });
+            // $("#datetimepicker7").on("change.datetimepicker", function (e) {
+            //     $('#datetimepicker8').datetimepicker('minDate', e.date);
+            // });
+            // $("#datetimepicker8").on("change.datetimepicker", function (e) {
+            //     $('#datetimepicker7').datetimepicker('maxDate', e.date);
+            // });
 
             $('#datetimepicker71').datetimepicker({
-                format: 'L'
+                // format: 'L'
+                icons: {
+                            time:"fas fa-clock"
+                        }
             });
             $('#datetimepicker81').datetimepicker({
                 useCurrent: false,
-                format: 'L'
+                // format: 'L'
+                icons: {
+                            time:"fas fa-clock"
+                }
             });
-            $("#datetimepicker71").on("change.datetimepicker", function (e) {
-                $('#datetimepicker81').datetimepicker('minDate', e.date);
-            });
-            $("#datetimepicker81").on("change.datetimepicker", function (e) {
-                $('#datetimepicker71').datetimepicker('maxDate', e.date);
-            });
+            // $("#datetimepicker71").on("change.datetimepicker", function (e) {
+            //     $('#datetimepicker81').datetimepicker('minDate', e.date);
+            // });
+            // $("#datetimepicker81").on("change.datetimepicker", function (e) {
+            //     $('#datetimepicker71').datetimepicker('maxDate', e.date);
+            // });
 
         });
     </script>

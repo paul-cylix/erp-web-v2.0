@@ -461,8 +461,9 @@
                                 </div>                            
                             </div>
                         </div>
+                        <span class="text-danger">@error('jsonOTdata'){{ $message }}@enderror</span>
 
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">                                            
                                     <label for="purpose">Purpose</label> 
@@ -470,8 +471,7 @@
                                     <span class="text-danger">@error('rmID'){{ $message }}@enderror</span>
                                 </div>
                             </div>
-                        </div>
-    <span class="text-danger">@error('jsonOTdata'){{ $message }}@enderror</span>
+                        </div> --}}
 
                     </form>
 
@@ -928,11 +928,11 @@
             return false;
             }
 
-            if ($.trim($("#purpose").val()) === "") {
-            $('#myError').removeClass('d-none');
-            $('#myError').text('Purpose is Required.');
-            return false;
-            }
+            // if ($.trim($("#purpose").val()) === "") {
+            // $('#myError').removeClass('d-none');
+            // $('#myError').text('Purpose is Required.');
+            // return false;
+            // }
 
             if ($.trim($("#jsonOTdata").val()) === "") {
             $('#myError').removeClass('d-none');
