@@ -2167,6 +2167,15 @@ class WorkflowController extends Controller
                 return back()->with('form_submitted', 'Your request is now Withdrawn.');
             }
 
+            // RE withdraw Button in In-progress Workflow
+            public function claREWithdraw(Request $request){
+                DB::update("UPDATE general.`actual_sign` AS a SET a.`webapp` = '1', a.`STATUS` = 'Withdrawn', a.`SIGNDATETIME` = NOW(), a.`ApprovedRemarks` = '" .$request->withdrawRemarks. "' 
+                WHERE a.`FRM_CLASS` = 'REIMBURSEMENT_REQUEST' AND a.`PROCESSID` = '".$request->reID."' AND a.`COMPID` = '".session('LoggedUser_CompanyID')."' AND a.`STATUS` = 'For Clarification'");
+                DB::update("UPDATE accounting.`reimbursement_request` a SET a.`STATUS` = 'Withdrawn'  WHERE a.`ID` = '".$request->reID."' AND a.`TITLEID` = '".session('LoggedUser_CompanyID')."' ");
+                return back()->with('form_submitted', 'Your request is now Withdrawn.');
+            }
+            
+
 
             // PC
             public function inpPCWithdraw(Request $request){

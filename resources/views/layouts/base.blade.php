@@ -831,6 +831,7 @@ max-width: 60%; */
 
 <script>
     $('#example').DataTable( {
+      "scrollX": true,
       "order": [],
         dom: 'Bfrtip',
         buttons: [

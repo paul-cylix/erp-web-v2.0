@@ -1250,7 +1250,7 @@ public function rejectedApprvrLeave(Request $request){
         $posts = DB::select("call general.Display_Approver_Company_web('%', '" . session('LoggedUser') . "', '1', '2020-01-01', '2020-12-31', 'True')");
         $employee = DB::select("SELECT SysPK_Empl, Name_Empl FROM humanresource.`employees` WHERE Status_Empl LIKE 'Active%' AND CompanyID = ".session('LoggedUser_CompanyID')." ORDER BY Name_Empl");
         $project = DB::select("SELECT project_id, project_name FROM general.`setup_project` WHERE title_id = ".session('LoggedUser_CompanyID')." AND `status` = 'Active' AND project_type IN ('Project Site', 'Non-Project') ORDER BY project_name;");
-        $managers = DB::select("SELECT RMID, RMName FROM general.`systemreportingmanager` WHERE UID = '" . session('LoggedUser') . "' ORDER BY RMName");
+        $managers = DB::select("SELECT RMID, RMName FROM general.`systemreportingmanager` a WHERE a.`UID` = '" . session('LoggedUser') . "' ORDER BY RMName");
         $businesslist = DB::select("SELECT * FROM general.`business_list` a WHERE a.`status` LIKE 'Active%' AND a.`title_id` = '".session('LoggedUser_CompanyID')."' AND a.`Type` = 'CLIENT' ORDER BY a.`business_fullname` ASC");
         
         return view('HumanResourceRequest.create-itinerary', compact('posts','managers','businesslist'));

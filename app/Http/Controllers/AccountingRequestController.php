@@ -47,6 +47,51 @@ class AccountingRequestController extends Controller
             return view('AccountingRequest.create-rfp', compact('mgrs','projects','expenseType','currencyType'));
         }
 
+        public function createRFP(){
+            $mgrs = DB::select("SELECT RMID, RMName FROM general.`systemreportingmanager` GROUP BY RMID ORDER BY RMName");
+            $projects = DB::select("SELECT project_id, project_name FROM general.`setup_project` WHERE project_type <> 'MAIN OFFICE' AND `status` = 'Active' AND title_id = 1 ORDER BY project_name");
+            $expenseType = DB::select("SELECT type FROM accounting.`expense_type_setup`");
+            $currencyType = DB::select("SELECT CurrencyName FROM accounting.`currencysetup`");
+
+            return response()->json(['data' => ['managers' => $mgrs,'projects' => $projects,'expense_type' => $expenseType,'currency_type' =>$currencyType], 'code'=> 200 ]);
+        }
+
+        public function getManagers(){
+            $managers = DB::select("SELECT RMID, RMName FROM general.`systemreportingmanager` GROUP BY RMID ORDER BY RMName");
+            return response()->json(['data' => $managers, 'code' => 200]);
+        }
+
+        public function getProjects(){
+            $projects = DB::select("SELECT project_id, project_name FROM general.`setup_project` WHERE project_type <> 'MAIN OFFICE' AND `status` = 'Active' AND title_id = 1 ORDER BY project_name");
+            return response()->json(['data' => $projects, 'code' => 200]);
+
+        }
+
+        public function getExpenseType(){
+            $expenseType = DB::select("SELECT type FROM accounting.`expense_type_setup`");
+            return response()->json(['data' => $expenseType, 'code' => 200]);
+
+        }
+
+        public function getCurrencyType(){
+            $currencyType = DB::select("SELECT CurrencyName FROM accounting.`currencysetup`");
+            return response()->json(['data' => $currencyType, 'code' => 200]);
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public function getClientName($prjid) {
             $clientNames = DB::select("SELECT Business_Number as 'clientID', ifnull(business_fullname, '') AS 'clientName', (SELECT Main_office_id FROM general.`setup_project` WHERE `project_id` = '" . $prjid . "' LIMIT 1) as 'mainID' FROM general.`business_list` WHERE Business_Number IN (SELECT `ClientID` FROM general.`setup_project` WHERE `project_id` = '" . $prjid . "')");
             if(count($clientNames) > 0) {
@@ -127,7 +172,6 @@ class AccountingRequestController extends Controller
                 'modeOfPayment'=>'required',
                 'amount'=>'required|not_in:0',
                 'purpose'=>'required'
-                
             ]);
 
 

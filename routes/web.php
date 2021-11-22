@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountingRequestController;
+use App\Http\Controllers\CustomerSupportController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\HumanResourceRequestController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\OperationRequestController;
 use App\Http\Controllers\PurchasingRequestController;
 use App\Http\Controllers\SalesOrderRequestController;
 use App\Http\Controllers\SupplyChainRequestController;
+use App\Http\Controllers\TheApiController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -187,6 +189,10 @@ Route::group(['middleware'=>['AuthCheck']], function(){
             Route::post('/approvals/withdraw',[WorkflowController::class, 'withdrawnByIDRemarks'])->name(('inp.withdraw.post'));
             // RE
             Route::post('/in-progress/withdraw',[WorkflowController::class, 'inpREWithdraw'])->name(('inp.withdraw.re'));
+
+            // Clarity withdraw RE
+            Route::post('/clarification/withdraw',[WorkflowController::class, 'claREWithdraw'])->name(('cla.withdraw.re'));
+
             // PC
             Route::post('/in-progress/withdraw-pc',[WorkflowController::class, 'inpPCWithdraw'])->name(('inp.withdraw.pc'));
 
@@ -526,6 +532,21 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
 
 
+    // Customer Support
+    Route::get('/create-rma-receiving', [CustomerSupportController::class, 'createRmaReceiving']);
+    Route::post('/save-rma-receiving', [CustomerSupportController::class, 'saveRmaReceiving'])->name('save.rma.rcvd');
+    Route::get('/list-rma-receiving', [CustomerSupportController::class, 'getRmaReceivingList']);
+    Route::post('/delete-rma-receiving', [CustomerSupportController::class, 'deleteRmaReceivingList'])->name('del.rma.rcvd');
+    Route::get('/edit-rma-receiving/{id}', [CustomerSupportController::class, 'editRmaReceiving'])->name('edit.rma.rcvd');
+    Route::post('/update-rma-receiving', [CustomerSupportController::class, 'updateRmaReceiving'])->name('update.rma.rcvd');
+
+
+
+
+    
+
+
+
 
     // Materials Request
     Route::get('/materials-request', function(){
@@ -534,13 +555,17 @@ Route::group(['middleware'=>['AuthCheck']], function(){
 
 
 
-
-
-
-
-
-
 });
+
+
+    // QR RMA
+    Route::get('/rma/{guid}', [CustomerSupportController::class, 'getRmaByGuid']);
+    Route::get('/register-user', [TheApiController::class, 'index']);
+
+
+
+
+
 
 // Route::get('/', [LoginController::class, 'getCompanyList']);
 

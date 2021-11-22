@@ -293,9 +293,7 @@
             }
         });
     });
-        // $("#attachmentsTable").on('click', '.btnDelete', function () {
-        //     $(this).closest('tr').remove();
-        // });
+
 </script>
 
 

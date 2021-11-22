@@ -96,6 +96,26 @@
 </div>
 </div>
 
+<div class="panel panel-default">
+  <div class="panel-heading" role="tab" id="headingSeven">
+    <h4 class="panel-title">
+    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#colapseTen" aria-expanded="false" aria-controls="colapseTen">
+      <i class="fas fa-headset" aria-hidden="true"></i>
+      Customer Support
+    </a>
+  </h4>
+  </div>
+  <div id="colapseTen" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
+    <div class="panel-body">
+      <div class="list-group">
+        <a href="/create-rma-receiving" class="list-group-item list-group-item-action">RMA Receiving</a>
+        <a href="/list-rma-receiving" class="list-group-item list-group-item-action">RMA Receiving List</a>
+
+      </div>
+    </div>
+  </div>
+</div>
+
   
 
 <div class="panel panel-default">
@@ -234,6 +254,8 @@
     </div>
   </div>
 </div>
+
+
 
 
 {{-- 

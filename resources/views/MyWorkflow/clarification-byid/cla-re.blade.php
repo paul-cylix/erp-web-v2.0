@@ -58,7 +58,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 </div>
-                <form action="{{ route('inp.withdraw.re') }}" method="POST">
+                <form action="{{ route('cla.withdraw.re') }}" method="POST">
                     @csrf
                 <div class="modal-body">
                     <div class="container-fluid">
